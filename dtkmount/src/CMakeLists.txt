@@ -9,6 +9,16 @@ file(GLOB_RECURSE SRCS
     "./*.cpp"
 )
 
+# using classes generated from D-Bus XML
+set(UDISKS2_OBJECT_XML ../misc/org.freedesktop.UDisks2.ObjectManager.xml)
+set(UDISKS2_XML ../misc/org.freedesktop.UDisks2.xml)
+set_source_files_properties(
+    ${UDISKS2_XML}
+    PROPERTIES NO_NAMESPACE true INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/dbus/udisks2_dbus_common.h
+    )
+qt5_add_dbus_interface(SRCS ${UDISKS2_OBJECT_XML} objectmanager_interface)
+qt5_add_dbus_interface(SRCS ${UDISKS2_XML} udisks2_interface)
+
 add_library(${BIN_NAME} SHARED
     ${INCLUDE_FILES}
     ${SRCS}
@@ -23,14 +33,13 @@ set_target_properties(${BIN_NAME} PROPERTIES
 target_compile_definitions(${BIN_NAME} PRIVATE VERSION="${CMAKE_PROJECT_VERSION}")
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(UDISKS2 REQUIRED udisks2)
 pkg_check_modules(GLIB REQUIRED glib-2.0)
 pkg_check_modules(GIOUNIX REQUIRED gio-unix-2.0)
 pkg_check_modules(LIBSECRET REQUIRED libsecret-1)
 
 target_include_directories(${BIN_NAME} PUBLIC
     Qt${QT_VERSION_MAJOR}::Core
-    ${UDISKS2_INCLUDE_DIRS}
+    Qt${QT_VERSION_MAJOR}::DBus
     ${GLIB_INCLUDE_DIRS}
     ${GIOUNIX_INCLUDE_DIRS}
     ${LIBSECRET_INCLUDE_DIRS}
@@ -38,7 +47,7 @@ target_include_directories(${BIN_NAME} PUBLIC
 
 target_link_libraries(${BIN_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
-    ${RSVG2_LIBRARIES}
+    Qt${QT_VERSION_MAJOR}::DBus
     ${GLIB_LIBRARIES}
     ${GIOUNIX_LIBRARIES}
     ${LIBSECRET_LIBRARIES}

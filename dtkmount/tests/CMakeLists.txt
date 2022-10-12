@@ -2,10 +2,9 @@
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
-set(BIN_NAME ut-dtkmount)
+set(BIN_NAME ut-${BIN_NAME})
 
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-access-control -fno-inline -Wno-pmf-conversions")
-
+find_package(GTest REQUIRED)
 file(GLOB_RECURSE INCLUDE_FILES "../include/*.h")
 file(GLOB_RECURSE SRCS
     "../src/*.h"
@@ -13,26 +12,39 @@ file(GLOB_RECURSE SRCS
 )
 file(GLOB_RECURSE TEST_FILES "./*.h" "./*.cpp")
 
+# using classes generated from D-Bus XML
+set(UDISKS2_OBJECT_XML ../misc/org.freedesktop.UDisks2.ObjectManager.xml)
+set(UDISKS2_XML ../misc/org.freedesktop.UDisks2.xml)
+set_source_files_properties(
+    ${UDISKS2_XML}
+    PROPERTIES NO_NAMESPACE true INCLUDE ${CMAKE_CURRENT_SOURCE_DIR}/../src/dbus/udisks2_dbus_common.h
+    )
+qt5_add_dbus_interface(SRCS ${UDISKS2_OBJECT_XML} objectmanager_interface)
+qt5_add_dbus_interface(SRCS ${UDISKS2_XML} udisks2_interface)
+
+# defines to determind whether to show invoke log at stub function.
+add_definitions(-DDEBUG_STUB_INVOKE)
+
 include_directories(
     "../include"
+    "3rdparty/cpp-stub"
+    "3rdparty/stub-ext"
 )
-add_definitions(-DUSE_FAKE_INTERFACE)
+
 add_executable(${BIN_NAME}
     ${INCLUDE_FILES}
     ${SRCS}
     ${TEST_FILES}
-    ${DFAKE_INTERFACE_DBUS_XML}
 )
 
 find_package(PkgConfig REQUIRED)
-pkg_check_modules(UDISKS2 REQUIRED udisks2)
 pkg_check_modules(GLIB REQUIRED glib-2.0)
 pkg_check_modules(GIOUNIX REQUIRED gio-unix-2.0)
 pkg_check_modules(LIBSECRET REQUIRED libsecret-1)
 
 target_include_directories(${BIN_NAME} PUBLIC
     Qt${QT_VERSION_MAJOR}::Core
-    ${UDISKS2_INCLUDE_DIRS}
+    Qt${QT_VERSION_MAJOR}::DBus
     ${GLIB_INCLUDE_DIRS}
     ${GIOUNIX_INCLUDE_DIRS}
     ${LIBSECRET_INCLUDE_DIRS}
@@ -40,7 +52,7 @@ target_include_directories(${BIN_NAME} PUBLIC
 
 target_link_libraries(${BIN_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
-    ${RSVG2_LIBRARIES}
+    Qt${QT_VERSION_MAJOR}::DBus
     ${GLIB_LIBRARIES}
     ${GIOUNIX_LIBRARIES}
     ${LIBSECRET_LIBRARIES}
@@ -48,6 +60,9 @@ target_link_libraries(${BIN_NAME} PRIVATE
     -lgcov
     -lgtest
 )
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-inline -fno-access-control")
+
 
 if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
     target_compile_options(${BIN_NAME} PRIVATE -fprofile-instr-generate -ftest-coverage)
