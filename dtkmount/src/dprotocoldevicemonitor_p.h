@@ -22,7 +22,7 @@ class DProtocolDeviceMonitorPrivate : public QObject
 
 public:
     explicit DProtocolDeviceMonitorPrivate(DProtocolDeviceMonitor *qq)
-        : q_ptr(qq)
+        : QObject { qq }, q_ptr { qq }
     {
         if (QThread::currentThread() != qApp->thread()) {
             qCritical() << "mount: monitor must be initialized in main thread.";

@@ -175,8 +175,7 @@ bool DProtocolDeviceMonitorPrivate::isMountOfCurrentUser(const QString &mpt)
 {
     Q_ASSERT(!mpt.isEmpty());
 
-    // daemon mounts mounted at "/media/$USER/smbmounts/hello on 1.2.3.4"
-    static QRegularExpression regx(R"(^/media/(.*)/smbmounts)");
+    static QRegularExpression regx(Utils::kRegxDaemonMountPath);
     auto match = regx.match(mpt);
     if (match.hasMatch()) {
         auto user = match.captured(1);

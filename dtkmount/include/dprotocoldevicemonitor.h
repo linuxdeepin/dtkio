@@ -11,12 +11,12 @@
 
 DMOUNT_BEGIN_NAMESPACE
 
-enum class ProtocolDeviceProperty;
 class DProtocolDeviceMonitorPrivate;
-
 class DProtocolDeviceMonitor : public QObject
 {
     Q_OBJECT
+    Q_DECLARE_PRIVATE(DProtocolDeviceMonitor)
+
 public:
     explicit DProtocolDeviceMonitor(QObject *parent = nullptr);
     virtual ~DProtocolDeviceMonitor();
@@ -26,8 +26,6 @@ public:
     QStringList devices() const;
 
 Q_SIGNALS:
-    // TODO(xust) should the property separated from Block devices?
-    void propertyChanged(const QString &devUrl, const QMap<Dtk::Mount::ProtocolDeviceProperty, QVariant> &changes);
     void deviceAdded(const QString &devUrl);
     void deviceRemoved(const QString &devUrl);
     void mountAdded(const QString &devUrl, const QString &mountPoint);
@@ -35,7 +33,6 @@ Q_SIGNALS:
 
 private:
     QScopedPointer<DProtocolDeviceMonitorPrivate> d_ptr;
-    Q_DECLARE_PRIVATE(DProtocolDeviceMonitor)
 };
 
 DMOUNT_END_NAMESPACE
