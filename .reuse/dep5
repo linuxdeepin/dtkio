@@ -18,6 +18,11 @@ Files: docs/*.md
 Copyright: None
 License: CC0-1.0
 
+# misc
+Files: */misc/*
+Copyright: None
+License: CC0-1.0
+
 # debian
 Files: debian/*
 Copyright: None
@@ -31,4 +36,9 @@ License: CC0-1.0
 # cpp-stub
 Files: */tests/3rdparty/cpp-stub/*
 Copyright: 2019 coolxv
+License: MIT
+
+# stub-ext
+Files: */tests/3rdparty/stub-ext/*
+Copyright: 2020 Zhang Yu
 License: MIT
