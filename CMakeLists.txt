@@ -13,6 +13,7 @@ project(dtkio
     DESCRIPTION "dtk library for dtkio."
     VERSION ${VERSION})
 
+message("beta")
 add_subdirectory(dtkmount)
 # TODO:
 #add_subdirectory(dtkio)
