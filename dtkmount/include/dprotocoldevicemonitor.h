@@ -7,7 +7,7 @@
 
 #include <QObject>
 
-#include "namespace.h"
+#include "dtkmount_global.h"
 
 DMOUNT_BEGIN_NAMESPACE
 

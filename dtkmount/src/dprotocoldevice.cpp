@@ -164,25 +164,25 @@ QString DProtocolDevice::displayName() const
 QString DProtocolDevice::fileSystem() const
 {
     Q_D(const DProtocolDevice);
-    return d->queryAttrs(DProtocolDevicePrivate::kFileSystem).toString();
+    return d->queryAttrs(DProtocolDevicePrivate::FileSystem).toString();
 }
 
 quint64 DProtocolDevice::sizeTotal() const
 {
     Q_D(const DProtocolDevice);
-    return d->queryAttrs(DProtocolDevicePrivate::kTotal).toULongLong();
+    return d->queryAttrs(DProtocolDevicePrivate::Total).toULongLong();
 }
 
 quint64 DProtocolDevice::sizeFree() const
 {
     Q_D(const DProtocolDevice);
-    return d->queryAttrs(DProtocolDevicePrivate::kFree).toULongLong();
+    return d->queryAttrs(DProtocolDevicePrivate::Free).toULongLong();
 }
 
 quint64 DProtocolDevice::sizeUsage() const
 {
     Q_D(const DProtocolDevice);
-    return d->queryAttrs(DProtocolDevicePrivate::kUsage).toULongLong();
+    return d->queryAttrs(DProtocolDevicePrivate::Usage).toULongLong();
 }
 
 QStringList DProtocolDevice::iconNames() const
@@ -204,7 +204,7 @@ QStringList DProtocolDevice::iconNames() const
 
     g_autofree char *names = g_icon_to_string(icon);
     if (names)
-        d->icons = QString(names).remove(". GThemedIcon").split(" ", Qt::SkipEmptyParts);
+        d->icons = QString(names).remove(". GThemedIcon").split(" ", QString::SkipEmptyParts);
     return d->icons;
 }
 
@@ -244,13 +244,13 @@ QVariant DProtocolDevicePrivate::queryAttrs(Attr attr) const
         return QVariant();
 
     switch (attr) {
-    case kFileSystem:
-        if (!attrs.value(kFileSystem, QString()).toString().isEmpty())
-            return attrs.value(kFileSystem);
+    case FileSystem:
+        if (!attrs.value(FileSystem, QString()).toString().isEmpty())
+            return attrs.value(FileSystem);
         break;
-    case kTotal:
-        if (attrs.value(kTotal, 0).toLongLong() != 0)
-            return attrs.value(kTotal);
+    case Total:
+        if (attrs.value(Total, 0).toLongLong() != 0)
+            return attrs.value(Total);
         break;
     default:
         break;
@@ -289,10 +289,10 @@ QVariant DProtocolDevicePrivate::queryAttrs(Attr attr) const
     quint64 used = g_file_info_get_attribute_uint64(fsInfo, G_FILE_ATTRIBUTE_FILESYSTEM_USED);
     QString fs = g_file_info_get_attribute_as_string(fsInfo, G_FILE_ATTRIBUTE_FILESYSTEM_TYPE);
 
-    this->attrs.insert(kFileSystem, fs);
-    this->attrs.insert(kTotal, total);
-    this->attrs.insert(kFree, free);
-    this->attrs.insert(kUsage, used);
+    this->attrs.insert(FileSystem, fs);
+    this->attrs.insert(Total, total);
+    this->attrs.insert(Free, free);
+    this->attrs.insert(Usage, used);
     return this->attrs.value(attr, QVariant());
 }
 
@@ -463,22 +463,24 @@ void DProtocolDevicePrivate::askPasswd(GMountOperation *op, const char *msg, con
         askPasswd.callOnceFlag = true;
     }
 
+    using namespace MountPasswdInfoParamKeys;
     // if ask-password callback is not specified, trying mount with default user infos.
-    auto passInfo = askPasswd.ask
-            ? askPasswd.ask(msg, defUser, defDomain)
-            : MountPasswdInfo { .name = defUser, .passwd = "", .domain = defDomain };
+    QVariantMap info { { kName, defUser },
+                       { kPasswd, "" },
+                       { kDomain, defDomain } };
+    auto passInfo = askPasswd.ask ? askPasswd.ask(msg, defUser, defDomain) : info;
 
     if (dat->timeoutEnabled)
         dat->timer.start();
 
-    if (passInfo.cancel) {
+    if (passInfo.value(kCancel, false).toBool()) {
         g_mount_operation_reply(op, G_MOUNT_OPERATION_ABORTED);
         // TODO(xust): error handle
         qDebug() << "mount: user cancelled mount";
         return;
     }
 
-    if (passInfo.anonymous) {
+    if (passInfo.value(kAnonymous, false).toBool()) {
         if (flgs & G_ASK_PASSWORD_ANONYMOUS_SUPPORTED) {
             askPasswd.anonymous = true;
             g_mount_operation_set_anonymous(op, true);
@@ -488,12 +490,12 @@ void DProtocolDevicePrivate::askPasswd(GMountOperation *op, const char *msg, con
         }
     } else {
         if (flgs & G_ASK_PASSWORD_NEED_DOMAIN)
-            g_mount_operation_set_domain(op, passInfo.domain.toStdString().c_str());
+            g_mount_operation_set_domain(op, passInfo.value(kDomain, "").toString().toStdString().c_str());
         if (flgs & G_ASK_PASSWORD_NEED_USERNAME)
-            g_mount_operation_set_username(op, passInfo.name.toStdString().c_str());
+            g_mount_operation_set_username(op, passInfo.value(kName, "").toString().toStdString().c_str());
         if (flgs & G_ASK_PASSWORD_NEED_PASSWORD)
-            g_mount_operation_set_password(op, passInfo.passwd.toStdString().c_str());
-        g_mount_operation_set_password_save(op, GPasswordSave(passInfo.mode));
+            g_mount_operation_set_password(op, passInfo.value(kPasswd, "").toString().toStdString().c_str());
+        g_mount_operation_set_password_save(op, GPasswordSave(passInfo.value(kSaveMode, Never).toInt()));
     }
     g_mount_operation_reply(op, G_MOUNT_OPERATION_HANDLED);
 }

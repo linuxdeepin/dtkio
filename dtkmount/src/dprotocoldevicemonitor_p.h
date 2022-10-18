@@ -38,7 +38,7 @@ public:
         initDevices();
     }
 
-    virtual ~DProtocolDeviceMonitorPrivate()
+    ~DProtocolDeviceMonitorPrivate() override
     {
         if (monitor)
             g_object_unref(monitor);

@@ -10,31 +10,30 @@
 #include <QObject>
 #include <QVariantMap>
 
-#include "namespace.h"
+#include "dtkmount_global.h"
 
 DMOUNT_BEGIN_NAMESPACE
 
 enum PasswdSave {
-    kNever = 0,
-    kSaveInSession,
-    kSaveForever
+    Never = 0,
+    SaveInSession,
+    SaveForever
 };
 
-struct MountPasswdInfo
-{
-    QString name;
-    QString passwd;
-    QString domain;
-    bool anonymous { false };
-    bool cancel { false };
-    PasswdSave mode { kNever };
-};
+namespace MountPasswdInfoParamKeys {
+inline constexpr char kName[] { "name" };
+inline constexpr char kPasswd[] { "passwd" };
+inline constexpr char kDomain[] { "domain" };
+inline constexpr char kAnonymous[] { "anonymous" };
+inline constexpr char kCancel[] { "cancel" };
+inline constexpr char kSaveMode[] { "mode" };
+}   // namespace MountPasswdInfoParamKeys
 
 // TODO(xust): error handle in callback
 using OperateCallback = std::function<void(bool)>;
 using OperateCallbackWithInfo = std::function<void(bool, const QString &)>;
 
-using AskForPasswd = std::function<MountPasswdInfo(const QString &msg, const QString &user, const QString &domain)>;
+using AskForPasswd = std::function<QVariantMap(const QString &msg, const QString &user, const QString &domain)>;
 using AskForChoice = std::function<int(const QString &msg, const QStringList &choices)>;
 
 class DProtocolDevicePrivate;

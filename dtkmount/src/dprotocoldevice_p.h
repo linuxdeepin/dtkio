@@ -22,15 +22,15 @@ class DProtocolDevicePrivate : public QObject
     Q_DECLARE_PUBLIC(DProtocolDevice)
 
     enum Attr {
-        kTotal,
-        kUsage,
-        kFree,
-        kFileSystem
+        Total,
+        Usage,
+        Free,
+        FileSystem
     };
 
 public:
     explicit DProtocolDevicePrivate(const QString &devicePath, DProtocolDevice *qq);
-    virtual ~DProtocolDevicePrivate()
+    ~DProtocolDevicePrivate() override
     {
         if (mount)
             g_object_unref(mount);
@@ -68,7 +68,7 @@ public:
 
 private:
     QString devicePath;
-    int timeout = 3;
+    int timeout { 3 };
     AskForPasswd askForPasswd { nullptr };
     AskForChoice askForChoice { nullptr };
 

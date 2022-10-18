@@ -26,11 +26,11 @@ QString mountPointOf(GMount *mount)
 }
 
 /*!
- * \brief mountInfoOf
- * \param mount
- * \return the pair of uri and mountpoint.
- *      uri is like 'smb://1.2.3.4',
- *      while mountpoint is like '/run/user/1000/gvfs/xxx...'
+ * @~english \brief mountInfoOf
+ * @~english \param mount
+ * @~english \return the pair of uri and mountpoint.
+ * @~english      uri is like 'smb://1.2.3.4',
+ * @~english      while mountpoint is like '/run/user/1000/gvfs/xxx...'
  */
 QPair<QString, QString> mountInfoOf(GMount *mount)
 {

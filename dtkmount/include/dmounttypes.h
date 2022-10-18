@@ -5,13 +5,17 @@
 #ifndef DMOUNTTYPES_H
 #define DMOUNTTYPES_H
 
-#include "namespace.h"
+#include "dtkmount_global.h"
 
 DMOUNT_BEGIN_NAMESPACE
 
 enum class ProtocolDeviceProperty {
 
 };   // enum ProtocolDeviceProperty
+
+enum class BlockDeviceProperty {
+
+};   // enum BlockDeviceProperty
 
 DMOUNT_END_NAMESPACE
 
