@@ -20,7 +20,7 @@ class DBlockDeviceMonitor : public QObject
 
 public:
     explicit DBlockDeviceMonitor(QObject *parent = nullptr);
-    virtual ~DBlockDeviceMonitor();
+    ~DBlockDeviceMonitor() override;
 
     void setWatchChanges(bool watchChanges);
     bool watchChanges() const;

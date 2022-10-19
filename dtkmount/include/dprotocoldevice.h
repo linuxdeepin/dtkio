@@ -14,7 +14,7 @@
 
 DMOUNT_BEGIN_NAMESPACE
 
-enum PasswdSave {
+enum PasswdSaveMode {
     Never = 0,
     SaveInSession,
     SaveForever
@@ -44,7 +44,7 @@ class DProtocolDevice : public QObject
 
 public:
     explicit DProtocolDevice(const QString &devicePath, QObject *parent = nullptr);
-    virtual ~DProtocolDevice();
+    ~DProtocolDevice() override;
 
     QString path() const;
     QString mountPoint() const;

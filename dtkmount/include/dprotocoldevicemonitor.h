@@ -19,7 +19,7 @@ class DProtocolDeviceMonitor : public QObject
 
 public:
     explicit DProtocolDeviceMonitor(QObject *parent = nullptr);
-    virtual ~DProtocolDeviceMonitor();
+    ~DProtocolDeviceMonitor() override;
 
     void setWatchChanges(bool watchChanges);
     bool watchChanges() const;
