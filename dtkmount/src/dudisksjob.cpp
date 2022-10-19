@@ -7,9 +7,14 @@
 
 DMOUNT_USE_NAMESPACE
 
-DUDisksJob::DUDisksJob(QObject *parent)
+DUDisksJob::DUDisksJob(const QString &path, QObject *parent)
     : QObject { parent }, d_ptr { new DUDisksJobPrivate(this) }
 {
+    Q_D(DUDisksJob);
+    d->iface = new OrgFreedesktopUDisks2JobInterface(kUDisks2Service, path, QDBusConnection::systemBus());
+    QDBusConnection::systemBus().connect(kUDisks2Service, d->iface->path(), "org.freedesktop.DBus.Properties",
+                                         "PropertiesChanged", this, SLOT(onPropertiesChanged(const QString &, const QVariantMap &)));
+    connect(d->iface, &OrgFreedesktopUDisks2JobInterface::Completed, this, &DUDisksJob::completed);
 }
 
 DUDisksJob::~DUDisksJob()

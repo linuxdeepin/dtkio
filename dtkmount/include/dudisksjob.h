@@ -30,7 +30,7 @@ class DUDisksJob : public QObject
     Q_PROPERTY(quint64 startTime READ startTime CONSTANT FINAL)
 
 public:
-    explicit DUDisksJob(QObject *parent = nullptr);
+    explicit DUDisksJob(const QString &path, QObject *parent = nullptr);
     ~DUDisksJob() override;
 
     QString path() const;
@@ -49,7 +49,7 @@ public Q_SLOTS:
     void cancel(const QVariantMap &options);
 
 Q_SIGNALS:
-    void completed(bool success, QString message);
+    void completed(bool success, const QString &message);
     void progressChanged(double progress);
     void rateChanged(quint64 rate);
     void expectedEndTimeChanged(quint64 expectedEndTime);
