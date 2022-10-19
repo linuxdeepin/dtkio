@@ -16,8 +16,8 @@ DMOUNT_BEGIN_NAMESPACE
 
 enum PasswdSaveMode {
     Never = 0,
-    SaveInSession,
-    SaveForever
+    SaveInSession = 1,
+    SaveForever = 2
 };
 
 namespace MountPasswdInfoParamKeys {

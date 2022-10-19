@@ -376,11 +376,11 @@ void DProtocolDevicePrivate::mountNetworkWithGvfs(OperateCallbackWithInfo callba
     if (timeout != 0) {
         datFinal->timeoutEnabled = true;
         cancel = g_cancellable_new();
-        connect(&datFinal->timer, &QTimer::timeout, this, [&] {
-            g_cancellable_cancel(cancel);   // WARNING(xust): warning eliminate
-            if (blocker) {
+        connect(&datFinal->timer, &QTimer::timeout, this, [this, datFinal, cancel] {
+            g_cancellable_cancel(cancel);
+            if (datFinal->blocker) {
                 QMutexLocker locker(&lockForLoop);
-                blocker->quit();
+                datFinal->blocker->quit();
             }
         });
         datFinal->timer.start();
@@ -515,11 +515,11 @@ void DProtocolDevicePrivate::mountWithVolume(OperateCallbackWithInfo callback, Q
     if (timeout != 0) {
         cancel = g_cancellable_new();
         datFinal->timeoutEnabled = true;
-        connect(&datFinal->timer, &QTimer::timeout, this, [&] {
-            g_cancellable_cancel(cancel);   // WARNING(xust): warning eliminate
-            if (blocker) {
+        connect(&datFinal->timer, &QTimer::timeout, this, [this, datFinal, cancel] {
+            g_cancellable_cancel(cancel);
+            if (datFinal->blocker) {
                 QMutexLocker locker(&lockForLoop);
-                blocker->quit();
+                datFinal->blocker->quit();
             }
         });
         datFinal->timer.start();
@@ -575,11 +575,11 @@ void DProtocolDevicePrivate::unmountWithGvfs(OperateCallback callback, QEventLoo
     if (timeout != 0) {
         datFinal->timeoutEnabled = true;
         cancel = g_cancellable_new();
-        connect(&datFinal->timer, &QTimer::timeout, this, [&] {
-            g_cancellable_cancel(cancel);   // WARNING(xust): warning eliminate
-            if (blocker) {
+        connect(&datFinal->timer, &QTimer::timeout, this, [this, datFinal, cancel] {
+            g_cancellable_cancel(cancel);
+            if (datFinal->blocker) {
                 QMutexLocker locker(&lockForLoop);
-                blocker->quit();
+                datFinal->blocker->quit();
             }
         });
         datFinal->timer.start();
