@@ -6,7 +6,7 @@
 
 DMOUNT_BEGIN_NAMESPACE
 
-qulonglong DBlockPartition::flags() const
+quint64 DBlockPartition::flags() const
 {
     Q_D(const DBlockPartition);
 
@@ -41,14 +41,14 @@ uint DBlockPartition::number() const
     return d->dbus->number();
 }
 
-qulonglong DBlockPartition::offset() const
+quint64 DBlockPartition::offset() const
 {
     Q_D(const DBlockPartition);
 
     return d->dbus->offset();
 }
 
-qulonglong DBlockPartition::size() const
+quint64 DBlockPartition::size() const
 {
     Q_D(const DBlockPartition);
 
@@ -80,7 +80,7 @@ DBlockPartition::PartitionType DBlockPartition::partitionType() const
     int value = type.toInt(&ok, 16);
 
     if (!ok)
-        return PartitionType::Unknow;
+        return PartitionType::Unknown;
 
     return static_cast<PartitionType>(value);
 }
@@ -271,7 +271,7 @@ DBlockPartition::GUIDType DBlockPartition::guidType() const
         return GUIDType::InvalidUUID;
 
     if (!kGuidMap.contains(guid))
-        return GUIDType::UnknowUUID;
+        return GUIDType::UnknownUUID;
 
     return kGuidMap.value(guid);
 }
@@ -847,7 +847,7 @@ QString DBlockPartition::guidTypeDescription(DBlockPartition::GUIDType type)
 
     case InvalidUUID:
         return "Invalid UUID";
-    case UnknowUUID:
+    case UnknownUUID:
         return "Unknow GUID";
     }
 
@@ -861,14 +861,14 @@ void DBlockPartition::deletePartition(const QVariantMap &options)
     d->dbus->Delete(options);
 }
 
-void DBlockPartition::resize(qulonglong size, const QVariantMap &options)
+void DBlockPartition::resize(quint64 size, const QVariantMap &options)
 {
     Q_D(DBlockPartition);
 
     d->dbus->Resize(size, options);
 }
 
-void DBlockPartition::setFlags(qulonglong flags, const QVariantMap &options)
+void DBlockPartition::setFlags(quint64 flags, const QVariantMap &options)
 {
     Q_D(DBlockPartition);
 
@@ -891,7 +891,7 @@ void DBlockPartition::setType(const QString &type, const QVariantMap &options)
 
 void DBlockPartition::setType(DBlockPartition::PartitionType type, const QVariantMap &options)
 {
-    if (type == Unknow)
+    if (type == Unknown)
         return;
 
     QString typeString = QString::asprintf("0x%.2s", QByteArray::number(type, 16).constData());

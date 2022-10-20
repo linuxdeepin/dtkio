@@ -21,21 +21,21 @@ class DBlockPartition : public DBlockDevice
     Q_OBJECT
     Q_DECLARE_PRIVATE(DBlockPartition)
 
-    Q_PROPERTY(qulonglong flags READ flags NOTIFY flagsChanged)
-    Q_PROPERTY(bool isContained READ isContained NOTIFY isContainedChanged)
-    Q_PROPERTY(bool isContainer READ isContainer NOTIFY isContainerChanged)
-    Q_PROPERTY(QString name READ name NOTIFY nameChanged)
-    Q_PROPERTY(uint number READ number NOTIFY numberChanged)
-    Q_PROPERTY(qulonglong offset READ offset NOTIFY offsetChanged)
-    Q_PROPERTY(qulonglong size READ size NOTIFY sizeChanged)
-    Q_PROPERTY(QString table READ table)
-    Q_PROPERTY(QString type READ type NOTIFY typeChanged)
-    Q_PROPERTY(PartitionType partitionType READ partitionType NOTIFY partitionTypeChanged)
-    Q_PROPERTY(GUIDType guidType READ guidType NOTIFY guidTypeChanged)
-    Q_PROPERTY(QString UUID READ UUID NOTIFY UUIDChanged)
+    Q_PROPERTY(quint64 flags READ flags NOTIFY flagsChanged);
+    Q_PROPERTY(bool isContained READ isContained NOTIFY isContainedChanged);
+    Q_PROPERTY(bool isContainer READ isContainer NOTIFY isContainerChanged);
+    Q_PROPERTY(QString name READ name NOTIFY nameChanged);
+    Q_PROPERTY(uint number READ number NOTIFY numberChanged);
+    Q_PROPERTY(quint64 offset READ offset NOTIFY offsetChanged);
+    Q_PROPERTY(quint64 size READ size NOTIFY sizeChanged);
+    Q_PROPERTY(QString table READ table CONSTANT);
+    Q_PROPERTY(QString type READ type NOTIFY typeChanged);
+    Q_PROPERTY(PartitionType partitionType READ partitionType NOTIFY partitionTypeChanged);
+    Q_PROPERTY(GUIDType guidType READ guidType NOTIFY guidTypeChanged);
+    Q_PROPERTY(QString UUID READ UUID NOTIFY UUIDChanged);
 
 public:
-    //! @~english by: https://en.wikipedia.org/wiki/Partition_type
+    //! @~english @see https://en.wikipedia.org/wiki/Partition_type
     enum PartitionType {
         Empty = 0x00,
         FAT12Type = 0x01,
@@ -129,7 +129,7 @@ public:
         LANstep = 0xfe,
         BBT = 0xff,
 
-        Unknow
+        Unknown = -1
     };
     Q_ENUM(PartitionType)
 
@@ -338,17 +338,17 @@ public:
         EmmcBoot1FuchsiaLegacy,
         EmmcBoot2FuchsiaLegacy,
 
-        UnknowUUID
+        UnknownUUID = -1
     };
     Q_ENUM(GUIDType)
 
-    qulonglong flags() const;
+    quint64 flags() const;
     bool isContained() const;
     bool isContainer() const;
     QString name() const;
     uint number() const;
-    qulonglong offset() const;
-    qulonglong size() const;
+    quint64 offset() const;
+    quint64 size() const;
     QString table() const;
     QString type() const;
     PartitionType partitionType() const;
@@ -360,20 +360,20 @@ public:
 
 public Q_SLOTS:
     void deletePartition(const QVariantMap &options);
-    void resize(qulonglong size, const QVariantMap &options);
-    void setFlags(qulonglong flags, const QVariantMap &options);
+    void resize(quint64 size, const QVariantMap &options);
+    void setFlags(quint64 flags, const QVariantMap &options);
     void setName(const QString &name, const QVariantMap &options);
     void setType(const QString &type, const QVariantMap &options);
     void setType(PartitionType type, const QVariantMap &options);
 
 Q_SIGNALS:
-    void flagsChanged(qulonglong flags);
+    void flagsChanged(quint64 flags);
     void isContainedChanged(bool isContained);
     void isContainerChanged(bool isContainer);
     void nameChanged(const QString &name);
     void numberChanged(uint number);
-    void offsetChanged(qulonglong offset);
-    void sizeChanged(qulonglong size);
+    void offsetChanged(quint64 offset);
+    void sizeChanged(quint64 size);
     void typeChanged(const QString &type);
     void partitionTypeChanged();
     void UUIDChanged(const QString &UUID);

@@ -195,7 +195,7 @@ QByteArray DBlockDevice::device() const
     return d->dbus->device();
 }
 
-qulonglong DBlockDevice::deviceNumber() const
+quint64 DBlockDevice::deviceNumber() const
 {
     Q_D(const DBlockDevice);
 
@@ -333,7 +333,7 @@ bool DBlockDevice::readOnly() const
     return d->dbus->readOnly();
 }
 
-qulonglong DBlockDevice::size() const
+quint64 DBlockDevice::size() const
 {
     Q_D(const DBlockDevice);
 
@@ -433,7 +433,7 @@ DBlockDevice::PartitionTableType DBlockDevice::partitionTableTypeype() const
     if (type == "gpt")
         return GPT;
 
-    return UnknowPT;
+    return UnknownPT;
 }
 
 QList<QPair<QString, QVariantMap>> DBlockDevice::childConfiguration() const

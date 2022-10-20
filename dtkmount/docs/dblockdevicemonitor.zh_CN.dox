@@ -1,13 +1,9 @@
-// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
-//
-// SPDX-License-Identifier: LGPL-3.0-or-later
-
 /*!
 @~chinese
 @file dblockdevicemonitor.h
 
 @class Dtk::Mount::DBlockDeviceMonitor dblockdevicemonitor.h
-@brief DBlockDeviceMonitor 类提供基于 udisks 的块设备的监听操作
+@brief 提供块设备的监听操作
 
 @fn DBlockDeviceMonitor::DBlockDeviceMonitor(QObject *parent = nullptr)
 @brief 构造函数
@@ -28,7 +24,7 @@
 
 @fn void DBlockDeviceMonitor::deviceAdded(const QString &devPath)
 @brief 信号，告知块设备添加
-@param[out] devPath 添加的块设备路径，现阶段该路径对应 udisks2 中块设备的对象路径，形如 /org/freedesktop/UDisks2/block_devices/sda1 格式
+@param[out] devPath 添加的块设备路径，形如 /org/freedesktop/UDisks2/block_devices/sda1 格式
 
 @fn void DBlockDeviceMonitor::deviceRemoved(const QString &devPath)
 @brief 信号，告知块设备移除

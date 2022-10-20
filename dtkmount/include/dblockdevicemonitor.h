@@ -19,7 +19,6 @@ class DBlockDeviceMonitor : public QObject
     Q_DECLARE_PRIVATE(DBlockDeviceMonitor)
 
 public:
-    explicit DBlockDeviceMonitor(QObject *parent = nullptr);
     ~DBlockDeviceMonitor() override;
 
     void setWatchChanges(bool watchChanges);
@@ -37,6 +36,7 @@ Q_SIGNALS:
     void propertiesChanged(const QString &devPath, const QMap<Dtk::Mount::BlockDeviceProperty, QVariant> &changes);
 
 private:
+    explicit DBlockDeviceMonitor(QObject *parent = nullptr);
     QScopedPointer<DBlockDeviceMonitorPrivate> d_ptr;
 };
 

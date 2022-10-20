@@ -14,9 +14,9 @@ Copyright: None
 License: CC0-1.0
 
 # docs
-Files: docs/*.md
-Copyright: None
-License: CC0-1.0
+Files: */docs/*.md */docs/*.dox
+Copyright: UnionTech Software Technology Co., Ltd.
+License: CC-BY-4.0
 
 # misc
 Files: */misc/*

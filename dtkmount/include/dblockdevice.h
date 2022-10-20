@@ -29,49 +29,49 @@ class DBlockDevice : public QObject
     Q_OBJECT
     Q_DECLARE_PRIVATE(DBlockDevice)
 
-    Q_PROPERTY(QString path READ path CONSTANT FINAL)
-    Q_PROPERTY(bool watchChanges READ watchChanges WRITE setWatchChanges)
-    Q_PROPERTY(bool hasFileSystem READ hasFileSystem NOTIFY hasFileSystemChanged)
-    Q_PROPERTY(bool hasPartition READ hasPartition NOTIFY hasPartitionChanged)
-    Q_PROPERTY(bool isEncrypted READ isEncrypted NOTIFY isEncryptedChanged)
-    Q_PROPERTY(bool isLoopDevice READ isLoopDevice)
-    Q_PROPERTY(QList<QPair<QString, QVariantMap>> configuration READ configuration NOTIFY configurationChanged)
-    Q_PROPERTY(QString cryptoBackingDevice READ cryptoBackingDevice NOTIFY cryptoBackingDeviceChanged)
-    Q_PROPERTY(QByteArray device READ device)
-    Q_PROPERTY(qulonglong deviceNumber READ deviceNumber)
-    Q_PROPERTY(QString drive READ drive)
-    Q_PROPERTY(bool hintAuto READ hintAuto NOTIFY hintAutoChanged)
-    Q_PROPERTY(QString hintIconName READ hintIconName NOTIFY hintIconNameChanged)
-    Q_PROPERTY(bool hintIgnore READ hintIgnore NOTIFY hintIgnoreChanged)
-    Q_PROPERTY(QString hintName READ hintName NOTIFY hintNameChanged)
-    Q_PROPERTY(bool hintPartitionable READ hintPartitionable NOTIFY hintPartitionableChanged)
-    Q_PROPERTY(QString hintSymbolicIconName READ hintSymbolicIconName NOTIFY hintSymbolicIconNameChanged)
-    Q_PROPERTY(bool hintSystem READ hintSystem)
-    Q_PROPERTY(QString id READ id)
-    Q_PROPERTY(QString idLabel READ idLabel NOTIFY idLabelChanged)
-    Q_PROPERTY(QString idType READ idType NOTIFY idTypeChanged)
-    // TODO(zhangs) Q_PROPERTY(FSType fsType READ fsType NOTIFY fsTypeChanged)
-    Q_PROPERTY(QString idUUID READ idUUID NOTIFY idUUIDChanged)
-    Q_PROPERTY(QString idUsage READ idUsage NOTIFY idUsageChanged)
-    Q_PROPERTY(QString idVersion READ idVersion NOTIFY idVersionChanged)
-    Q_PROPERTY(QString mDRaid READ mDRaid NOTIFY mDRaidChanged)
-    Q_PROPERTY(QString mDRaidMember READ mDRaidMember NOTIFY mDRaidMemberChanged)
-    Q_PROPERTY(QByteArray preferredDevice READ preferredDevice NOTIFY preferredDeviceChanged)
-    Q_PROPERTY(bool readOnly READ readOnly NOTIFY readOnlyChanged)
-    Q_PROPERTY(qulonglong size READ size NOTIFY sizeChanged)
-    Q_PROPERTY(QByteArrayList symlinks READ symlinks NOTIFY symlinksChanged)
-    Q_PROPERTY(QStringList userspaceMountOptions READ userspaceMountOptions NOTIFY userspaceMountOptionsChanged)
-    Q_PROPERTY(QByteArrayList mountPoints READ mountPoints NOTIFY mountPointsChanged)
-    Q_PROPERTY(PartitionTableType partitionTableTypeype READ partitionTableTypeype NOTIFY ptTypeChanged)
-    Q_PROPERTY(QList<QPair<QString, QVariantMap>> childConfiguration READ childConfiguration NOTIFY childConfigurationChanged)
-    Q_PROPERTY(QString cleartextDevice READ cleartextDevice NOTIFY cleartextDeviceChanged)
+    Q_PROPERTY(QString path READ path CONSTANT FINAL);
+    Q_PROPERTY(bool watchChanges READ watchChanges WRITE setWatchChanges);
+    Q_PROPERTY(bool hasFileSystem READ hasFileSystem NOTIFY hasFileSystemChanged);
+    Q_PROPERTY(bool hasPartition READ hasPartition NOTIFY hasPartitionChanged);
+    Q_PROPERTY(bool isEncrypted READ isEncrypted NOTIFY isEncryptedChanged);
+    Q_PROPERTY(bool isLoopDevice READ isLoopDevice CONSTANT);
+    Q_PROPERTY(QList<QPair<QString, QVariantMap>> configuration READ configuration NOTIFY configurationChanged);
+    Q_PROPERTY(QString cryptoBackingDevice READ cryptoBackingDevice NOTIFY cryptoBackingDeviceChanged);
+    Q_PROPERTY(QByteArray device READ device CONSTANT);
+    Q_PROPERTY(quint64 deviceNumber READ deviceNumber CONSTANT);
+    Q_PROPERTY(QString drive READ drive CONSTANT);
+    Q_PROPERTY(bool hintAuto READ hintAuto NOTIFY hintAutoChanged);
+    Q_PROPERTY(QString hintIconName READ hintIconName NOTIFY hintIconNameChanged);
+    Q_PROPERTY(bool hintIgnore READ hintIgnore NOTIFY hintIgnoreChanged);
+    Q_PROPERTY(QString hintName READ hintName NOTIFY hintNameChanged);
+    Q_PROPERTY(bool hintPartitionable READ hintPartitionable NOTIFY hintPartitionableChanged);
+    Q_PROPERTY(QString hintSymbolicIconName READ hintSymbolicIconName NOTIFY hintSymbolicIconNameChanged);
+    Q_PROPERTY(bool hintSystem READ hintSystem CONSTANT);
+    Q_PROPERTY(QString id READ id CONSTANT);
+    Q_PROPERTY(QString idLabel READ idLabel NOTIFY idLabelChanged);
+    Q_PROPERTY(QString idType READ idType NOTIFY idTypeChanged);
+    // TODO(zhangs); Q_PROPERTY(FSType fsType READ fsType NOTIFY fsTypeChanged);
+    Q_PROPERTY(QString idUUID READ idUUID NOTIFY idUUIDChanged);
+    Q_PROPERTY(QString idUsage READ idUsage NOTIFY idUsageChanged);
+    Q_PROPERTY(QString idVersion READ idVersion NOTIFY idVersionChanged);
+    Q_PROPERTY(QString mDRaid READ mDRaid NOTIFY mDRaidChanged);
+    Q_PROPERTY(QString mDRaidMember READ mDRaidMember NOTIFY mDRaidMemberChanged);
+    Q_PROPERTY(QByteArray preferredDevice READ preferredDevice NOTIFY preferredDeviceChanged);
+    Q_PROPERTY(bool readOnly READ readOnly NOTIFY readOnlyChanged);
+    Q_PROPERTY(quint64 size READ size NOTIFY sizeChanged);
+    Q_PROPERTY(QByteArrayList symlinks READ symlinks NOTIFY symlinksChanged);
+    Q_PROPERTY(QStringList userspaceMountOptions READ userspaceMountOptions NOTIFY userspaceMountOptionsChanged);
+    Q_PROPERTY(QByteArrayList mountPoints READ mountPoints NOTIFY mountPointsChanged);
+    Q_PROPERTY(PartitionTableType partitionTableTypeype READ partitionTableTypeype NOTIFY ptTypeChanged);
+    Q_PROPERTY(QList<QPair<QString, QVariantMap>> childConfiguration READ childConfiguration NOTIFY childConfigurationChanged);
+    Q_PROPERTY(QString cleartextDevice READ cleartextDevice NOTIFY cleartextDeviceChanged);
 
 public:
     enum PartitionTableType {
         InvalidPT,
         MBR,
         GPT,
-        UnknowPT
+        UnknownPT
     };
 
     Q_ENUM(PartitionTableType)
@@ -87,7 +87,7 @@ public:
     QList<QPair<QString, QVariantMap>> configuration() const;
     QString cryptoBackingDevice() const;
     QByteArray device() const;
-    qulonglong deviceNumber() const;
+    quint64 deviceNumber() const;
     QString drive() const;
     bool hintAuto() const;
     QString hintIconName() const;
@@ -107,7 +107,7 @@ public:
     QString mDRaidMember() const;
     QByteArray preferredDevice() const;
     bool readOnly() const;
-    qulonglong size() const;
+    quint64 size() const;
     QByteArrayList symlinks() const;
     QStringList userspaceMountOptions() const;
 
@@ -175,7 +175,7 @@ Q_SIGNALS:
     void mDRaidMemberChanged(QString mDRaidMember);
     void preferredDeviceChanged(QByteArray preferredDevice);
     void readOnlyChanged(bool readOnly);
-    void sizeChanged(qulonglong size);
+    void sizeChanged(quint64 size);
     void symlinksChanged(QByteArrayList symlinks);
     void userspaceMountOptionsChanged(QStringList userspaceMountOptions);
     void ptTypeChanged();
