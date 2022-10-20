@@ -5,11 +5,11 @@
 #ifndef UDISK2_DBUS_COMMON_H
 #define UDISK2_DBUS_COMMON_H
 
-#include "dtkmount_global.h"
-
 #include <QDBusObjectPath>
 #include <QString>
 #include <QVariantMap>
+
+#include "dtkmount_global.h"
 
 QT_BEGIN_NAMESPACE
 class QDBusArgument;
