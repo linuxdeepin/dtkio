@@ -1,13 +1,9 @@
-// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
-//
-// SPDX-License-Identifier: LGPL-3.0-or-later
-
 /*!
 @~chinese
 @file dprotocoldevicemonitor.h
 
 @class Dtk::Mount::DProtocolDeviceMonitor dprotocoldevicemonitor.h
-@brief DProtocolDeviceMonitor 类提供对协议类设备的监听操作
+@brief 提供对协议类设备的监听操作
 
 @fn DProtocolDeviceMonitor::DProtocolDeviceMonitor(QObject *parent = nullptr)
 @brief 构造函数

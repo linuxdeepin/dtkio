@@ -1,7 +1,3 @@
-// SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
-//
-// SPDX-License-Identifier: LGPL-3.0-or-later
-
 /*!
 @~chinese
 @file dprotocoldevice.h
@@ -41,7 +37,7 @@
     挂载网络设备时，请求用户秘钥时的参数名字空间。使用此种方式配合 QVariantMap 传参以保证较高的 ABI 兼容性。
 
 @class Dtk::Mount::DProtocolDevice dprotocoldevice.h
-@brief DProtocolDevice 类.用于操作如 smb/ftp/sftp/mpt/gphoto 等协议设备。当前版本基于 GVFS 来处理设备的卸载、挂载以及获取设备属性。
+@brief 用于操作如 smb/ftp/sftp/mpt/gphoto 等协议设备，处理设备的卸载、挂载以及获取设备属性。
 
 @fn DProtocolDevice::DProtocolDevice(const QString &devicePath, QObject *parent = nullptr)
 @brief 构造函数

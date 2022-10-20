@@ -1,0 +1,13 @@
+/*!
+@~chinese
+@file ddevicemanager.h
+
+// @namespace Dtk::Mount::DDeviceManager
+//     名字空间，设备管理器。包含各种设备管理接口。
+
+// @fn DBlockDeviceMonitor *DDeviceManager::globalBlockDeviceMonitor()
+// @brief 获取全局唯一块设备监视器
+// @return 块设备监视器指针
+
+
+*/

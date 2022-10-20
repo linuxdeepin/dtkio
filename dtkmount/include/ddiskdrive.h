@@ -23,36 +23,36 @@ class DDiskDrive : public QObject
     Q_OBJECT
     Q_DECLARE_PRIVATE(DDiskDrive)
 
-    Q_PROPERTY(QString path READ path CONSTANT FINAL)
-    Q_PROPERTY(bool canPowerOff READ canPowerOff CONSTANT FINAL)
-    Q_PROPERTY(QVariantMap configuration READ configuration CONSTANT FINAL)
-    Q_PROPERTY(QString connectionBus READ connectionBus CONSTANT FINAL)
-    Q_PROPERTY(bool ejectable READ ejectable CONSTANT FINAL)
-    Q_PROPERTY(QString id READ id CONSTANT FINAL)
-    Q_PROPERTY(QString media READ media CONSTANT FINAL)
-    Q_PROPERTY(bool mediaAvailable READ mediaAvailable CONSTANT FINAL)
-    Q_PROPERTY(bool mediaChangeDetected READ mediaChangeDetected CONSTANT FINAL)
-    Q_PROPERTY(QStringList mediaCompatibility READ mediaCompatibility CONSTANT FINAL)
-    Q_PROPERTY(bool mediaRemovable READ mediaRemovable CONSTANT FINAL)
-    Q_PROPERTY(QString model READ model CONSTANT FINAL)
-    Q_PROPERTY(bool optical READ optical CONSTANT FINAL)
-    Q_PROPERTY(bool opticalBlank READ opticalBlank CONSTANT FINAL)
-    Q_PROPERTY(uint opticalNumAudioTracks READ opticalNumAudioTracks CONSTANT FINAL)
-    Q_PROPERTY(uint opticalNumDataTracks READ opticalNumDataTracks CONSTANT FINAL)
-    Q_PROPERTY(uint opticalNumSessions READ opticalNumSessions CONSTANT FINAL)
-    Q_PROPERTY(uint opticalNumTracks READ opticalNumTracks CONSTANT FINAL)
-    Q_PROPERTY(bool removable READ removable CONSTANT FINAL)
-    Q_PROPERTY(QString revision READ revision CONSTANT FINAL)
-    Q_PROPERTY(int rotationRate READ rotationRate CONSTANT FINAL)
-    Q_PROPERTY(QString seat READ seat CONSTANT FINAL)
-    Q_PROPERTY(QString serial READ serial CONSTANT FINAL)
-    Q_PROPERTY(QString siblingId READ siblingId CONSTANT FINAL)
-    Q_PROPERTY(qulonglong size READ size CONSTANT FINAL)
-    Q_PROPERTY(QString sortKey READ sortKey CONSTANT FINAL)
-    Q_PROPERTY(qulonglong timeDetected READ timeDetected CONSTANT FINAL)
-    Q_PROPERTY(qulonglong timeMediaDetected READ timeMediaDetected CONSTANT FINAL)
-    Q_PROPERTY(QString vendor READ vendor CONSTANT FINAL)
-    Q_PROPERTY(QString WWN READ WWN CONSTANT FINAL)
+    Q_PROPERTY(QString path READ path CONSTANT FINAL);
+    Q_PROPERTY(bool canPowerOff READ canPowerOff CONSTANT FINAL);
+    Q_PROPERTY(QVariantMap configuration READ configuration CONSTANT FINAL);
+    Q_PROPERTY(QString connectionBus READ connectionBus CONSTANT FINAL);
+    Q_PROPERTY(bool ejectable READ ejectable CONSTANT FINAL);
+    Q_PROPERTY(QString id READ id CONSTANT FINAL);
+    Q_PROPERTY(QString media READ media CONSTANT FINAL);
+    Q_PROPERTY(bool mediaAvailable READ mediaAvailable CONSTANT FINAL);
+    Q_PROPERTY(bool mediaChangeDetected READ mediaChangeDetected CONSTANT FINAL);
+    Q_PROPERTY(QStringList mediaCompatibility READ mediaCompatibility CONSTANT FINAL);
+    Q_PROPERTY(bool mediaRemovable READ mediaRemovable CONSTANT FINAL);
+    Q_PROPERTY(QString model READ model CONSTANT FINAL);
+    Q_PROPERTY(bool optical READ optical CONSTANT FINAL);
+    Q_PROPERTY(bool opticalBlank READ opticalBlank CONSTANT FINAL);
+    Q_PROPERTY(uint opticalNumAudioTracks READ opticalNumAudioTracks CONSTANT FINAL);
+    Q_PROPERTY(uint opticalNumDataTracks READ opticalNumDataTracks CONSTANT FINAL);
+    Q_PROPERTY(uint opticalNumSessions READ opticalNumSessions CONSTANT FINAL);
+    Q_PROPERTY(uint opticalNumTracks READ opticalNumTracks CONSTANT FINAL);
+    Q_PROPERTY(bool removable READ removable CONSTANT FINAL);
+    Q_PROPERTY(QString revision READ revision CONSTANT FINAL);
+    Q_PROPERTY(int rotationRate READ rotationRate CONSTANT FINAL);
+    Q_PROPERTY(QString seat READ seat CONSTANT FINAL);
+    Q_PROPERTY(QString serial READ serial CONSTANT FINAL);
+    Q_PROPERTY(QString siblingId READ siblingId CONSTANT FINAL);
+    Q_PROPERTY(quint64 size READ size CONSTANT FINAL);
+    Q_PROPERTY(QString sortKey READ sortKey CONSTANT FINAL);
+    Q_PROPERTY(quint64 timeDetected READ timeDetected CONSTANT FINAL);
+    Q_PROPERTY(quint64 timeMediaDetected READ timeMediaDetected CONSTANT FINAL);
+    Q_PROPERTY(QString vendor READ vendor CONSTANT FINAL);
+    Q_PROPERTY(QString WWN READ WWN CONSTANT FINAL);
 
 public:
     ~DDiskDrive();
@@ -80,10 +80,10 @@ public:
     QString seat() const;
     QString serial() const;
     QString siblingId() const;
-    qulonglong size() const;
+    quint64 size() const;
     QString sortKey() const;
-    qulonglong timeDetected() const;
-    qulonglong timeMediaDetected() const;
+    quint64 timeDetected() const;
+    quint64 timeMediaDetected() const;
     QString vendor() const;
     QString WWN() const;
 

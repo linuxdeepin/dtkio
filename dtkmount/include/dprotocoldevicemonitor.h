@@ -18,7 +18,6 @@ class DProtocolDeviceMonitor : public QObject
     Q_DECLARE_PRIVATE(DProtocolDeviceMonitor)
 
 public:
-    explicit DProtocolDeviceMonitor(QObject *parent = nullptr);
     ~DProtocolDeviceMonitor() override;
 
     void setWatchChanges(bool watchChanges);
@@ -32,6 +31,8 @@ Q_SIGNALS:
     void mountRemoved(const QString &devUrl);
 
 private:
+    explicit DProtocolDeviceMonitor(QObject *parent = nullptr);
+
     QScopedPointer<DProtocolDeviceMonitorPrivate> d_ptr;
 };
 

@@ -180,7 +180,7 @@ QString DDiskDrive::siblingId() const
     return d->dbus->siblingId();
 }
 
-qulonglong DDiskDrive::size() const
+quint64 DDiskDrive::size() const
 {
     Q_D(const DDiskDrive);
 
@@ -194,14 +194,14 @@ QString DDiskDrive::sortKey() const
     return d->dbus->sortKey();
 }
 
-qulonglong DDiskDrive::timeDetected() const
+quint64 DDiskDrive::timeDetected() const
 {
     Q_D(const DDiskDrive);
 
     return d->dbus->timeDetected();
 }
 
-qulonglong DDiskDrive::timeMediaDetected() const
+quint64 DDiskDrive::timeMediaDetected() const
 {
     Q_D(const DDiskDrive);
 
