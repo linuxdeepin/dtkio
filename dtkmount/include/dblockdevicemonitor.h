@@ -16,7 +16,7 @@ class DBlockDeviceMonitorPrivate;
 class DBlockDeviceMonitor : public QObject
 {
     Q_OBJECT
-    Q_DECLARE_PRIVATE(DBlockDeviceMonitor);
+    Q_DECLARE_PRIVATE(DBlockDeviceMonitor)
 
 public:
     explicit DBlockDeviceMonitor(QObject *parent = nullptr);

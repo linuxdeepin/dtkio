@@ -7,6 +7,9 @@
 #include "objectmanager_interface.h"
 #include "udisks2_interface.h"
 #include "dbus/udisks2_dbus_common.h"
+#include "dblockdevice.h"
+#include "ddiskdrive.h"
+#include "dblockpartition.h"
 
 DMOUNT_BEGIN_NAMESPACE
 
@@ -70,32 +73,45 @@ QStringList DDeviceManager::diskDrives()
 
 DBlockDevice *DDeviceManager::createBlockDevice(const QString &path, QObject *parent)
 {
-    // TODO(zhangs): impl me
-    return {};
+    return new DBlockDevice(path, parent);
 }
 
 DBlockDevice *DDeviceManager::createBlockDeviceByDevicePath(const QByteArray &path, QObject *parent)
 {
-    // TODO(zhangs): impl me
-    return {};
+    for (const QString &block : blockDevices()) {
+        DBlockDevice *device = new DBlockDevice(block, parent);
+
+        if (device->device() == path)
+            return device;
+
+        device->deleteLater();
+    }
+
+    return nullptr;
 }
 
 DBlockPartition *DDeviceManager::createBlockPartition(const QString &path, QObject *parent)
 {
-    // TODO(zhangs): impl me
-    return {};
+    return new DBlockPartition(path, parent);
 }
 
 DBlockPartition *DDeviceManager::createBlockPartitionByMountPoint(const QByteArray &path, QObject *parent)
 {
-    // TODO(zhangs): impl me
-    return {};
+    for (const QString &block : blockDevices()) {
+        DBlockPartition *device = new DBlockPartition(block, parent);
+
+        if (device->mountPoints().contains(path))
+            return device;
+
+        device->deleteLater();
+    }
+
+    return nullptr;
 }
 
 DDiskDrive *DDeviceManager::createDiskDrive(const QString &path, QObject *parent)
 {
-    // TODO(zhangs): impl me
-    return {};
+    return new DDiskDrive(path, parent);
 }
 
 DDiskJob *DDeviceManager::createDiskJob(const QString &path, QObject *parent)
