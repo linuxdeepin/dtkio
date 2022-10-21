@@ -30,14 +30,16 @@ class DBlockPartition : public DBlockDevice
     Q_PROPERTY(quint64 size READ size NOTIFY sizeChanged);
     Q_PROPERTY(QString table READ table CONSTANT);
     Q_PROPERTY(QString type READ type NOTIFY typeChanged);
-    Q_PROPERTY(PartitionType partitionType READ partitionType NOTIFY partitionTypeChanged);
-    Q_PROPERTY(GUIDType guidType READ guidType NOTIFY guidTypeChanged);
+    Q_PROPERTY(MbrPartitionType mbrType READ mbrType NOTIFY mbrPartitionTypeChanged);
+    Q_PROPERTY(GptPartitionType gptType READ gptType NOTIFY gptPartitionTypeChanged);
     Q_PROPERTY(QString UUID READ UUID NOTIFY UUIDChanged);
 
 public:
     //! @~english @see https://en.wikipedia.org/wiki/Partition_type
-    enum PartitionType {
-        Empty = 0x00,
+    enum MbrPartitionType {
+        UnknownMbrType = -1,
+
+        EmptyMbrType = 0x00,
         FAT12Type = 0x01,
         XENIX_root = 0x02,
         XENIX_usr = 0x03,
@@ -129,13 +131,13 @@ public:
         LANstep = 0xfe,
         BBT = 0xff,
 
-        Unknown = -1
     };
-    Q_ENUM(PartitionType)
+    Q_ENUM(MbrPartitionType)
 
-    // @~english by:  https://en.wikipedia.org/wiki/GUID_Partition_Table
-    enum GUIDType {
-        InvalidUUID = 0,
+    //! @~english @see https://en.wikipedia.org/wiki/GUID_Partition_Table
+    enum GptPartitionType {
+        UnknownGptType = -1,
+        EmptyGptType = 0,
 
         UnusedEntryNA = 1,
         MBRPartitionSchemeNA,
@@ -338,9 +340,8 @@ public:
         EmmcBoot1FuchsiaLegacy,
         EmmcBoot2FuchsiaLegacy,
 
-        UnknownUUID = -1
     };
-    Q_ENUM(GUIDType)
+    Q_ENUM(GptPartitionType)
 
     quint64 flags() const;
     bool isContained() const;
@@ -351,12 +352,12 @@ public:
     quint64 size() const;
     QString table() const;
     QString type() const;
-    PartitionType partitionType() const;
-    GUIDType guidType() const;
+    MbrPartitionType mbrType() const;
+    GptPartitionType gptType() const;
     QString UUID() const;
 
-    static QString typeDescription(PartitionType type);
-    static QString guidTypeDescription(GUIDType type);
+    static QString mbrTypeDescription(MbrPartitionType type);
+    static QString gptTypeDescription(GptPartitionType type);
 
 public Q_SLOTS:
     void deletePartition(const QVariantMap &options);
@@ -364,7 +365,7 @@ public Q_SLOTS:
     void setFlags(quint64 flags, const QVariantMap &options);
     void setName(const QString &name, const QVariantMap &options);
     void setType(const QString &type, const QVariantMap &options);
-    void setType(PartitionType type, const QVariantMap &options);
+    void setType(Dtk::Mount::DBlockPartition::MbrPartitionType type, const QVariantMap &options);
 
 Q_SIGNALS:
     void flagsChanged(quint64 flags);
@@ -375,9 +376,9 @@ Q_SIGNALS:
     void offsetChanged(quint64 offset);
     void sizeChanged(quint64 size);
     void typeChanged(const QString &type);
-    void partitionTypeChanged();
+    void mbrPartitionTypeChanged(Dtk::Mount::DBlockPartition::MbrPartitionType type);
+    void gptPartitionTypeChanged(Dtk::Mount::DBlockPartition::GptPartitionType type);
     void UUIDChanged(const QString &UUID);
-    void guidTypeChanged();
 
 private:
     explicit DBlockPartition(const QString &path, QObject *parent = nullptr);
