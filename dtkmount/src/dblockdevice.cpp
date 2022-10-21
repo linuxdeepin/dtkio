@@ -413,7 +413,7 @@ QByteArrayList DBlockDevice::mountPoints() const
     return fsif.mountPoints();
 }
 
-DBlockDevice::PartitionTableType DBlockDevice::partitionTableTypeype() const
+DBlockDevice::PartitionTableType DBlockDevice::partitionTableType() const
 {
     Q_D(const DBlockDevice);
 

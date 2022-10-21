@@ -62,7 +62,7 @@ class DBlockDevice : public QObject
     Q_PROPERTY(QByteArrayList symlinks READ symlinks NOTIFY symlinksChanged);
     Q_PROPERTY(QStringList userspaceMountOptions READ userspaceMountOptions NOTIFY userspaceMountOptionsChanged);
     Q_PROPERTY(QByteArrayList mountPoints READ mountPoints NOTIFY mountPointsChanged);
-    Q_PROPERTY(PartitionTableType partitionTableTypeype READ partitionTableTypeype NOTIFY ptTypeChanged);
+    Q_PROPERTY(PartitionTableType partitionTableType READ partitionTableType NOTIFY ptTypeChanged);
     Q_PROPERTY(QList<QPair<QString, QVariantMap>> childConfiguration READ childConfiguration NOTIFY childConfigurationChanged);
     Q_PROPERTY(QString cleartextDevice READ cleartextDevice NOTIFY cleartextDeviceChanged);
 
@@ -110,6 +110,7 @@ public:
     quint64 size() const;
     QByteArrayList symlinks() const;
     QStringList userspaceMountOptions() const;
+    bool canSetLabel() const;
 
     bool hasFileSystem() const;
     bool hasPartition() const;
@@ -122,7 +123,7 @@ public:
     static bool isLoopDevice(const QString &path);
 
     QByteArrayList mountPoints() const;
-    PartitionTableType partitionTableTypeype() const;
+    PartitionTableType partitionTableType() const;
 
     QList<QPair<QString, QVariantMap>> childConfiguration() const;
 
@@ -144,10 +145,9 @@ public Q_SLOTS:
     QString mount(const QVariantMap &options);
     void unmount(const QVariantMap &options);
     // TODO(zhangs): async interfaces
-    bool canSetLabel() const;
     void setLabel(const QString &label, const QVariantMap &options);
 
-    void changePassphrase(const QString &passphrase, const QString &new_passphrase, const QVariantMap &options);
+    void changePassphrase(const QString &passphrase, const QString &newPassphrase, const QVariantMap &options);
     void lock(const QVariantMap &options);
     QString unlock(const QString &passphrase, const QVariantMap &options);
     // TODO(zhangs): async interfaces
@@ -167,7 +167,7 @@ Q_SIGNALS:
     void hintSymbolicIconNameChanged(QString hintSymbolicIconName);
     void idLabelChanged(QString idLabel);
     void idTypeChanged(QString idType);
-    void fsTypeChanged();
+    void fsTypeChanged(QString fsType);
     void idUUIDChanged(QString idUUID);
     void idUsageChanged(QString idUsage);
     void idVersionChanged(QString idVersion);
