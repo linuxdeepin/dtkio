@@ -21,9 +21,9 @@ set (DOXYGEN_TAGFILES "qtcore.tags=qthelp://doc.qt.io/qt-5/" CACHE STRING "Doxyg
 set (DOXYGEN_MACRO_EXPANSION "YES")
 set (DOXYGEN_EXPAND_ONLY_PREDEF "YES")
 set (DOXYGEN_PREDEFINED
-    "\"DMOUNT_BEGIN_NAMESPACE=namespace Dtk { namespace Mount {\""
-    "\"DMOUNT_END_NAMESPACE=}}\""
-    "\"DMOUNT_USE_NAMESPACE=using namespace Dtk::Mount;\""
+    "DMOUNT_BEGIN_NAMESPACE=namespace Dtk { namespace Mount {"
+    "DMOUNT_END_NAMESPACE=}}"
+    "DMOUNT_USE_NAMESPACE=using namespace Dtk::Mount;"
 )
 
 doxygen_add_docs (doxygen_dtkmount

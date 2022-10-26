@@ -9,13 +9,13 @@
     @brief 描述分区的标识
     @return 分区标识
     @note 对于 mbr 分区：
-    @note - Bit 7 标识分区是可引导分区
+    @note > Bit 7 标识分区是可引导分区
     @note 对于 gpt 分区：
-    @note - Bit 0 标识是系统分区；
-    @note - Bit 2 标识为传统（legacy）可引导 BIOS 分区；
-    @note - Bit 60 标识是只读分区；
-    @note - Bit 62 标识是隐藏分区；
-    @note - Bit 63 标识是不执行自动挂载的分区
+    @note > Bit 0 标识是系统分区；
+    @note > Bit 2 标识为传统（legacy）可引导 BIOS 分区；
+    @note > Bit 60 标识是只读分区；
+    @note > Bit 62 标识是隐藏分区；
+    @note > Bit 63 标识是不执行自动挂载的分区
     @see void DBlockPartition::setFlags(quint64 flags, const QVariantMap &options)
     @see void DBlockPartition::flagsChanged(quint64 flags)
 
