@@ -26,6 +26,7 @@
     @param[out] user    挂载所使用的默认用户
     @param[out] domain  挂载所使用的默认域
     @return             返回挂载所需的参数集合
+    @see Dtk::Mount::MountPasswdInfoParamKeys
 
 @var Dtk::Mount::AskForChoice
     询问用户选择的回调函数
@@ -35,6 +36,21 @@
 
 @namespace Dtk::Mount::MountPasswdInfoParamKeys
     挂载网络设备时，请求用户秘钥时的参数名字空间。使用此种方式配合 QVariantMap 传参以保证较高的 ABI 兼容性。
+
+@var constexpr char Dtk::Mount::MountPasswdInfoParamKeys::kName
+    @brief 挂载网络设备时，鉴权所使用的用户名的参数键名
+@var constexpr char Dtk::Mount::MountPasswdInfoParamKeys::kPasswd
+    @brief 挂载网络设备时，鉴权所使用的用户密码的参数键名
+@var constexpr char Dtk::Mount::MountPasswdInfoParamKeys::kDomain
+    @brief 挂载网络设备时，鉴权所使用的用户域的参数键名
+@var constexpr char Dtk::Mount::MountPasswdInfoParamKeys::kAnonymous
+    @brief 挂载网络设备时，所使用的是否允许匿名访问的参数键名
+@var constexpr char Dtk::Mount::MountPasswdInfoParamKeys::kCancel
+    @brief 挂载网络设备时，用于告知挂载流程用户取消挂载的参数键名
+@var constexpr char Dtk::Mount::MountPasswdInfoParamKeys::kSaveMode 
+    @brief 挂载网络设备时，鉴权所使用的用户密码保存模式的参数键名
+    @see Dtk::Mount::PasswdSaveMode
+
 
 @class Dtk::Mount::DProtocolDevice dprotocoldevice.h
     @brief 用于操作如 smb/ftp/sftp/mpt/gphoto 等协议设备，处理设备的卸载、挂载以及获取设备属性。
