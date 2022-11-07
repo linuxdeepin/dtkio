@@ -43,6 +43,7 @@ target_include_directories(${BIN_NAME} PUBLIC
     ${GLIB_INCLUDE_DIRS}
     ${GIOUNIX_INCLUDE_DIRS}
     ${LIBSECRET_INCLUDE_DIRS}
+    ${DtkCore_INCLUDE_DIRS}
 )
 
 target_link_libraries(${BIN_NAME} PRIVATE
@@ -51,6 +52,7 @@ target_link_libraries(${BIN_NAME} PRIVATE
     ${GLIB_LIBRARIES}
     ${GIOUNIX_LIBRARIES}
     ${LIBSECRET_LIBRARIES}
+    ${DtkCore_LIBRARIES}
 )
 
 install(FILES ${INCLUDE_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${BIN_NAME})

@@ -47,12 +47,15 @@ DProtocolDeviceMonitor *DDeviceManager::globalProtocolDeviceMonitor()
     return {};
 }
 
-QStringList DDeviceManager::blockDevices(const QVariantMap &options)
+DExpected<QStringList> DDeviceManager::blockDevices(const QVariantMap &options)
 {
     OrgFreedesktopUDisks2ManagerInterface udisksmgr(kUDisks2Service, kUDisks2ManagerPath, QDBusConnection::systemBus());
 
     auto reply = udisksmgr.GetBlockDevices(options);
     reply.waitForFinished();
+    if (reply.isError())
+        return DUnexpected<> { DError { reply.error().type(), reply.error().message() } };
+
     const QList<QDBusObjectPath> &resultList = reply.value();
     QStringList dbusPaths;
     for (const QDBusObjectPath &singleResult : resultList)
@@ -71,14 +74,24 @@ QStringList DDeviceManager::diskDrives()
     return getDBusNodeNameList(kUDisks2Service, kUDisks2DrivePath, QDBusConnection::systemBus());
 }
 
-DBlockDevice *DDeviceManager::createBlockDevice(const QString &path, QObject *parent)
+DExpected<DBlockDevice *> DDeviceManager::createBlockDevice(const QString &path, QObject *parent)
 {
-    return new DBlockDevice(path, parent);
+    const auto &devs = blockDevices();
+    if (!devs.hasValue())
+        return DUnexpected<> { devs.error() };
+
+    if (blockDevices().value().contains(path))
+        return new DBlockDevice(path, parent);
+    return DUnexpected<> { DError { -1, "No such object path: " + path } };
 }
 
-DBlockDevice *DDeviceManager::createBlockDeviceByDevicePath(const QByteArray &path, QObject *parent)
+DExpected<DBlockDevice *> DDeviceManager::createBlockDeviceByDevicePath(const QByteArray &path, QObject *parent)
 {
-    for (const QString &block : blockDevices()) {
+    const auto &devs = blockDevices();
+    if (!devs.hasValue())
+        return DUnexpected<> { devs.error() };
+
+    for (const QString &block : devs.value()) {
         DBlockDevice *device = new DBlockDevice(block, parent);
 
         if (device->device() == path)
@@ -87,17 +100,27 @@ DBlockDevice *DDeviceManager::createBlockDeviceByDevicePath(const QByteArray &pa
         device->deleteLater();
     }
 
-    return nullptr;
+    return DUnexpected<> { DError { -1, "No such object path: " + path } };
 }
 
-DBlockPartition *DDeviceManager::createBlockPartition(const QString &path, QObject *parent)
+DExpected<DBlockPartition *> DDeviceManager::createBlockPartition(const QString &path, QObject *parent)
 {
-    return new DBlockPartition(path, parent);
+    const auto &devs = blockDevices();
+    if (!devs.hasValue())
+        return DUnexpected<> { devs.error() };
+
+    if (devs.value().contains(path))
+        return new DBlockPartition(path, parent);
+    return DUnexpected<> { DError { -1, "No such object path: " + path } };
 }
 
-DBlockPartition *DDeviceManager::createBlockPartitionByMountPoint(const QByteArray &path, QObject *parent)
+DExpected<DBlockPartition *> DDeviceManager::createBlockPartitionByMountPoint(const QByteArray &path, QObject *parent)
 {
-    for (const QString &block : blockDevices()) {
+    const auto &devs = blockDevices();
+    if (!devs.hasValue())
+        return DUnexpected<> { devs.error() };
+
+    for (const QString &block : devs.value()) {
         DBlockPartition *device = new DBlockPartition(block, parent);
 
         if (device->mountPoints().contains(path))
@@ -106,21 +129,23 @@ DBlockPartition *DDeviceManager::createBlockPartitionByMountPoint(const QByteArr
         device->deleteLater();
     }
 
-    return nullptr;
+    return DUnexpected<> { DError { -1, "No such object path: " + path } };
 }
 
-DDiskDrive *DDeviceManager::createDiskDrive(const QString &path, QObject *parent)
+DExpected<DDiskDrive *> DDeviceManager::createDiskDrive(const QString &path, QObject *parent)
 {
-    return new DDiskDrive(path, parent);
+    if (diskDrives().contains(path))
+        return new DDiskDrive(path, parent);
+    return DUnexpected<> { DError { -1, "No such object path: " + path } };
 }
 
-DDiskJob *DDeviceManager::createDiskJob(const QString &path, QObject *parent)
+DExpected<DDiskJob *> DDeviceManager::createDiskJob(const QString &path, QObject *parent)
 {
     // TODO(zhangs): impl me
     return {};
 }
 
-DProtocolDevice *DDeviceManager::createProtocolDevice(const QString &path, QObject *parent)
+DExpected<DProtocolDevice *> DDeviceManager::createProtocolDevice(const QString &path, QObject *parent)
 {
     // TODO(xust): impl me
     return {};
@@ -138,31 +163,32 @@ QStringList DDeviceManager::supportedEncryptionTypes()
     return udisksmgr.supportedEncryptionTypes();
 }
 
-QStringList DDeviceManager::resolveDevice(QVariantMap devspec, QVariantMap options)
+DExpected<QStringList> DDeviceManager::resolveDevice(QVariantMap devspec, QVariantMap options)
 {
     OrgFreedesktopUDisks2ManagerInterface udisksmgr(kUDisks2Service, kUDisks2ManagerPath, QDBusConnection::systemBus());
     QStringList ret;
-    auto devices = udisksmgr.ResolveDevice(devspec, options);
-    devices.waitForFinished();
-    if (!devices.isError()) {
-        for (const auto &d : devices.value())
+    auto r = udisksmgr.ResolveDevice(devspec, options);
+    r.waitForFinished();
+    if (!r.isError()) {
+        const auto &devices = r.value();
+        for (const auto &d : devices)
             ret.push_back(d.path());
     }
-    return ret;
+    return DUnexpected<> { DError { r.error().type(), r.error().message() } };
 }
 
-QStringList DDeviceManager::resolveDeviceNode(QString devnode, QVariantMap options)
+DExpected<QStringList> DDeviceManager::resolveDeviceNode(QString devnode, QVariantMap options)
 {
     return resolveDevice({ { "path", QVariant(devnode) } }, options);
 }
 
-bool DDeviceManager::canCheck(const QString &type, QString *requiredUtil)
+DExpected<bool> DDeviceManager::canCheck(const QString &type, QString *requiredUtil)
 {
     OrgFreedesktopUDisks2ManagerInterface udisksmgr(kUDisks2Service, kUDisks2ManagerPath, QDBusConnection::systemBus());
     auto r = udisksmgr.CanCheck(type);
     r.waitForFinished();
     if (r.isError())
-        return false;
+        return DUnexpected<> { DError { r.error().type(), r.error().message() } };
 
     if (requiredUtil)
         *requiredUtil = r.value().second;
@@ -170,13 +196,13 @@ bool DDeviceManager::canCheck(const QString &type, QString *requiredUtil)
     return r.value().first;
 }
 
-bool DDeviceManager::canFormat(const QString &type, QString *requiredUtil)
+DExpected<bool> DDeviceManager::canFormat(const QString &type, QString *requiredUtil)
 {
     OrgFreedesktopUDisks2ManagerInterface udisksmgr(kUDisks2Service, kUDisks2ManagerPath, QDBusConnection::systemBus());
     auto r = udisksmgr.CanFormat(type);
     r.waitForFinished();
     if (r.isError())
-        return false;
+        return DUnexpected<> { DError { r.error().type(), r.error().message() } };
 
     if (requiredUtil)
         *requiredUtil = r.value().second;
@@ -184,13 +210,13 @@ bool DDeviceManager::canFormat(const QString &type, QString *requiredUtil)
     return r.value().first;
 }
 
-bool DDeviceManager::canRepair(const QString &type, QString *requiredUtil)
+DExpected<bool> DDeviceManager::canRepair(const QString &type, QString *requiredUtil)
 {
     OrgFreedesktopUDisks2ManagerInterface udisksmgr(kUDisks2Service, kUDisks2ManagerPath, QDBusConnection::systemBus());
     auto r = udisksmgr.CanRepair(type);
     r.waitForFinished();
     if (r.isError())
-        return false;
+        return DUnexpected<> { DError { r.error().type(), r.error().message() } };
 
     if (requiredUtil)
         *requiredUtil = r.value().second;
@@ -198,13 +224,13 @@ bool DDeviceManager::canRepair(const QString &type, QString *requiredUtil)
     return r.value().first;
 }
 
-bool DDeviceManager::canResize(const QString &type, QString *requiredUtil)
+DExpected<bool> DDeviceManager::canResize(const QString &type, QString *requiredUtil)
 {
     OrgFreedesktopUDisks2ManagerInterface udisksmgr(kUDisks2Service, kUDisks2ManagerPath, QDBusConnection::systemBus());
     auto r = udisksmgr.CanResize(type);
     r.waitForFinished();
     if (r.isError())
-        return false;
+        return DUnexpected<> { DError { r.error().type(), r.error().message() } };
 
     if (requiredUtil)
         *requiredUtil = r.value().second.second;
@@ -212,13 +238,15 @@ bool DDeviceManager::canResize(const QString &type, QString *requiredUtil)
     return r.value().first;
 }
 
-QString DDeviceManager::loopSetup(int fd, QVariantMap options)
+DExpected<QString> DDeviceManager::loopSetup(int fd, QVariantMap options)
 {
     OrgFreedesktopUDisks2ManagerInterface udisksmgr(kUDisks2Service, kUDisks2ManagerPath, QDBusConnection::systemBus());
     QDBusUnixFileDescriptor dbusfd;
     dbusfd.setFileDescriptor(fd);
     auto r = udisksmgr.LoopSetup(dbusfd, options);
     r.waitForFinished();
+    if (r.isError())
+        return DUnexpected { DError { r.error().type(), r.error().message() } };
     return r.value().path();
 }
 

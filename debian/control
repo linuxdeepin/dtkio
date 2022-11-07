@@ -10,7 +10,8 @@ Build-Depends:
  librsvg2-dev,
  qtbase5-dev,
  libsecret-1-dev,
- libglib2.0-dev
+ libglib2.0-dev,
+ libdtkcore-dev
 Standards-Version: 4.5.0
 
 Package: libdtkmount

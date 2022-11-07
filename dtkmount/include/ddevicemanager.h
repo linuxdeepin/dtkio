@@ -8,8 +8,11 @@
 #include <QObject>
 #include <QVariantMap>
 
+#include <DExpected>
+
 #include "dtkmount_global.h"
 
+DCORE_USE_NAMESPACE
 DMOUNT_BEGIN_NAMESPACE
 
 class DBlockDeviceMonitor;
@@ -23,27 +26,27 @@ class DProtocolDevice;
 namespace DDeviceManager {
 DBlockDeviceMonitor *globalBlockDeviceMonitor();
 DProtocolDeviceMonitor *globalProtocolDeviceMonitor();
-QStringList blockDevices(const QVariantMap &options = {});
+DExpected<QStringList> blockDevices(const QVariantMap &options = {});
 QStringList protocolDevices();
 QStringList diskDrives();
 
-[[nodiscard]] DBlockDevice *createBlockDevice(const QString &path, QObject *parent = nullptr);
-[[nodiscard]] DBlockDevice *createBlockDeviceByDevicePath(const QByteArray &path, QObject *parent = nullptr);
-[[nodiscard]] DBlockPartition *createBlockPartition(const QString &path, QObject *parent = nullptr);
-[[nodiscard]] DBlockPartition *createBlockPartitionByMountPoint(const QByteArray &path, QObject *parent = nullptr);
-[[nodiscard]] DDiskDrive *createDiskDrive(const QString &path, QObject *parent = nullptr);
-[[nodiscard]] DDiskJob *createDiskJob(const QString &path, QObject *parent = nullptr);
-[[nodiscard]] DProtocolDevice *createProtocolDevice(const QString &path, QObject *parent = nullptr);
+[[nodiscard]] DExpected<DBlockDevice *> createBlockDevice(const QString &path, QObject *parent = nullptr);
+[[nodiscard]] DExpected<DBlockDevice *> createBlockDeviceByDevicePath(const QByteArray &path, QObject *parent = nullptr);
+[[nodiscard]] DExpected<DBlockPartition *> createBlockPartition(const QString &path, QObject *parent = nullptr);
+[[nodiscard]] DExpected<DBlockPartition *> createBlockPartitionByMountPoint(const QByteArray &path, QObject *parent = nullptr);
+[[nodiscard]] DExpected<DDiskDrive *> createDiskDrive(const QString &path, QObject *parent = nullptr);
+[[nodiscard]] DExpected<DDiskJob *> createDiskJob(const QString &path, QObject *parent = nullptr);
+[[nodiscard]] DExpected<DProtocolDevice *> createProtocolDevice(const QString &path, QObject *parent = nullptr);
 
 QStringList supportedFilesystems();
 QStringList supportedEncryptionTypes();
-QStringList resolveDevice(QVariantMap devspec, QVariantMap options);
-QStringList resolveDeviceNode(QString devnode, QVariantMap options);
-bool canCheck(const QString &type, QString *requiredUtil = nullptr);
-bool canFormat(const QString &type, QString *requiredUtil = nullptr);
-bool canRepair(const QString &type, QString *requiredUtil = nullptr);
-bool canResize(const QString &type, QString *requiredUtil = nullptr);
-QString loopSetup(int fd, QVariantMap options);
+DExpected<QStringList> resolveDevice(QVariantMap devspec, QVariantMap options);
+DExpected<QStringList> resolveDeviceNode(QString devnode, QVariantMap options);
+DExpected<bool> canCheck(const QString &type, QString *requiredUtil = nullptr);
+DExpected<bool> canFormat(const QString &type, QString *requiredUtil = nullptr);
+DExpected<bool> canRepair(const QString &type, QString *requiredUtil = nullptr);
+DExpected<bool> canResize(const QString &type, QString *requiredUtil = nullptr);
+DExpected<QString> loopSetup(int fd, QVariantMap options);
 
 // TODO(zhangs): error handle
 

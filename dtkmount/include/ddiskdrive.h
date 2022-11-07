@@ -8,13 +8,16 @@
 #include <QObject>
 #include <QVariantMap>
 
+#include <DExpected>
+
 #include "dtkmount_global.h"
 
+DCORE_USE_NAMESPACE
 DMOUNT_BEGIN_NAMESPACE
 
 class DDiskDrive;
 namespace DDeviceManager {
-DDiskDrive *createDiskDrive(const QString &path, QObject *parent);
+DExpected<DDiskDrive *> createDiskDrive(const QString &path, QObject *parent);
 }   // namespace DDeviceManager
 
 class DDiskDrivePrivate;
@@ -100,7 +103,7 @@ protected:
 private:
     QScopedPointer<DDiskDrivePrivate> d_ptr;
 
-    friend DDiskDrive *DDeviceManager::createDiskDrive(const QString &path, QObject *parent);
+    friend DExpected<DDiskDrive *> DDeviceManager::createDiskDrive(const QString &path, QObject *parent);
 };
 
 DMOUNT_END_NAMESPACE
