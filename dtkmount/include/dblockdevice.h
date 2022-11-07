@@ -9,18 +9,21 @@
 #include <QDBusError>
 #include <QVariantMap>
 
+#include <DExpected>
+
 #include "dtkmount_global.h"
 
 QT_BEGIN_NAMESPACE
 class QDBusObjectPath;
 QT_END_NAMESPACE
 
+DCORE_USE_NAMESPACE
 DMOUNT_BEGIN_NAMESPACE
 
 class DBlockDevice;
 namespace DDeviceManager {
-DBlockDevice *createBlockDevice(const QString &path, QObject *parent);
-DBlockDevice *createBlockDeviceByDevicePath(const QByteArray &path, QObject *parent);
+DExpected<DBlockDevice *> createBlockDevice(const QString &path, QObject *parent);
+DExpected<DBlockDevice *> createBlockDeviceByDevicePath(const QByteArray &path, QObject *parent);
 }   // namespace DDeviceManager
 
 class DBlockDevicePrivate;
@@ -189,8 +192,8 @@ protected:
 
     QScopedPointer<DBlockDevicePrivate> d_ptr;
 
-    friend DBlockDevice *DDeviceManager::createBlockDevice(const QString &path, QObject *parent);
-    friend DBlockDevice *DDeviceManager::createBlockDeviceByDevicePath(const QByteArray &path, QObject *parent);
+    friend DExpected<DBlockDevice *> DDeviceManager::createBlockDevice(const QString &path, QObject *parent);
+    friend DExpected<DBlockDevice *> DDeviceManager::createBlockDeviceByDevicePath(const QByteArray &path, QObject *parent);
 };
 
 DMOUNT_END_NAMESPACE

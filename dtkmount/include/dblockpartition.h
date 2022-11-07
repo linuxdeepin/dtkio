@@ -11,8 +11,8 @@ DMOUNT_BEGIN_NAMESPACE
 
 class DBlockPartition;
 namespace DDeviceManager {
-DBlockPartition *createBlockPartition(const QString &path, QObject *parent);
-DBlockPartition *createBlockPartitionByMountPoint(const QByteArray &path, QObject *parent);
+DExpected<DBlockPartition *> createBlockPartition(const QString &path, QObject *parent);
+DExpected<DBlockPartition *> createBlockPartitionByMountPoint(const QByteArray &path, QObject *parent);
 }   // namespace DDeviceManager
 
 class DBlockPartitionPrivate;
@@ -383,8 +383,8 @@ Q_SIGNALS:
 private:
     explicit DBlockPartition(const QString &path, QObject *parent = nullptr);
 
-    friend DBlockPartition *DDeviceManager::createBlockPartition(const QString &path, QObject *parent);
-    friend DBlockPartition *DDeviceManager::createBlockPartitionByMountPoint(const QByteArray &path, QObject *parent);
+    friend DExpected<DBlockPartition *> DDeviceManager::createBlockPartition(const QString &path, QObject *parent);
+    friend DExpected<DBlockPartition *> DDeviceManager::createBlockPartitionByMountPoint(const QByteArray &path, QObject *parent);
 };
 
 DMOUNT_END_NAMESPACE
