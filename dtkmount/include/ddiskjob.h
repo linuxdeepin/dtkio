@@ -5,17 +5,25 @@
 #ifndef DDISKJOB_H
 #define DDISKJOB_H
 
+#include <DtkMountGlobal>
+
 #include <QObject>
 
-#include "dtkmount_global.h"
+#include <DExpected>
 
 DMOUNT_BEGIN_NAMESPACE
+
+class DDiskJob;
+namespace DDeviceManager {
+DCORE_NAMESPACE::DExpected<DDiskJob *> createDiskJob(const QString &, QObject *);
+}   // namespace DDeviceManager
 
 class DDiskJobPrivate;
 class DDiskJob : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(DDiskJob)
+    friend DCORE_NAMESPACE::DExpected<DDiskJob *> DDeviceManager::createDiskJob(const QString &, QObject *);
 
     Q_PROPERTY(QString path READ path CONSTANT FINAL);
     Q_PROPERTY(QStringList objects READ objects CONSTANT FINAL);

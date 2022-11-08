@@ -5,17 +5,23 @@
 #ifndef DPROTOCOLDEVICEMONITOR_H
 #define DPROTOCOLDEVICEMONITOR_H
 
+#include <DtkMountGlobal>
+
 #include <QObject>
 
-#include "dtkmount_global.h"
-
 DMOUNT_BEGIN_NAMESPACE
+
+class DProtocolDeviceMonitor;
+namespace DDeviceManager {
+DProtocolDeviceMonitor *globalProtocolDeviceMonitor();
+}   // namespace DDeviceManager
 
 class DProtocolDeviceMonitorPrivate;
 class DProtocolDeviceMonitor : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(DProtocolDeviceMonitor)
+    friend DProtocolDeviceMonitor *DDeviceManager::globalProtocolDeviceMonitor();
 
 public:
     ~DProtocolDeviceMonitor() override;

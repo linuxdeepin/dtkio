@@ -5,12 +5,14 @@
 #ifndef DPROTOCOLDEVICE_H
 #define DPROTOCOLDEVICE_H
 
+#include <DtkMountGlobal>
+
 #include <functional>
 
 #include <QObject>
 #include <QVariantMap>
 
-#include "dtkmount_global.h"
+#include <DExpected>
 
 DMOUNT_BEGIN_NAMESPACE
 
@@ -36,11 +38,17 @@ using OperateCallbackWithInfo = std::function<void(bool, const QString &)>;
 using AskForPasswd = std::function<QVariantMap(const QString &msg, const QString &user, const QString &domain)>;
 using AskForChoice = std::function<int(const QString &msg, const QStringList &choices)>;
 
+class DProtocolDevice;
+namespace DDeviceManager {
+DCORE_NAMESPACE::DExpected<DProtocolDevice *> createProtocolDevice(const QString &, QObject *);
+}   // namespace DDeviceManager
+
 class DProtocolDevicePrivate;
 class DProtocolDevice : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(DProtocolDevice)
+    friend DCORE_NAMESPACE::DExpected<DProtocolDevice *> DDeviceManager::createProtocolDevice(const QString &, QObject *);
 
     Q_PROPERTY(QString path READ path CONSTANT FINAL);
     Q_PROPERTY(QString mountPoint READ mountPoint CONSTANT FINAL);

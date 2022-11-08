@@ -5,7 +5,7 @@
 #ifndef DPROTOCOLDEVICEMONITOR_P_H
 #define DPROTOCOLDEVICEMONITOR_P_H
 
-#include "dprotocoldevicemonitor.h"
+#include <DProtocolDeviceMonitor>
 
 #include <gio/gio.h>
 

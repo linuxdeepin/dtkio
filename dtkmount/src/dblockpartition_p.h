@@ -5,7 +5,7 @@
 #ifndef DBLOCKPARTITION_P_H
 #define DBLOCKPARTITION_P_H
 
-#include "dblockpartition.h"
+#include <DBlockPartition>
 #include "dblockdevice_p.h"
 #include "udisks2_interface.h"
 
