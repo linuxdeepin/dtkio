@@ -3,12 +3,12 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "dblockdevice_p.h"
-
-#include <QDBusUnixFileDescriptor>
-
 #include "objectmanager_interface.h"
 #include "udisks2_interface.h"
 #include "dbus/udisks2_dbus_common.h"
+
+#include <QDBusUnixFileDescriptor>
+
 
 DMOUNT_BEGIN_NAMESPACE
 

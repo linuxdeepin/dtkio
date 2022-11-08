@@ -5,13 +5,13 @@
 #ifndef DBLOCKDEVICE_H
 #define DBLOCKDEVICE_H
 
+#include <DtkMountGlobal>
+
 #include <QObject>
 #include <QDBusError>
 #include <QVariantMap>
 
 #include <DExpected>
-
-#include "dtkmount_global.h"
 
 QT_BEGIN_NAMESPACE
 class QDBusObjectPath;

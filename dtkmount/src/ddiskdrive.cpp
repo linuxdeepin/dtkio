@@ -3,7 +3,6 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "ddiskdrive_p.h"
-
 #include "udisks2_interface.h"
 
 DMOUNT_BEGIN_NAMESPACE

@@ -2,7 +2,7 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "ddiskjob.h"
+#include <DDiskJob>
 #include "ddiskjob_p.h"
 
 DMOUNT_USE_NAMESPACE

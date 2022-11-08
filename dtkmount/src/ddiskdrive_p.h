@@ -5,7 +5,7 @@
 #ifndef DDISKDRIVE_P_H
 #define DDISKDRIVE_P_H
 
-#include "ddiskdrive.h"
+#include <DDiskDrive>
 
 #include <QDBusError>
 

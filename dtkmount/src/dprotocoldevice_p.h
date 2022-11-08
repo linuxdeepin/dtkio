@@ -5,14 +5,14 @@
 #ifndef DPROTOCOLDEVICE_P_H
 #define DPROTOCOLDEVICE_P_H
 
+#include <DProtocolDevice>
+
 #include <gio/gio.h>
 
 #include <QObject>
 #include <QPointer>
 #include <QEventLoop>
 #include <QMutex>
-
-#include "dprotocoldevice.h"
 
 DMOUNT_BEGIN_NAMESPACE
 
