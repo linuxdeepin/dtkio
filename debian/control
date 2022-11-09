@@ -30,3 +30,19 @@ Description: Deepin Tool Kit template devel library
  .
  This package contains the header files and static libraries.
 
+Package: libdtkcompressor
+Architecture: any
+Depends: ${shlibs:Depends}, ${misc:Depends}
+Description: Development Tool Kit template library
+ libdtkcompressor is base library of Deepin Qt/C++ applications.
+ .
+ This package contains the shared libraries.
+
+Package: libdtkcompressor-dev
+Architecture: any
+Depends:${misc:Depends}, libdtkcompressor( =${binary:Version})
+Description: Development Tool Kit template devel library
+ libdtkcompressor-dev is base devel library of Deepin Qt/C++ applications.
+ .
+ This package contains the header files and static libraries.
+

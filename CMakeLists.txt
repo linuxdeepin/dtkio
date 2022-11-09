@@ -14,6 +14,7 @@ project(dtkio
     VERSION ${VERSION})
 
 add_subdirectory(dtkmount)
+add_subdirectory(dtkcompressor)
 # TODO:
 #add_subdirectory(dtkio)
 #add_subdirectory(dtksearch)
