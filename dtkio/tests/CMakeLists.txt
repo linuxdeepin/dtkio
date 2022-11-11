@@ -8,8 +8,6 @@ set(BIN_NAME ut-dtkio)
 
 # set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-access-control -fno-inline -Wno-pmf-conversions")
 
-include(./dbus/fakeInterface.cmake)
-
 file(GLOB_RECURSE INCLUDE_FILES "../include/*.h")
 file(GLOB_RECURSE SRCS
     "../src/*.h"
