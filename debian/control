@@ -11,7 +11,16 @@ Build-Depends:
  qtbase5-dev,
  libsecret-1-dev,
  libglib2.0-dev,
- libdtkcore-dev
+ libdtkcore-dev,
+ libarchive-dev,
+ libsecret-1-dev,
+ libpoppler-cpp-dev,
+ libudisks2-qt5-dev,
+ libdisomaster-dev,
+ libkf5codecs-dev,
+ libzip-dev,
+ libkf5archive-dev,
+ libminizip-dev
 Standards-Version: 4.5.0
 
 Package: libdtkmount

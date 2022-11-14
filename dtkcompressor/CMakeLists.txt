@@ -26,28 +26,44 @@ set(CMAKE_INCLUDE_CURRENT_DIR ON)
 set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -Wall -Wextra")
 set(CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS} "-Wl,--as-needed")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set(LIBRARY_OUTPUT_PATH ${CMAKE_BINARY_DIR}/libplugin)
 
 # Install settings
 if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX /usr)
 endif ()
 
-set(CMAKE_CXX_FLAGS Release CACHE STRING "define CXXFLAGS")
+## plugin install
+if(NOT DEFINED DTK_COMPRESSOR_PLUGIN_PATH)
+    set(DTK_COMPRESSOR_PLUGIN_PATH ${CMAKE_INSTALL_LIBDIR}/dtkcompressor/plugins)
+endif()
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(BUILD_TESTING ON)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer -Wl,-rpath=${LIBRARY_OUTPUT_PATH}")
+else()
+    SET(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -O3 -Wl,-O1,-rpath=${CMAKE_INSTALL_PREFIX}/${DTK_COMPRESSOR_PLUGIN_PATH}")
 endif ()
+
+## export include path
+if(NOT DEFINED HFILES_OUTPUT_PATH)
+    set(HFILES_OUTPUT_PATH ${CMAKE_BINARY_DIR}/include)
+endif()
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui DBus)
 
 add_subdirectory(src)
+add_subdirectory(3rdparty)
 
 set(BUILD_DOCS ON CACHE BOOL "Generate doxygen-based documentation")
 find_package(Doxygen)
 if (BUILD_DOCS AND DOXYGEN_FOUND)
     add_subdirectory(docs)
+endif ()
+
+if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+    add_subdirectory(examples)
 endif ()
 
 # test
@@ -73,3 +89,14 @@ set(DTK_DEPS "core dbus")
 set(QMKSPECS_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/qt${QT_VERSION_MAJOR}/mkspecs/modules" CACHE STRING "INSTALL DIR FOR qt pri files")
 configure_file(misc/qt_lib_${BIN_NAME}.pri.in qt_lib_${BIN_NAME}.pri @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qt_lib_${BIN_NAME}.pri DESTINATION "${QMKSPECS_INSTALL_DIR}")
+install(TARGETS cli7zplugincompressor DESTINATION ${DTK_COMPRESSOR_PLUGIN_PATH})
+install(TARGETS clirarplugincompressor DESTINATION ${DTK_COMPRESSOR_PLUGIN_PATH})
+install(TARGETS zipplugincompressor DESTINATION ${DTK_COMPRESSOR_PLUGIN_PATH})
+install(TARGETS pigzplugincompressor DESTINATION ${DTK_COMPRESSOR_PLUGIN_PATH})
+install(TARGETS minizipplugincompressor DESTINATION ${DTK_COMPRESSOR_PLUGIN_PATH})
+install(TARGETS readwritelibarchiveplugincompressor DESTINATION ${DTK_COMPRESSOR_PLUGIN_PATH})
+install(TARGETS readonlylibarchiveplugincompressor DESTINATION ${DTK_COMPRESSOR_PLUGIN_PATH})
+install(TARGETS interfacecompressor DESTINATION ${DTK_COMPRESSOR_PLUGIN_PATH})
+install(TARGETS bz2plugincompressor DESTINATION ${DTK_COMPRESSOR_PLUGIN_PATH})
+install(TARGETS gzplugincompressor DESTINATION ${DTK_COMPRESSOR_PLUGIN_PATH})
+install(TARGETS xzplugincompressor DESTINATION ${DTK_COMPRESSOR_PLUGIN_PATH})
