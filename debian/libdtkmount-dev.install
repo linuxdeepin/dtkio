@@ -1,4 +1,4 @@
-usr/lib/*/lib*.so
+usr/lib/*/libdtkmount.so
 usr/include
 usr/lib/*/pkgconfig/*.pc
 usr/lib/*/cmake/*/*.cmake

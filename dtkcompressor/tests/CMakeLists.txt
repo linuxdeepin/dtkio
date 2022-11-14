@@ -27,17 +27,23 @@ add_executable(${BIN_NAME}
 )
 
 find_package(PkgConfig REQUIRED)
+find_package(DtkCore REQUIRED)
+find_package(KF5Codecs REQUIRED)
 
 target_include_directories(${BIN_NAME} PUBLIC
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::DBus
+    ${HFILES_OUTPUT_PATH}
 )
 
 target_link_libraries(${BIN_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::DBus
+    ${DtkCore_LIBRARIES}
+    KF5::Codecs
+    interfacecompressor
     -lpthread
     -lgcov
     -lgtest
