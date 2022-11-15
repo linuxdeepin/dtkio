@@ -15,13 +15,9 @@
 #include <QFile>
 #include <QDebug>
 #include <QFileInfo>
-#include <QFontInfo>
 #include <QMimeType>
-#include <QGuiApplication>
 #include <QMimeDatabase>
 #include <QStandardPaths>
-#include <QImageReader>
-#include <QPixmap>
 #include <QTextCodec>
 #include <QRegularExpression>
 #include <QUuid>
@@ -79,25 +75,6 @@ QString UiTools::getConfigPath()
                      .filePath(qApp->organizationName()));
 
     return dir.filePath(qApp->applicationName());
-}
-
-QPixmap UiTools::renderSVG(const QString &filePath, const QSize &size)
-{
-    QImageReader reader;
-    QPixmap pixmap;
-
-    reader.setFileName(filePath);
-
-    if (reader.canRead()) {
-        const qreal ratio = qApp->devicePixelRatio();
-        reader.setScaledSize(size * ratio);
-        pixmap = QPixmap::fromImage(reader.read());
-        pixmap.setDevicePixelRatio(ratio);
-    } else {
-        pixmap.load(filePath);
-    }
-
-    return pixmap;
 }
 
 QString UiTools::humanReadableSize(const qint64 &size, int precision)
