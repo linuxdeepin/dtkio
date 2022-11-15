@@ -13,7 +13,6 @@ add_library(${BIN_NAME} SHARED
     ${SRCS}
 )
 
-find_package(Qt5Gui REQUIRED)
 find_package(KF5Codecs REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(DtkCore REQUIRED)
@@ -29,14 +28,12 @@ target_compile_definitions(${BIN_NAME} PRIVATE VERSION="${CMAKE_PROJECT_VERSION}
 
 target_include_directories(${BIN_NAME} PUBLIC
     Qt${QT_VERSION_MAJOR}::Core
-    Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::DBus
     ${HFILES_OUTPUT_PATH}
 )
 
 target_link_libraries(${BIN_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
-    Qt${QT_VERSION_MAJOR}::Gui
     Qt${QT_VERSION_MAJOR}::DBus
     ${DtkCore_LIBRARIES}
     interfacecompressor

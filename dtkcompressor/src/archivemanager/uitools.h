@@ -52,13 +52,8 @@ public:
     };
 
     static QString getConfigPath();
-
-    static QPixmap renderSVG(const QString &filePath, const QSize &size);
-
     static QString humanReadableSize(const qint64 &size, int precision);
-
     static bool isArchiveFile(const QString &strFileName);
-
     static bool isExistMimeType(const QString &strMimeType, bool &bArchive);
     static QString readConf();
     static QString toShortString(QString strSrc, int limitCounts = 16, int left = 8);

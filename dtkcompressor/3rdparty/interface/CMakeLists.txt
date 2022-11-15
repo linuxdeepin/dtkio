@@ -11,7 +11,6 @@ project(${LIB_NAME})
 
 #查找依赖关系的包信息
 find_package(PkgConfig REQUIRED)
-find_package(Qt5Gui REQUIRED)
 find_package(KF5Codecs REQUIRED)
 include(FindPkgConfig)
 
@@ -59,7 +58,6 @@ add_library(${LIB_NAME} SHARED ${h_files} ${c_files})
 
 #链接动静态库
 target_link_libraries(${LIB_NAME}
-    Qt5::Core
     KF5::Codecs
     chardetdetectorcompressor
 )
