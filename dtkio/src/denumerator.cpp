@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "denumerator_p.h"
-
-#include <DEnumerator>
+#include "denumerator.h"
 
 DIO_BEGIN_NAMESPACE
 

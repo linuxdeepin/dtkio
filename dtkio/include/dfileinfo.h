@@ -30,7 +30,7 @@ public:
 
     bool initQuerier();
     QVariant attribute(AttributeID id, bool *success = nullptr) const;
-    QVariant attribute(const QByteArray &key, const DFileAttributeType type) const;
+    QVariant attribute(const QByteArray &key, const AttributeType type) const;
     bool hasAttribute(AttributeID id) const;
     bool hasAttribute(const QByteArray &key) const;
     bool exists() const;
@@ -40,7 +40,7 @@ public:
 
     [[nodiscard]] DFileFuture *initQuerierAsync(int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *attributeAsync(AttributeID id, int ioPriority, QObject *parent = nullptr) const;
-    [[nodiscard]] DFileFuture *attributeAsync(const QByteArray &key, const DFileAttributeType type, int ioPriority, QObject *parent = nullptr) const;
+    [[nodiscard]] DFileFuture *attributeAsync(const QByteArray &key, const AttributeType type, int ioPriority, QObject *parent = nullptr) const;
     [[nodiscard]] DFileFuture *existsAsync(int ioPriority, QObject *parent = nullptr) const;
     [[nodiscard]] DFileFuture *refreshAsync(int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *permissionsAsync(int ioPriority, QObject *parent = nullptr);

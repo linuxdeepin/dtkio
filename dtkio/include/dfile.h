@@ -9,9 +9,12 @@
 #include <QUrl>
 #include <QScopedPointer>
 
+#include <DError>
+
 #include "dtkio_global.h"
 #include "dtkiotypes.h"
 
+DCORE_USE_NAMESPACE
 DIO_BEGIN_NAMESPACE
 class DFileFuture;
 class DFilePrivate;
@@ -40,8 +43,7 @@ public:
     Permissions permissions() const;
     bool setPermissions(Permissions permission);
     bool setAttribute(AttributeID id, const QVariant &value);
-    bool setCustomAttribute(const QByteArray &key, const void *value, const DFileAttributeType type, const FileQueryInfoFlags flag = FileQueryInfoFlags::TypeNone);
-    //DError lastError() const; // TODO(lanxs): deal error
+    bool setAttribute(const QByteArray &key, const QVariant &value, const AttributeType type, const FileQueryInfoFlags flag = FileQueryInfoFlags::TypeNoFollowSymlinks);
 
     [[nodiscard]] DFileFuture *openAsync(OpenFlags mode, int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *closeAsync(int ioPriority, QObject *parent = nullptr);
@@ -54,6 +56,8 @@ public:
     [[nodiscard]] DFileFuture *existsAsync(int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *permissionsAsync(int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *setPermissionsAsync(Permissions permission, int ioPriority, QObject *parent = nullptr);
+
+    DError lastError() const;
 
 private:
     QScopedPointer<DFilePrivate> d;

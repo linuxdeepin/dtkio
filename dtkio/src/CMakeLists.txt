@@ -2,9 +2,7 @@
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
-set(BIN_NAME ${CMAKE_PROJECT_NAME})
-
-file(GLOB_RECURSE INCLUDE_FILES "../include/*")
+file(GLOB_RECURSE INCLUDE_FILES "../include/*.h")
 file(GLOB_RECURSE SRCS
     "./*.h"
     "./*.cpp"
@@ -31,12 +29,14 @@ target_include_directories(${BIN_NAME} PUBLIC
     Qt${QT_VERSION_MAJOR}::Core
     ${GLIB_INCLUDE_DIRS}
     ${GIOUNIX_INCLUDE_DIRS}
+    ${DtkCore_INCLUDE_DIRS}
 )
 
 target_link_libraries(${BIN_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     ${GLIB_LIBRARIES}
     ${GIOUNIX_LIBRARIES}
+    ${DtkCore_LIBRARIES}
 )
 
 install(FILES ${INCLUDE_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${BIN_NAME})

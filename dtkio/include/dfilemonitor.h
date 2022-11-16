@@ -2,8 +2,8 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#ifndef DFILEWATCHER_H
-#define DFILEWATCHER_H
+#ifndef DFILEMONITOR_H
+#define DFILEMONITOR_H
 
 #include <QObject>
 #include <QUrl>
@@ -14,13 +14,13 @@
 
 DIO_BEGIN_NAMESPACE
 class DFileFuture;
-class DFileWatcherPrivate;
-class DFileWatcher : public QObject
+class DFileMonitorPrivate;
+class DFileMonitor : public QObject
 {
     Q_OBJECT
 public:
-    explicit DFileWatcher(const QUrl &url, QObject *parent = nullptr);
-    ~DFileWatcher();
+    explicit DFileMonitor(const QUrl &url, QObject *parent = nullptr);
+    ~DFileMonitor();
 
     QUrl url() const;
     void setTimeRate(quint32 msec);
@@ -33,7 +33,7 @@ public:
     [[nodiscard]] DFileFuture *startAsync(int ioPriority, QObject *parent = nullptr);
 
     bool stop();
-    //DError lastError() const; // TODO(lanxs): deal error
+    //!<@~english DError lastError() const; // TODO(lanxs): deal error
 
 Q_SIGNALS:
     void fileChanged(const QUrl &url);
@@ -42,8 +42,8 @@ Q_SIGNALS:
     void fileRenamed(const QUrl &fromUrl, const QUrl &toUrl);
 
 private:
-    QScopedPointer<DFileWatcherPrivate> d;
+    QScopedPointer<DFileMonitorPrivate> d;
 };
 DIO_END_NAMESPACE
 
-#endif   // DFILEWATCHER_H
+#endif   // DFILEMONITOR_H
