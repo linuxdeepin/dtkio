@@ -396,6 +396,10 @@ bool ReadWriteLibarchivePlugin::writeFileTodestination(const QString &sourceFile
     archive_entry_copy_sourcepath(entry, QFile::encodeName(absoluteFilename).constData());
     archive_read_disk_entry_from_file(m_archiveReadDisk.data(), entry, -1, &st);
 
+    if (m_archiveWriter.isNull()) {
+        archive_entry_free(entry);
+        return false;
+    }
     const auto returnCode = archive_write_header(m_archiveWriter.data(), entry);
     if (returnCode == ARCHIVE_OK) {
         // If the whole archive is extracted and the total filesize is
