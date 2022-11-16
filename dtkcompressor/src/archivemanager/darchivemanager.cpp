@@ -96,8 +96,8 @@ void DArchiveManager::MgrUpdateOptions::reset()
     qSize = 0;
 }
 
-QMutex DArchiveManagerPrivate::m_mutex;
-QAtomicPointer<DArchiveManager> DArchiveManagerPrivate::m_instance = nullptr;
+QMutex DArchiveManagerPrivate::mutex;
+QAtomicPointer<DArchiveManager> DArchiveManagerPrivate::instance = nullptr;
 
 DArchiveManager::DArchiveManager(QObject *parent)
     : QObject(parent), d_ptr(new DArchiveManagerPrivate(this))
@@ -107,9 +107,9 @@ DArchiveManager::DArchiveManager(QObject *parent)
 DArchiveManager::~DArchiveManager()
 {
     Q_D(DArchiveManager);
-    SAFE_DELETE_ELE(d->m_pArchiveJob);
-    SAFE_DELETE_ELE(d->m_pInterface);
-    SAFE_DELETE_ELE(d->m_pTempInterface);
+    SAFE_DELETE_ELE(d->pArchiveJob);
+    SAFE_DELETE_ELE(d->pInterface);
+    SAFE_DELETE_ELE(d->pTempInterface);
 }
 
 DArchiveManager *DArchiveManager::get_instance()
@@ -124,39 +124,39 @@ DArchiveManager *DArchiveManager::get_instance()
     /*! testAndSetOrders操作保证在原子操作前和后的的内存访问
      * 不会被重新排序。
      */
-    if (DArchiveManagerPrivate::m_instance.testAndSetOrdered(nullptr, nullptr)) {
-        QMutexLocker locker(&DArchiveManagerPrivate::m_mutex);
+    if (DArchiveManagerPrivate::instance.testAndSetOrdered(nullptr, nullptr)) {
+        QMutexLocker locker(&DArchiveManagerPrivate::mutex);
 
-        DArchiveManagerPrivate::m_instance.testAndSetOrdered(nullptr, new DArchiveManager);
+        DArchiveManagerPrivate::instance.testAndSetOrdered(nullptr, new DArchiveManager);
     }
 
-    return DArchiveManagerPrivate::m_instance;
+    return DArchiveManagerPrivate::instance;
 }
 
 void DArchiveManager::destory_instance()
 {
     Q_D(DArchiveManager);
-    SAFE_DELETE_ELE(d->m_instance)
+    SAFE_DELETE_ELE(d->instance)
 }
 
 bool DArchiveManager::createArchive(const QList<MgrFileEntry> &files, const QString &strDestination, const MgrCompressOptions &stOptions, ArchivePluginType eType)
 {
     Q_D(DArchiveManager);
-    if (d->m_pInterface != nullptr) {
-        delete d->m_pInterface;
-        d->m_pInterface = nullptr;
+    if (d->pInterface != nullptr) {
+        delete d->pInterface;
+        d->pInterface = nullptr;
     }
 
-    d->m_pTempInterface = UiTools::createInterface(strDestination, true, (UiTools::AssignPluginType)eType);
+    d->pTempInterface = UiTools::createInterface(strDestination, true, (UiTools::AssignPluginType)eType);
 
-    if (d->m_pTempInterface) {
-        CreateJob *pCreateJob = new CreateJob(*((QList<FileEntry> *)&files), d->m_pTempInterface, *((CompressOptions *)&stOptions), this);
+    if (d->pTempInterface) {
+        CreateJob *pCreateJob = new CreateJob(*((QList<FileEntry> *)&files), d->pTempInterface, *((CompressOptions *)&stOptions), this);
 
         connect(pCreateJob, &CreateJob::signalJobFinshed, d, &DArchiveManagerPrivate::slotJobFinished);
         connect(pCreateJob, &CreateJob::signalprogress, this, &DArchiveManager::signalprogress);
         connect(pCreateJob, &CreateJob::signalCurFileName, this, &DArchiveManager::signalCurFileName);
 
-        d->m_pArchiveJob = pCreateJob;
+        d->pArchiveJob = pCreateJob;
         pCreateJob->start();
 
         return true;
@@ -168,19 +168,19 @@ bool DArchiveManager::createArchive(const QList<MgrFileEntry> &files, const QStr
 bool DArchiveManager::loadArchive(const QString &strArchiveFullPath, ArchivePluginType eType)
 {
     Q_D(DArchiveManager);
-    if (d->m_pInterface != nullptr) {
-        delete d->m_pInterface;
-        d->m_pInterface = nullptr;
+    if (d->pInterface != nullptr) {
+        delete d->pInterface;
+        d->pInterface = nullptr;
     }
 
-    d->m_pInterface = UiTools::createInterface(strArchiveFullPath, false, (UiTools::AssignPluginType)eType);
+    d->pInterface = UiTools::createInterface(strArchiveFullPath, false, (UiTools::AssignPluginType)eType);
 
-    if (d->m_pInterface) {
-        LoadJob *pLoadJob = new LoadJob(d->m_pInterface);
+    if (d->pInterface) {
+        LoadJob *pLoadJob = new LoadJob(d->pInterface);
 
         connect(pLoadJob, &LoadJob::signalJobFinshed, d, &DArchiveManagerPrivate::slotJobFinished);
 
-        d->m_pArchiveJob = pLoadJob;
+        d->pArchiveJob = pLoadJob;
         pLoadJob->start();
 
         return true;
@@ -196,16 +196,16 @@ DArchiveManager::MgrArchiveData *DArchiveManager::archiveData()
 bool DArchiveManager::addFiles(const QString &strArchiveFullPath, const QList<MgrFileEntry> &listAddEntry, const MgrCompressOptions &stOptions)
 {
     Q_D(DArchiveManager);
-    d->m_pTempInterface = UiTools::createInterface(strArchiveFullPath, true);
+    d->pTempInterface = UiTools::createInterface(strArchiveFullPath, true);
 
-    if (d->m_pTempInterface) {
-        AddJob *pAddJob = new AddJob(*(QList<FileEntry> *)&listAddEntry, d->m_pTempInterface, *(CompressOptions *)&stOptions);
+    if (d->pTempInterface) {
+        AddJob *pAddJob = new AddJob(*(QList<FileEntry> *)&listAddEntry, d->pTempInterface, *(CompressOptions *)&stOptions);
 
         connect(pAddJob, &AddJob::signalJobFinshed, d, &DArchiveManagerPrivate::slotJobFinished);
         connect(pAddJob, &AddJob::signalprogress, this, &DArchiveManager::signalprogress);
         connect(pAddJob, &AddJob::signalCurFileName, this, &DArchiveManager::signalCurFileName);
 
-        d->m_pArchiveJob = pAddJob;
+        d->pArchiveJob = pAddJob;
         pAddJob->start();
 
         return true;
@@ -217,26 +217,26 @@ bool DArchiveManager::addFiles(const QString &strArchiveFullPath, const QList<Mg
 bool DArchiveManager::extractFiles(const QString &strArchiveFullPath, const QList<MgrFileEntry> &files, const MgrExtractionOptions &stOptions, ArchivePluginType eType)
 {
     Q_D(DArchiveManager);
-    if (nullptr == d->m_pInterface) {
-        d->m_pInterface = UiTools::createInterface(strArchiveFullPath, false, (UiTools::AssignPluginType)eType);
+    if (nullptr == d->pInterface) {
+        d->pInterface = UiTools::createInterface(strArchiveFullPath, false, (UiTools::AssignPluginType)eType);
     }
 
-    if (d->m_pInterface) {
+    if (d->pInterface) {
         if (!stOptions.bTar_7z) {
-            ExtractJob *pExtractJob = new ExtractJob(*(QList<FileEntry> *)&files, d->m_pInterface, *(ExtractionOptions *)&stOptions);
+            ExtractJob *pExtractJob = new ExtractJob(*(QList<FileEntry> *)&files, d->pInterface, *(ExtractionOptions *)&stOptions);
 
             connect(pExtractJob, &ExtractJob::signalJobFinshed, d, &DArchiveManagerPrivate::slotJobFinished);
             connect(pExtractJob, &ExtractJob::signalprogress, this, &DArchiveManager::signalprogress);
             connect(pExtractJob, &ExtractJob::signalCurFileName, this, &DArchiveManager::signalCurFileName);
             connect(pExtractJob, &ExtractJob::signalFileWriteErrorName, this, &DArchiveManager::signalFileWriteErrorName);
 
-            d->m_pArchiveJob = pExtractJob;
+            d->pArchiveJob = pExtractJob;
             pExtractJob->start();
 
             return pExtractJob->errorcode;
         } else {
             StepExtractJob *pStepExtractJob = new StepExtractJob(strArchiveFullPath, *(ExtractionOptions *)&stOptions);
-            d->m_pArchiveJob = pStepExtractJob;
+            d->pArchiveJob = pStepExtractJob;
 
             connect(pStepExtractJob, &StepExtractJob::signalJobFinshed, d, &DArchiveManagerPrivate::slotJobFinished);
             connect(pStepExtractJob, &StepExtractJob::signalprogress, this, &DArchiveManager::signalprogress);
@@ -255,18 +255,18 @@ bool DArchiveManager::extractFiles(const QString &strArchiveFullPath, const QLis
 bool DArchiveManager::extractFiles2Path(const QString &strArchiveFullPath, const QList<MgrFileEntry> &listSelEntry, const MgrExtractionOptions &stOptions)
 {
     Q_D(DArchiveManager);
-    if (nullptr == d->m_pInterface) {
-        d->m_pInterface = UiTools::createInterface(strArchiveFullPath);
+    if (nullptr == d->pInterface) {
+        d->pInterface = UiTools::createInterface(strArchiveFullPath);
     }
 
-    if (d->m_pInterface) {
-        ExtractJob *pExtractJob = new ExtractJob(*(QList<FileEntry> *)&listSelEntry, d->m_pInterface, *(ExtractionOptions *)&stOptions);
+    if (d->pInterface) {
+        ExtractJob *pExtractJob = new ExtractJob(*(QList<FileEntry> *)&listSelEntry, d->pInterface, *(ExtractionOptions *)&stOptions);
 
         connect(pExtractJob, &ExtractJob::signalJobFinshed, d, &DArchiveManagerPrivate::slotJobFinished);
         connect(pExtractJob, &ExtractJob::signalprogress, this, &DArchiveManager::signalprogress);
         connect(pExtractJob, &ExtractJob::signalCurFileName, this, &DArchiveManager::signalCurFileName);
 
-        d->m_pArchiveJob = pExtractJob;
+        d->pArchiveJob = pExtractJob;
         pExtractJob->start();
 
         return true;
@@ -278,18 +278,18 @@ bool DArchiveManager::extractFiles2Path(const QString &strArchiveFullPath, const
 bool DArchiveManager::deleteFiles(const QString &strArchiveFullPath, const QList<MgrFileEntry> &listSelEntry)
 {
     Q_D(DArchiveManager);
-    if (nullptr == d->m_pInterface) {
-        d->m_pInterface = UiTools::createInterface(strArchiveFullPath);
+    if (nullptr == d->pInterface) {
+        d->pInterface = UiTools::createInterface(strArchiveFullPath);
     }
 
-    if (d->m_pInterface) {
-        DeleteJob *pDeleteJob = new DeleteJob(*(QList<FileEntry> *)&listSelEntry, d->m_pInterface);
+    if (d->pInterface) {
+        DeleteJob *pDeleteJob = new DeleteJob(*(QList<FileEntry> *)&listSelEntry, d->pInterface);
 
         connect(pDeleteJob, &DeleteJob::signalJobFinshed, d, &DArchiveManagerPrivate::slotJobFinished);
         connect(pDeleteJob, &DeleteJob::signalprogress, this, &DArchiveManager::signalprogress);
         connect(pDeleteJob, &DeleteJob::signalCurFileName, this, &DArchiveManager::signalCurFileName);
 
-        d->m_pArchiveJob = pDeleteJob;
+        d->pArchiveJob = pDeleteJob;
         pDeleteJob->start();
 
         return true;
@@ -301,18 +301,18 @@ bool DArchiveManager::deleteFiles(const QString &strArchiveFullPath, const QList
 bool DArchiveManager::renameFiles(const QString &strArchiveFullPath, const QList<MgrFileEntry> &listSelEntry)
 {
     Q_D(DArchiveManager);
-    if (nullptr == d->m_pInterface) {
-        d->m_pInterface = UiTools::createInterface(strArchiveFullPath);
+    if (nullptr == d->pInterface) {
+        d->pInterface = UiTools::createInterface(strArchiveFullPath);
     }
 
-    if (d->m_pInterface) {
-        RenameJob *pRenameJob = new RenameJob(*(QList<FileEntry> *)&listSelEntry, d->m_pInterface);
+    if (d->pInterface) {
+        RenameJob *pRenameJob = new RenameJob(*(QList<FileEntry> *)&listSelEntry, d->pInterface);
 
         connect(pRenameJob, &RenameJob::signalJobFinshed, d, &DArchiveManagerPrivate::slotJobFinished);
         connect(pRenameJob, &RenameJob::signalprogress, this, &DArchiveManager::signalprogress);
         connect(pRenameJob, &RenameJob::signalCurFileName, this, &DArchiveManager::signalCurFileName);
 
-        d->m_pArchiveJob = pRenameJob;
+        d->pArchiveJob = pRenameJob;
         pRenameJob->start();
 
         return true;
@@ -333,7 +333,7 @@ bool DArchiveManager::batchExtractFiles(const QStringList &listFiles, const QStr
         connect(pBatchExtractJob, &BatchExtractJob::signalCurFileName, this, &DArchiveManager::signalCurFileName);
         connect(pBatchExtractJob, &BatchExtractJob::signalCurArchiveName, this, &DArchiveManager::signalCurArchiveName);
 
-        d->m_pArchiveJob = pBatchExtractJob;
+        d->pArchiveJob = pBatchExtractJob;
         pBatchExtractJob->start();
 
         return true;
@@ -346,16 +346,16 @@ bool DArchiveManager::batchExtractFiles(const QStringList &listFiles, const QStr
 bool DArchiveManager::openFile(const QString &strArchiveFullPath, const MgrFileEntry &stEntry, const QString &strTempExtractPath, const QString &strProgram)
 {
     Q_D(DArchiveManager);
-    if (nullptr == d->m_pInterface) {
-        d->m_pInterface = UiTools::createInterface(strArchiveFullPath);
+    if (nullptr == d->pInterface) {
+        d->pInterface = UiTools::createInterface(strArchiveFullPath);
     }
 
-    if (d->m_pInterface) {
-        OpenJob *pOpenJob = new OpenJob(*(FileEntry *)&stEntry, strTempExtractPath, strProgram, d->m_pInterface);
+    if (d->pInterface) {
+        OpenJob *pOpenJob = new OpenJob(*(FileEntry *)&stEntry, strTempExtractPath, strProgram, d->pInterface);
 
         connect(pOpenJob, &OpenJob::signalJobFinshed, d, &DArchiveManagerPrivate::slotJobFinished);
 
-        d->m_pArchiveJob = pOpenJob;
+        d->pArchiveJob = pOpenJob;
         pOpenJob->start();
 
         return true;
@@ -367,12 +367,12 @@ bool DArchiveManager::openFile(const QString &strArchiveFullPath, const MgrFileE
 bool DArchiveManager::updateArchiveCacheData(const MgrUpdateOptions &stOptions)
 {
     Q_D(DArchiveManager);
-    if (d->m_pInterface) {
-        UpdateJob *pUpdateJob = new UpdateJob(*(UpdateOptions *)&stOptions, d->m_pInterface);
+    if (d->pInterface) {
+        UpdateJob *pUpdateJob = new UpdateJob(*(UpdateOptions *)&stOptions, d->pInterface);
 
         connect(pUpdateJob, &UpdateJob::signalJobFinshed, d, &DArchiveManagerPrivate::slotJobFinished);
 
-        d->m_pArchiveJob = pUpdateJob;
+        d->pArchiveJob = pUpdateJob;
         pUpdateJob->start();
 
         return true;
@@ -391,7 +391,7 @@ bool DArchiveManager::updateArchiveComment(const QString &strArchiveFullPath, co
         connect(pCommentJob, &CommentJob::signalprogress, this, &DArchiveManager::signalprogress);
         connect(pCommentJob, &CommentJob::signalJobFinshed, d, &DArchiveManagerPrivate::slotJobFinished);
 
-        d->m_pArchiveJob = pCommentJob;
+        d->pArchiveJob = pCommentJob;
         pCommentJob->start();
 
         return true;
@@ -404,7 +404,7 @@ bool DArchiveManager::convertArchive(const QString &strOriginalArchiveFullPath, 
 {
     Q_D(DArchiveManager);
     ConvertJob *pConvertJob = new ConvertJob(strOriginalArchiveFullPath, strTargetFullPath, strNewArchiveFullPath);
-    d->m_pArchiveJob = pConvertJob;
+    d->pArchiveJob = pConvertJob;
 
     connect(pConvertJob, &ConvertJob::signalJobFinshed, d, &DArchiveManagerPrivate::slotJobFinished);
     connect(pConvertJob, &ConvertJob::signalprogress, this, &DArchiveManager::signalprogress);
@@ -417,8 +417,8 @@ bool DArchiveManager::convertArchive(const QString &strOriginalArchiveFullPath, 
 bool DArchiveManager::pauseOperation()
 {
     Q_D(DArchiveManager);
-    if (d->m_pArchiveJob) {
-        d->m_pArchiveJob->doPause();
+    if (d->pArchiveJob) {
+        d->pArchiveJob->doPause();
 
         return true;
     }
@@ -429,8 +429,8 @@ bool DArchiveManager::pauseOperation()
 bool DArchiveManager::continueOperation()
 {
     Q_D(DArchiveManager);
-    if (d->m_pArchiveJob) {
-        d->m_pArchiveJob->doContinue();
+    if (d->pArchiveJob) {
+        d->pArchiveJob->doContinue();
 
         return true;
     }
@@ -441,10 +441,10 @@ bool DArchiveManager::continueOperation()
 bool DArchiveManager::cancelOperation()
 {
     Q_D(DArchiveManager);
-    if (d->m_pArchiveJob) {
-        d->m_pArchiveJob->kill();
-        d->m_pArchiveJob->deleteLater();
-        d->m_pArchiveJob = nullptr;
+    if (d->pArchiveJob) {
+        d->pArchiveJob->kill();
+        d->pArchiveJob->deleteLater();
+        d->pArchiveJob = nullptr;
 
         return true;
     }
@@ -455,8 +455,8 @@ bool DArchiveManager::cancelOperation()
 QString DArchiveManager::getCurFilePassword()
 {
     Q_D(DArchiveManager);
-    if (d->m_pInterface) {
-        return d->m_pInterface->getPassword();
+    if (d->pInterface) {
+        return d->pInterface->getPassword();
     }
 
     return "";
@@ -465,8 +465,8 @@ QString DArchiveManager::getCurFilePassword()
 bool DArchiveManager::currentStatus()
 {
     Q_D(DArchiveManager);
-    if (d->m_pArchiveJob) {
-        return d->m_pArchiveJob->status();
+    if (d->pArchiveJob) {
+        return d->pArchiveJob->status();
     }
 
     return false;
@@ -475,16 +475,16 @@ bool DArchiveManager::currentStatus()
 void DArchiveManagerPrivate::slotJobFinished()
 {
     Q_Q(DArchiveManager);
-    if (m_pArchiveJob) {
-        ArchiveJob::JobType eJobType = m_pArchiveJob->m_eJobType;
-        PluginFinishType eFinishType = m_pArchiveJob->m_eFinishedType;
-        ErrorType eErrorType = m_pArchiveJob->m_eErrorType;
+    if (pArchiveJob) {
+        ArchiveJob::JobType eJobType = pArchiveJob->m_eJobType;
+        PluginFinishType eFinishType = pArchiveJob->m_eFinishedType;
+        ErrorType eErrorType = pArchiveJob->m_eErrorType;
 
-        m_pArchiveJob->deleteLater();
-        m_pArchiveJob = nullptr;
+        pArchiveJob->deleteLater();
+        pArchiveJob = nullptr;
 
         emit q->signalJobFinished((DArchiveManager::ArchiveJobType)eJobType, (DArchiveManager::MgrPluginFinishType)eFinishType, (DArchiveManager::MgrErrorType)eErrorType);
     }
 
-    SAFE_DELETE_ELE(m_pTempInterface);
+    SAFE_DELETE_ELE(pTempInterface);
 }

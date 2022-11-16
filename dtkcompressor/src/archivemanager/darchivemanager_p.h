@@ -25,12 +25,12 @@ private Q_SLOTS:
 
 private:
     DArchiveManager *q_ptr;
-    ArchiveJob *m_pArchiveJob = nullptr;
-    ReadOnlyArchiveInterface *m_pInterface = nullptr;
-    ReadOnlyArchiveInterface *m_pTempInterface = nullptr;
-    bool m_bCancel = false;
-    static QMutex m_mutex;
-    static QAtomicPointer<DArchiveManager> m_instance;
+    ArchiveJob *pArchiveJob = nullptr;
+    ReadOnlyArchiveInterface *pInterface = nullptr;
+    ReadOnlyArchiveInterface *pTempInterface = nullptr;
+    bool bCancel = false;
+    static QMutex mutex;
+    static QAtomicPointer<DArchiveManager> instance;
 };
 DCOMPRESSOR_END_NAMESPACE
 #endif
