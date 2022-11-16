@@ -40,7 +40,7 @@ public:
 
     quint64 fileCount();
     [[nodiscard]] DFileInfo *createFileInfo(QObject *parent = nullptr) const;
-    //DError lastError() const; // TODO(lanxs): deal error
+    //!<@~english DError lastError() const; // TODO(lanxs): deal error
 
 private:
     QScopedPointer<DEnumeratorPrivate> d;

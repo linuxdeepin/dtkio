@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "dfileinfo_p.h"
-
-#include <DFileInfo>
+#include "dfileinfo.h"
 
 DIO_BEGIN_NAMESPACE
 
@@ -58,7 +57,7 @@ QVariant DFileInfo::attribute(AttributeID id, bool *success) const
     return QVariant();
 }
 
-QVariant DFileInfo::attribute(const QByteArray &key, const DFileAttributeType type) const
+QVariant DFileInfo::attribute(const QByteArray &key, const AttributeType type) const
 {
     return QVariant();
 }
@@ -98,7 +97,7 @@ DFileFuture *DFileInfo::attributeAsync(AttributeID id, int ioPriority, QObject *
     return nullptr;
 }
 
-DFileFuture *DFileInfo::attributeAsync(const QByteArray &key, const DFileAttributeType type, int ioPriority, QObject *parent) const
+DFileFuture *DFileInfo::attributeAsync(const QByteArray &key, const AttributeType type, int ioPriority, QObject *parent) const
 {
     return nullptr;
 }

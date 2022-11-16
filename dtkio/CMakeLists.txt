@@ -42,7 +42,8 @@ endif ()
 add_compile_definitions(QT_NO_SIGNALS_SLOTS_KEYWORDS)
 
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
-find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core Gui DBus)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus)
+find_package(DtkCore REQUIRED)
 
 add_subdirectory(src)
 

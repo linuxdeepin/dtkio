@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "dfileoperator_p.h"
-
-#include <DFileOperator>
+#include "dfileoperator.h"
 
 DIO_BEGIN_NAMESPACE
 

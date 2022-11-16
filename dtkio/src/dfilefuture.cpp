@@ -3,8 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "dfilefuture_p.h"
-
-#include <DFileFuture>
+#include "dfilefuture.h"
 
 DIO_BEGIN_NAMESPACE
 

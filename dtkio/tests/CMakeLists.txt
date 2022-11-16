@@ -28,17 +28,19 @@ add_executable(${BIN_NAME}
 )
 
 find_package(PkgConfig REQUIRED)
+pkg_check_modules(GLIB REQUIRED glib-2.0)
+pkg_check_modules(GIOUNIX REQUIRED gio-unix-2.0)
 
 target_include_directories(${BIN_NAME} PUBLIC
     Qt${QT_VERSION_MAJOR}::Core
-    Qt${QT_VERSION_MAJOR}::Gui
-    Qt${QT_VERSION_MAJOR}::DBus
+    ${GLIB_INCLUDE_DIRS}
+    ${GIOUNIX_INCLUDE_DIRS}
 )
 
 target_link_libraries(${BIN_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
-    Qt${QT_VERSION_MAJOR}::Gui
-    Qt${QT_VERSION_MAJOR}::DBus
+    ${GLIB_LIBRARIES}
+    ${GIOUNIX_LIBRARIES}
     -lpthread
     -lgcov
     -lgtest

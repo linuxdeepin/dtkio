@@ -7,7 +7,10 @@
 
 #include <stdint.h>
 
+#include <string>
+
 #include <QFlags>
+#include <QVariant>
 
 #include "dtkio_global.h"
 
@@ -30,114 +33,114 @@ enum class OpenFlag : quint16 {
 Q_DECLARE_FLAGS(OpenFlags, OpenFlag)
 
 enum class CopyFlag : quint8 {
-    None = 0,   // No flags set.
-    Overwrite = 1,   // Overwrite any existing files.
-    Backup = 2,   // Make a backup of any existing files.
-    NoFollowSymlinks = 3,   // Don’t follow symlinks.
-    AllMetadata = 4,   // Copy all file metadata instead of just default set used for copy.
-    NoFallbackForMove = 5,   // Don’t use copy and delete fallback if native move not supported.
-    TargetDefaultPerms = 6,   // Leaves target file with default perms, instead of setting the source file perms.
+    None = 0,   //!<@~english//!<@~english No flags set.
+    Overwrite = 1,   //!<@~english Overwrite any existing files.
+    Backup = 2,   //!<@~english Make a backup of any existing files.
+    NoFollowSymlinks = 3,   //!<@~english Don’t follow symlinks.
+    AllMetadata = 4,   //!<@~english Copy all file metadata instead of just default set used for copy.
+    NoFallbackForMove = 5,   //!<@~english Don’t use copy and delete fallback if native move not supported.
+    TargetDefaultPerms = 6,   //!<@~english Leaves target file with default perms, instead of setting the source file perms.
 
     UserFlag = 0x10
 };
 
 enum class AttributeID : quint16 {
-    StandardType = 0,   // uint32
-    StandardIsHidden = 1,   // boolean
-    StandardIsBackup = 2,   // boolean
-    StandardIsSymlink = 3,   // boolean
-    StandardIsVirtual = 4,   // boolean
-    StandardIsVolatile = 5,   // boolean
-    StandardName = 6,   // byte string
-    StandardDisplayName = 7,   // string
+    StandardType = 0,   //!<@~english uint32
+    StandardIsHidden = 1,   //!<@~english boolean
+    StandardIsBackup = 2,   //!<@~english boolean
+    StandardIsSymlink = 3,   //!<@~english boolean
+    StandardIsVirtual = 4,   //!<@~english boolean
+    StandardIsVolatile = 5,   //!<@~english boolean
+    StandardName = 6,   //!<@~english byte string
+    StandardDisplayName = 7,   //!<@~english string
     StandardEditName = 8,   // string
-    StandardCopyName = 9,   // string
-    StandardIcon = 10,   // QList<QString>
-    StandardSymbolicIcon = 11,   // QList<QString>
-    StandardContentType = 12,   // string
-    StandardFastContentType = 13,   // string
-    StandardSize = 14,   // uint64
-    StandardAllocatedSize = 15,   // uint64
-    StandardSymlinkTarget = 16,   // byte string
-    StandardTargetUri = 17,   // string
-    StandardSortOrder = 18,   // int32
-    StandardDescription = 19,   // string
+    StandardCopyName = 9,   //!<@~english string
+    StandardIcon = 10,   //!<@~english QList<QString>
+    StandardSymbolicIcon = 11,   //!<@~english QList<QString>
+    StandardContentType = 12,   //!<@~english string
+    StandardFastContentType = 13,   //!<@~english string
+    StandardSize = 14,   //!<@~english uint64
+    StandardAllocatedSize = 15,   //!<@~english uint64
+    StandardSymlinkTarget = 16,   //!<@~english byte string
+    StandardTargetUri = 17,   //!<@~english string
+    StandardSortOrder = 18,   //!<@~english int32
+    StandardDescription = 19,   //!<@~english string
 
-    EtagValue = 40,   // string
+    EtagValue = 40,   //!<@~english string
 
-    IdFile = 60,   // string
-    IdFilesystem = 61,   // string
+    IdFile = 60,   //!<@~english string
+    IdFilesystem = 61,   //!<@~english string
 
-    AccessCanRead = 100,   // boolean
-    AccessCanWrite = 101,   // boolean
-    AccessCanExecute = 102,   // boolean
-    AccessCanDelete = 103,   // boolean
-    AccessCanTrash = 104,   // boolean
-    AccessCanRename = 105,   // boolean
+    AccessCanRead = 100,   //!<@~english boolean
+    AccessCanWrite = 101,   //!<@~english boolean
+    AccessCanExecute = 102,   //!<@~english boolean
+    AccessCanDelete = 103,   //!<@~english boolean
+    AccessCanTrash = 104,   //!<@~english boolean
+    AccessCanRename = 105,   //!<@~english boolean
 
-    MountableCanMount = 130,   // boolean
-    MountableCanUnmount = 131,   // boolean
-    MountableCanEject = 132,   // boolean
-    MountableUnixDevice = 133,   // uint32
-    MountableUnixDeviceFile = 134,   // string
-    MountableHalUdi = 135,   // string
-    MountableCanPoll = 136,   // boolean
-    MountableIsMediaCheckAutomatic = 137,   // boolean
-    MountableCanStart = 138,   // boolean
-    MountableCanStartDegraded = 139,   // boolean
-    MountableCanStop = 140,   // boolean
-    MountableStartStopType = 141,   // uint32
+    MountableCanMount = 130,   //!<@~english boolean
+    MountableCanUnmount = 131,   //!<@~english boolean
+    MountableCanEject = 132,   //!<@~english boolean
+    MountableUnixDevice = 133,   //!<@~english uint32
+    MountableUnixDeviceFile = 134,   //!<@~english string
+    MountableHalUdi = 135,   //!<@~english string
+    MountableCanPoll = 136,   //!<@~english boolean
+    MountableIsMediaCheckAutomatic = 137,   //!<@~english boolean
+    MountableCanStart = 138,   //!<@~english boolean
+    MountableCanStartDegraded = 139,   //!<@~english boolean
+    MountableCanStop = 140,   //!<@~english boolean
+    MountableStartStopType = 141,   //!<@~english uint32
 
-    TimeModified = 200,   // uint64
-    TimeModifiedUsec = 201,   // uint32
-    TimeAccess = 202,   // uint64
-    TimeAccessUsec = 203,   // uint32
-    TimeChanged = 204,   // uint64
-    TimeChangedUsec = 205,   // uint32
-    TimeCreated = 206,   // uint64
-    TimeCreatedUsec = 207,   // uint32
+    TimeModified = 200,   //!<@~english uint64
+    TimeModifiedUsec = 201,   //!<@~english uint32
+    TimeAccess = 202,   //!<@~english uint64
+    TimeAccessUsec = 203,   //!<@~english uint32
+    TimeChanged = 204,   //!<@~english uint64
+    TimeChangedUsec = 205,   //!<@~english uint32
+    TimeCreated = 206,   //!<@~english uint64
+    TimeCreatedUsec = 207,   //!<@~english uint32
 
-    UnixDevice = 330,   // uint32
-    UnixInode = 331,   // uint64
-    UnixMode = 332,   // uint32
-    UnixNlink = 333,   // uint32
-    UnixUID = 334,   // uint32
-    UnixGID = 335,   // uint32
-    UnixRdev = 336,   // uint32
-    UnixBlockSize = 337,   // uint32
-    UnixBlocks = 338,   // uint64
-    UnixIsMountPoint = 339,   // boolean
+    UnixDevice = 330,   //!<@~english uint32
+    UnixInode = 331,   //!<@~english uint64
+    UnixMode = 332,   //!<@~english uint32
+    UnixNlink = 333,   //!<@~english uint32
+    UnixUID = 334,   //!<@~english uint32
+    UnixGID = 335,   //!<@~english uint32
+    UnixRdev = 336,   //!<@~english uint32
+    UnixBlockSize = 337,   //!<@~english uint32
+    UnixBlocks = 338,   //!<@~english uint64
+    UnixIsMountPoint = 339,   //!<@~english boolean
 
-    DosIsArchive = 360,   // boolean
-    DosIsSystem = 361,   // boolean
+    DosIsArchive = 360,   //!<@~english boolean
+    DosIsSystem = 361,   //!<@~english boolean
 
-    OwnerUser = 300,   // string
-    OwnerUserReal = 301,   // string
-    OwnerGroup = 302,   // string
+    OwnerUser = 300,   //!<@~english string
+    OwnerUserReal = 301,   //!<@~english string
+    OwnerGroup = 302,   //!<@~english string
 
-    ThumbnailPath = 390,   // byte string
-    ThumbnailFailed = 391,   // boolean
-    ThumbnailIsValid = 392,   // boolean
+    ThumbnailPath = 390,   //!<@~english byte string
+    ThumbnailFailed = 391,   //!<@~english boolean
+    ThumbnailIsValid = 392,   //!<@~english boolean
 
-    PreviewIcon = 420,   // object
+    PreviewIcon = 420,   //!<@~english object
 
-    FileSystemSize = 440,   // uint64
-    FileSystemFree = 441,   // uint64
-    FileSystemUsed = 442,   // uint64
-    FileSystemType = 443,   // string
-    FileSystemReadOnly = 444,   // boolean
-    FileSystemUsePreview = 445,   // uint32
-    FileSystemRemote = 446,   // boolean
+    FileSystemSize = 440,   //!<@~english uint64
+    FileSystemFree = 441,   //!<@~english uint64
+    FileSystemUsed = 442,   //!<@~english uint64
+    FileSystemType = 443,   //!<@~english string
+    FileSystemReadOnly = 444,   //!<@~english boolean
+    FileSystemUsePreview = 445,   //!<@~english uint32
+    FileSystemRemote = 446,   //!<@~english boolean
 
-    GvfsBackend = 470,   // string
+    GvfsBackend = 470,   //!<@~english string
 
-    SelinuxContext = 490,   // string
+    SelinuxContext = 490,   //!<@~english string
 
-    TrashItemCount = 510,   // uint32
-    TrashDeletionDate = 511,   // string
-    TrashOrigPath = 512,   // byte string
+    TrashItemCount = 510,   //!<@~english uint32
+    TrashDeletionDate = 511,   //!<@~english string
+    TrashOrigPath = 512,   //!<@~english byte string
 
-    RecentModified = 540,   // uint64
+    RecentModified = 540,   //!<@~english int64
 
     CustomStart = 600,
 
@@ -182,17 +185,17 @@ enum class Permission : quint16 {
 };
 Q_DECLARE_FLAGS(Permissions, Permission)
 
-enum class DFileAttributeType : quint8 {
-    TypeInvalid = 0,   // Indicates an invalid or uninitialized type
-    TypeString = 1,   // A null terminated UTF8 string
-    TypeByteString = 2,   // A zero terminated string of non-zero bytes
-    TypeBool = 3,   // A boolean value
-    TypeUInt32 = 4,   // An unsigned 4-byte/32-bit integer
-    TypeInt32 = 5,   // A signed 4-byte/32-bit integer
-    TypeUInt64 = 6,   // An unsigned 8-byte/64-bit integer
-    TypeInt64 = 7,   // A signed 8-byte/64-bit integer
-    TypeObject = 8,   // A Object
-    TypeStringV = 9   // A NULL terminated char **
+enum class AttributeType : quint8 {
+    TypeInvalid = 0,   //!<@~english Indicates an invalid or uninitialized type
+    TypeString = 1,   //!<@~english A null terminated UTF8 string
+    TypeByteString = 2,   //!<@~english A zero terminated string of non-zero bytes
+    TypeBool = 3,   //!<@~english A boolean value
+    TypeUInt32 = 4,   //!<@~english An unsigned 4-byte/32-bit integer
+    TypeInt32 = 5,   //!<@~english A signed 4-byte/32-bit integer
+    TypeUInt64 = 6,   //!<@~english An unsigned 8-byte/64-bit integer
+    TypeInt64 = 7,   //!<@~english A signed 8-byte/64-bit integer
+    TypeObject = 8,   //!<@~english A Object
+    TypeStringV = 9   //!<@~english A NULL terminated char **
 };
 
 enum class FileQueryInfoFlags : quint8 {
@@ -201,33 +204,33 @@ enum class FileQueryInfoFlags : quint8 {
 };
 
 enum class DirFilter : qint16 {
-    NoFilter = 0x0000,   // no filter
-    Dirs = 0x0001,   // List directories that match the filters.
-    Files = 0x0002,   // List files.
-    Drives = 0x0004,   // List disk drives (ignored under Unix).
-    AllEntries = Dirs | Files | Drives,   // List directories, files, drives and symlinks (this does not list broken symlinks unless you specify System).
-    NoSymLinks = 0x0008,   // Do not list symbolic links (ignored by operating systems that don't support symbolic links).
+    NoFilter = 0x0000,   //!<@~english no filter
+    Dirs = 0x0001,   //!<@~english List directories that match the filters.
+    Files = 0x0002,   //!<@~english List files.
+    Drives = 0x0004,   //!<@~english List disk drives (ignored under Unix).
+    AllEntries = Dirs | Files | Drives,   //!<@~english List directories, files, drives and symlinks (this does not list broken symlinks unless you specify System).
+    NoSymLinks = 0x0008,   //!<@~english Do not list symbolic links (ignored by operating systems that don't support symbolic links).
 
-    Readable = 0x0010,   // List files for which the application has read access. The Readable value needs to be combined with Dirs or Files.
-    Writable = 0x0020,   // List files for which the application has write access. The Writable value needs to be combined with Dirs or Files.
-    Executable = 0x0040,   // List files for which the application has execute access. The Executable value needs to be combined with Dirs or Files.
-    Modified = 0x0080,   // Only list files that have been modified (ignored on Unix).
+    Readable = 0x0010,   //!<@~english List files for which the application has read access. The Readable value needs to be combined with Dirs or Files.
+    Writable = 0x0020,   //!<@~english List files for which the application has write access. The Writable value needs to be combined with Dirs or Files.
+    Executable = 0x0040,   //!<@~english//!<@~english List files for which the application has execute access. The Executable value needs to be combined with Dirs or Files.
+    Modified = 0x0080,   //!<@~english Only list files that have been modified (ignored on Unix).
 
-    Hidden = 0x0100,   // List hidden files (on Unix, files starting with a ".").
-    System = 0x0200,   // List system files (on Unix, FIFOs, sockets and device files are included; on Windows, .lnk files are included)
-    AllDirs = 0x0400,   // List all directories; i.e. don't apply the filters to directory names.
-    CaseSensitive = 0x0800,   // The filter should be case sensitive.
+    Hidden = 0x0100,   //!<@~english List hidden files (on Unix, files starting with a ".").
+    System = 0x0200,   //!<@~english List system files (on Unix, FIFOs, sockets and device files are included; on Windows, .lnk files are included)
+    AllDirs = 0x0400,   //!<@~english List all directories; i.e. don't apply the filters to directory names.
+    CaseSensitive = 0x0800,   //!<@~english The filter should be case sensitive.
 
-    NoDot = 0x2000,   // Do not list the special entry ".".
-    NoDotDot = 0x4000,   // Do not list the special entry "..".
-    NoDotAndDotDot = NoDot | NoDotDot,   // Do not list the special entries "." and "..".
+    NoDot = 0x2000,   //!<@~english Do not list the special entry ".".
+    NoDotDot = 0x4000,   //!<@~english Do not list the special entry "..".
+    NoDotAndDotDot = NoDot | NoDotDot,   //!<@~english Do not list the special entries "." and "..".
 };
 Q_DECLARE_FLAGS(DirFilters, DirFilter)
 
 enum class IteratorFlag : quint8 {
-    NoIteratorFlags = 0x00,   // The default value, representing no flags. The iterator will return entries for the assigned path.
-    FollowSymlinks = 0x01,   // When combined with Subdirectories, this flag enables iterating through all subdirectories of the assigned path, following all symbolic links. Symbolic link loops (e.g., "link" => "." or "link" => "..") are automatically detected and ignored.
-    Subdirectories = 0x02,   // List entries inside all subdirectories as well.
+    NoIteratorFlags = 0x00,   //!<@~english The default value, representing no flags. The iterator will return entries for the assigned path.
+    FollowSymlinks = 0x01,   //!<@~english When combined with Subdirectories, this flag enables iterating through all subdirectories of the assigned path, following all symbolic links. Symbolic link loops (e.g., "link" => "." or "link" => "..") are automatically detected and ignored.
+    Subdirectories = 0x02,   //!<@~english List entries inside all subdirectories as well.
 };
 Q_DECLARE_FLAGS(IteratorFlags, IteratorFlag)
 
@@ -237,6 +240,14 @@ enum class WatchType : quint8 {
     File = 0x02,
 };
 
+struct AttributeDetails
+{
+    AttributeID id;
+    std::string key;
+    QVariant defaultValue;
+    AttributeType type;
+};
+
 DIO_END_NAMESPACE
 
-#endif   //DTKIOTYPES_H
+#endif   // DTKIOTYPES_H

@@ -29,7 +29,7 @@ public:
     bool touchFile();
     bool makeDirectory();
     bool createLink(const QUrl &link);
-    //DError lastError() const; // TODO(lanxs): deal error
+    //!<@~english DError lastError() const; // TODO(lanxs): deal error
 
     [[nodiscard]] DFileFuture *renameFileAsync(const QString &newName, int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *copyFileAsync(const QUrl &destUrl, CopyFlag flag, int ioPriority, QObject *parent = nullptr);
