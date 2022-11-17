@@ -6,5 +6,9 @@
 
 #define DSEARCH_USE_NAMESPACE using namespace DSEARCH_NAMESPACE;
 
-#define DSEARCH_BEGIN_NAMESPACE namespace Dtk { namespace Search {
-#define DSEARCH_END_NAMESPACE }}
+#define DSEARCH_BEGIN_NAMESPACE \
+    namespace Dtk {             \
+    namespace Search {
+#define DSEARCH_END_NAMESPACE \
+    }                         \
+    }

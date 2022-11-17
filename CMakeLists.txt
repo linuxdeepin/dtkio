@@ -16,6 +16,6 @@ project(dtkio
 add_subdirectory(dtkmount)
 add_subdirectory(dtkcompressor)
 add_subdirectory(dtkio)
+add_subdirectory(dtksearch)
 # TODO:
-#add_subdirectory(dtksearch)
 #add_subdirectory(dtkburn)
