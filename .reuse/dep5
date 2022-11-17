@@ -114,3 +114,8 @@ Copyright: 2009 Harald Hvaal <haraldhv@stud.ntnu.no>
            2009-2010 Raphael Kubo da Costa <rakuco@FreeBSD.org>
            2016 Vladyslav Batyrenko <mvlabat@gmail.com> 
 License: GPL-2.0-or-later
+
+#doxygentheme
+Files: doxygentheme/*
+Copyright: Copyright (c) 2021 - 2022 jothepro
+License: MIT
