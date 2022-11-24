@@ -8,9 +8,12 @@
 #include <QUrl>
 #include <QScopedPointer>
 
+#include <DError>
+
 #include "dtkio_global.h"
 #include "dtkiotypes.h"
 
+DCORE_USE_NAMESPACE
 DIO_BEGIN_NAMESPACE
 class DFileFuture;
 class DFileInfo;
@@ -40,7 +43,8 @@ public:
 
     quint64 fileCount();
     [[nodiscard]] DFileInfo *createFileInfo(QObject *parent = nullptr) const;
-    //!<@~english DError lastError() const; // TODO(lanxs): deal error
+
+    DError lastError() const;
 
 private:
     QScopedPointer<DEnumeratorPrivate> d;

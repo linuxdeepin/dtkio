@@ -9,9 +9,12 @@
 #include <QUrl>
 #include <QScopedPointer>
 
+#include <DError>
+
 #include "dtkio_global.h"
 #include "dtkiotypes.h"
 
+DCORE_USE_NAMESPACE
 DIO_BEGIN_NAMESPACE
 class DFileFuture;
 class DFileMonitorPrivate;
@@ -33,7 +36,8 @@ public:
     [[nodiscard]] DFileFuture *startAsync(int ioPriority, QObject *parent = nullptr);
 
     bool stop();
-    //!<@~english DError lastError() const; // TODO(lanxs): deal error
+
+    DError lastError() const;
 
 Q_SIGNALS:
     void fileChanged(const QUrl &url);

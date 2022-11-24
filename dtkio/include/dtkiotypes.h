@@ -33,7 +33,7 @@ enum class OpenFlag : quint16 {
 Q_DECLARE_FLAGS(OpenFlags, OpenFlag)
 
 enum class CopyFlag : quint8 {
-    None = 0,   //!<@~english//!<@~english No flags set.
+    None = 0,   //!<@~english No flags set.
     Overwrite = 1,   //!<@~english Overwrite any existing files.
     Backup = 2,   //!<@~english Make a backup of any existing files.
     NoFollowSymlinks = 3,   //!<@~english Don’t follow symlinks.

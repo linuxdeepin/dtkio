@@ -7,8 +7,15 @@
 
 #include <QUrl>
 
-#include "dtkio_global.h"
+#include <gio/gio.h>
 
+#include <DError>
+
+#include "dtkio_global.h"
+#include "dtkiotypes.h"
+#include "dfileerror.h"
+
+DCORE_USE_NAMESPACE
 DIO_BEGIN_NAMESPACE
 class DFileMonitor;
 class DFileMonitorPrivate
@@ -17,7 +24,19 @@ public:
     explicit DFileMonitorPrivate(DFileMonitor *q);
     ~DFileMonitorPrivate();
 
+    GFileMonitor *createMonitor(GFile *gfile, WatchType type);
+    void setError(IOErrorCode code);
+
+    static void watchCallback(GFileMonitor *gmonitor, GFile *child, GFile *other, GFileMonitorEvent event_type, gpointer user_data);
+
     DFileMonitor *q = nullptr;
+    QUrl url;
+    quint32 timeRate = 200;
+    WatchType watchType = WatchType::Auto;
+    GFileMonitor *gmonitor = nullptr;
+    GFile *gfile = nullptr;
+
+    DError error { IOErrorCode::NoError, IOErrorMessage(IOErrorCode::NoError) };
 };
 DIO_END_NAMESPACE
 
