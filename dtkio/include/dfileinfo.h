@@ -10,9 +10,12 @@
 #include <QVariant>
 #include <QScopedPointer>
 
+#include <DError>
+
 #include "dtkio_global.h"
 #include "dtkiotypes.h"
 
+DCORE_USE_NAMESPACE
 DIO_BEGIN_NAMESPACE
 class DFileFuture;
 class DFileInfoPrivate;
@@ -24,7 +27,7 @@ public:
 
     QUrl url() const;
     void setQueryAttributes(const QByteArray &attributes);
-    void setQueryInfoFlags(const FileQueryInfoFlags flag);
+    void setQueryInfoFlags(const FileQueryInfoFlags flags);
     QByteArray queryAttributes() const;
     FileQueryInfoFlags queryInfoFlag() const;
 
@@ -36,7 +39,6 @@ public:
     bool exists() const;
     bool refresh();
     Permissions permissions() const;
-    //DError lastError() const; // TODO(lanxs): deal error
 
     [[nodiscard]] DFileFuture *initQuerierAsync(int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *attributeAsync(AttributeID id, int ioPriority, QObject *parent = nullptr) const;
@@ -44,6 +46,8 @@ public:
     [[nodiscard]] DFileFuture *existsAsync(int ioPriority, QObject *parent = nullptr) const;
     [[nodiscard]] DFileFuture *refreshAsync(int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *permissionsAsync(int ioPriority, QObject *parent = nullptr);
+
+    DError lastError() const;
 
 private:
     QScopedPointer<DFileInfoPrivate> d;

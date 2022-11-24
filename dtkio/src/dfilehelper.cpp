@@ -4,9 +4,128 @@
 
 #include "dfilehelper.h"
 
+#include <QDebug>
+
 #include "dtkiotypes.h"
 
 DIO_BEGIN_NAMESPACE
+
+namespace LocalFunc {
+
+bool isFile(GFileInfo *fileInfo)
+{
+    if (!fileInfo)
+        return false;
+    return g_file_info_get_file_type(fileInfo) == G_FILE_TYPE_REGULAR;
+}
+
+bool isDir(GFileInfo *fileInfo)
+{
+    if (!fileInfo)
+        return false;
+    return g_file_info_get_file_type(fileInfo) == G_FILE_TYPE_DIRECTORY;
+}
+
+bool isRoot(const QUrl &url)
+{
+    if (!url.isValid())
+        return false;
+
+    g_autoptr(GFile) gfile = DFileHelper::fileNewForUrl(url);
+    g_autofree gchar *gpath = g_file_get_path(gfile);   // no blocking I/O
+
+    return QString::fromStdString(gpath) == "/";
+}
+
+QString fileName(GFileInfo *fileInfo)
+{
+    if (!fileInfo)
+        return QString();
+
+    const char *name = g_file_info_get_name(fileInfo);
+    return QString::fromStdString(name);
+}
+
+QString baseName(GFileInfo *fileInfo)
+{
+    const QString &fullName = fileName(fileInfo);
+
+    if (isDir(fileInfo))
+        return fullName;
+
+    int pos2 = fullName.indexOf(".");
+    if (pos2 == -1)
+        return fullName;
+    else
+        return fullName.left(pos2);
+}
+
+QString completeBaseName(GFileInfo *fileInfo)
+{
+    const QString &fullName = fileName(fileInfo);
+
+    if (isDir(fileInfo))
+        return fullName;
+
+    int pos2 = fullName.lastIndexOf(".");
+    if (pos2 == -1)
+        return fullName;
+    else
+        return fullName.left(pos2);
+}
+
+QString suffix(GFileInfo *fileInfo)
+{
+    // path
+    if (isDir(fileInfo))
+        return "";
+
+    const QString &fullName = fileName(fileInfo);
+
+    int pos2 = fullName.lastIndexOf(".");
+    if (pos2 == -1)
+        return "";
+    else
+        return fullName.mid(pos2 + 1);
+}
+
+QString completeSuffix(GFileInfo *fileInfo)
+{
+    if (isDir(fileInfo))
+        return "";
+
+    const QString &fullName = fileName(fileInfo);
+
+    int pos2 = fullName.indexOf(".");
+    if (pos2 == -1)
+        return "";
+    else
+        return fullName.mid(pos2 + 1);
+}
+
+QString filePath(const QUrl &url)
+{
+    if (!url.isValid())
+        return QString();
+
+    g_autoptr(GFile) gfile = DFileHelper::fileNewForUrl(url);
+    g_autofree gchar *gpath = g_file_get_path(gfile);   // no blocking I/O
+
+    return QString::fromStdString(gpath);
+}
+
+QString parentPath(const QUrl &url)
+{
+    if (!url.isValid())
+        return QString();
+
+    g_autoptr(GFile) gfile = DFileHelper::fileNewForUrl(url);
+    g_autoptr(GFile) fileParent = g_file_get_parent(gfile);   // no blocking I/O
+
+    g_autofree gchar *gpath = g_file_get_path(fileParent);   // no blocking I/O
+    return QString::fromStdString(gpath);
+}
+}   // LocalFunc
 
 namespace DFileHelper {
 
@@ -133,47 +252,44 @@ AttributeType attributeType(AttributeID id)
     return AttributeType::TypeInvalid;
 }
 
-QVariant attributeFromInfo(GFileInfo *fileinfo, AttributeID id)
+QVariant attribute(const QByteArray &key, const AttributeType type, GFileInfo *fileinfo)
 {
-    const std::string &key = attributeKey(id);
-    const AttributeType &type = attributeType(id);
-
-    if (!g_file_info_has_attribute(fileinfo, key.c_str()))
+    if (!g_file_info_has_attribute(fileinfo, key))
         return QVariant();
     if (type == AttributeType::TypeInvalid)
         return QVariant();
 
     switch (type) {
     case AttributeType::TypeString: {
-        const char *ret = g_file_info_get_attribute_string(fileinfo, key.c_str());
+        const char *ret = g_file_info_get_attribute_string(fileinfo, key);
         return QVariant(ret);
     }
     case AttributeType::TypeByteString: {
-        const char *ret = g_file_info_get_attribute_byte_string(fileinfo, key.c_str());
+        const char *ret = g_file_info_get_attribute_byte_string(fileinfo, key);
         return QVariant(ret);
     }
     case AttributeType::TypeBool: {
-        bool ret = g_file_info_get_attribute_boolean(fileinfo, key.c_str());
+        bool ret = g_file_info_get_attribute_boolean(fileinfo, key);
         return QVariant(ret);
     }
     case AttributeType::TypeUInt32: {
-        uint32_t ret = g_file_info_get_attribute_uint32(fileinfo, key.c_str());
+        uint32_t ret = g_file_info_get_attribute_uint32(fileinfo, key);
         return QVariant(ret);
     }
     case AttributeType::TypeInt32: {
-        int32_t ret = g_file_info_get_attribute_int32(fileinfo, key.c_str());
+        int32_t ret = g_file_info_get_attribute_int32(fileinfo, key);
         return QVariant(ret);
     }
     case AttributeType::TypeUInt64: {
-        uint64_t ret = g_file_info_get_attribute_uint64(fileinfo, key.c_str());
+        uint64_t ret = g_file_info_get_attribute_uint64(fileinfo, key);
         return QVariant(qulonglong(ret));
     }
     case AttributeType::TypeInt64: {
-        int64_t ret = g_file_info_get_attribute_int64(fileinfo, key.c_str());
+        int64_t ret = g_file_info_get_attribute_int64(fileinfo, key);
         return QVariant(qulonglong(ret));
     }
     case AttributeType::TypeStringV: {
-        char **ret = g_file_info_get_attribute_stringv(fileinfo, key.c_str());
+        char **ret = g_file_info_get_attribute_stringv(fileinfo, key);
         QStringList retValue;
         for (int i = 0; ret && ret[i]; ++i) {
             retValue.append(QString::fromStdString(ret[i]));
@@ -183,6 +299,17 @@ QVariant attributeFromInfo(GFileInfo *fileinfo, AttributeID id)
     default:
         return QVariant();
     }
+}
+
+QVariant attributeFromInfo(AttributeID id, GFileInfo *fileinfo, const QUrl &url)
+{
+    if (id > AttributeID::CustomStart)
+        return customAttributeFromInfo(id, fileinfo, url);
+
+    const std::string &key = attributeKey(id);
+    const AttributeType &type = attributeType(id);
+
+    return attribute(key.c_str(), type, fileinfo);
 }
 
 bool setAttribute(GFile *gfile, const char *key, AttributeType type, const QVariant &value, GFileQueryInfoFlags flags, GCancellable *cancellable, GError **error)
@@ -235,6 +362,111 @@ bool setAttribute(GFile *gfile, const char *key, AttributeType type, const QVari
     }
 }
 
-}   // namespace DFileHelper
+QVariant customAttributeFromInfo(AttributeID id, GFileInfo *fileinfo, const QUrl &url)
+{
+    if (id < AttributeID::CustomStart)
+        return attributeFromInfo(id, fileinfo, url);
+
+    switch (id) {
+    case AttributeID::StandardIsFile:
+        return LocalFunc::isFile(fileinfo);
+    case AttributeID::StandardIsDir:
+        return LocalFunc::isDir(fileinfo);
+    case AttributeID::StandardIsRoot:
+        return LocalFunc::isRoot(url);
+    case AttributeID::StandardSuffix:
+        return LocalFunc::suffix(fileinfo);
+    case AttributeID::StandardCompleteSuffix:
+        return LocalFunc::completeSuffix(fileinfo);
+    case AttributeID::StandardFilePath:
+        return LocalFunc::filePath(url);
+    case AttributeID::StandardParentPath:
+        return LocalFunc::parentPath(url);
+    case AttributeID::StandardBaseName:
+        return LocalFunc::baseName(fileinfo);
+    case AttributeID::StandardFileName:
+        return LocalFunc::fileName(fileinfo);
+    case AttributeID::StandardCompleteBaseName:
+        return LocalFunc::completeBaseName(fileinfo);
+    default:
+        return QVariant();
+    }
+}
+
+GFile *fileNewForUrl(const QUrl &url)
+{
+    return g_file_new_for_uri(url.toString().toStdString().c_str());
+}
+
+QSet<QString> hideListFromUrl(const QUrl &url)
+{
+    g_autofree char *contents = nullptr;
+    g_autoptr(GError) error = nullptr;
+    gsize len = 0;
+    g_autoptr(GFile) hiddenFile = g_file_new_for_uri(url.toString().toLocal8Bit().data());
+    const bool exists = g_file_query_exists(hiddenFile, nullptr);
+    if (!exists)
+        return {};
+
+    const bool succ = g_file_load_contents(hiddenFile, nullptr, &contents, &len, nullptr, &error);
+    if (succ) {
+        if (contents && len > 0) {
+            QString dataStr(contents);
+            return QSet<QString>::fromList(dataStr.split('\n', QString::SkipEmptyParts));
+        }
+    } else {
+        qWarning() << "load .hidden fail, url: " << url << " error: " << error->code << " " << QString::fromLocal8Bit(error->message);
+    }
+    return {};
+}
+
+bool fileIsHidden(const DFileInfo *dfileinfo, const QSet<QString> &hideList)
+{
+    if (!dfileinfo)
+        return false;
+
+    const QString &fileName = dfileinfo->attribute(AttributeID::StandardName, nullptr).toString();
+    if (fileName.startsWith(".")) {
+        return true;
+    } else {
+        if (hideList.isEmpty()) {
+            const QString &hiddenPath = dfileinfo->attribute(AttributeID::StandardParentPath, nullptr).toString() + "/.hidden";
+            const QSet<QString> &hideList = DFileHelper::hideListFromUrl(QUrl::fromLocalFile(hiddenPath));
+
+            if (hideList.contains(fileName))
+                return true;
+        } else {
+            return hideList.contains(fileName);
+        }
+    }
+
+    return false;
+}
+
+}
+
+TimeoutHelper::TimeoutHelper(int timeout)
+{
+    blocker = new QEventLoop();
+
+    timer.reset(new QTimer());
+    timer->setInterval(timeout);
+    timer->setSingleShot(true);
+    QObject::connect(timer.data(), &QTimer::timeout, blocker, [this] {
+        blocker->exit(Timeout);
+    });
+}
+
+TimeoutHelper::~TimeoutHelper()
+{
+    if (blocker) {
+        blocker->exit();
+        delete blocker;
+        blocker = nullptr;
+    }
+    timer->stop();
+}
+
+// namespace DFileHelper
 
 DIO_END_NAMESPACE

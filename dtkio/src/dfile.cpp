@@ -14,7 +14,8 @@
 
 DIO_BEGIN_NAMESPACE
 
-DFilePrivate::DFilePrivate(DFile *q)
+DFilePrivate::DFilePrivate(DFile *file)
+    : q(file)
 {
 }
 
@@ -24,7 +25,8 @@ DFilePrivate::~DFilePrivate()
 
 bool DFilePrivate::exists()
 {
-    g_autoptr(GFile) gfile = g_file_new_for_uri(url.toString().toStdString().c_str());
+    g_autoptr(GFile) gfile = DFileHelper::fileNewForUrl(url);
+    ;
     return g_file_query_file_type(gfile, G_FILE_QUERY_INFO_NONE, nullptr) != G_FILE_TYPE_UNKNOWN;
 }
 
@@ -130,7 +132,7 @@ bool DFile::open(OpenFlags mode)
         return false;
     }
 
-    g_autoptr(GFile) gfile = g_file_new_for_uri(d->url.toString().toLocal8Bit().data());
+    g_autoptr(GFile) gfile = DFileHelper::fileNewForUrl(d->url);
     g_autoptr(GError) gerror = nullptr;
     g_autoptr(GCancellable) cancellable = g_cancellable_new();
 
@@ -422,7 +424,7 @@ bool DFile::flush()
 
 qint64 DFile::size() const
 {
-    g_autoptr(GFile) gfile = g_file_new_for_uri(d->url.toString().toStdString().c_str());
+    g_autoptr(GFile) gfile = DFileHelper::fileNewForUrl(d->url);
 
     g_autoptr(GCancellable) cancellable = g_cancellable_new();
     g_autoptr(GError) gerror = nullptr;
@@ -435,7 +437,7 @@ qint64 DFile::size() const
     if (!fileInfo)
         return -1;
 
-    const QVariant &value = DFileHelper::attributeFromInfo(fileInfo, AttributeID::StandardSize);
+    const QVariant &value = DFileHelper::attributeFromInfo(AttributeID::StandardSize, fileInfo);
     if (!value.isValid())
         return DFileHelper::attributeDefaultValue(AttributeID::StandardSize).toLongLong();
 
@@ -451,7 +453,7 @@ Permissions DFile::permissions() const
 {
     Permissions retValue = Permission::NoPermission;
 
-    g_autoptr(GFile) gfile = g_file_new_for_uri(d->url.toString().toStdString().c_str());
+    g_autoptr(GFile) gfile = DFileHelper::fileNewForUrl(d->url);
 
     g_autoptr(GCancellable) cancellable = g_cancellable_new();
     g_autoptr(GError) gerror = nullptr;
@@ -464,7 +466,7 @@ Permissions DFile::permissions() const
     if (!fileInfo)
         return retValue;
 
-    const QVariant &value = DFileHelper::attributeFromInfo(fileInfo, AttributeID::UnixMode);
+    const QVariant &value = DFileHelper::attributeFromInfo(AttributeID::UnixMode, fileInfo);
     if (!value.isValid())
         return retValue;
     const uint32_t stMode = value.toUInt();
@@ -523,7 +525,7 @@ bool DFile::setPermissions(Permissions permission)
     if (permission.testFlag(Permission::ReadOther))
         stMode |= S_IROTH;
 
-    g_autoptr(GFile) gfile = g_file_new_for_uri(d->url.toString().toStdString().c_str());
+    g_autoptr(GFile) gfile = DFileHelper::fileNewForUrl(d->url);
 
     g_autoptr(GCancellable) cancellable = g_cancellable_new();
     g_autoptr(GError) gerror = nullptr;
@@ -536,7 +538,7 @@ bool DFile::setPermissions(Permissions permission)
 
 bool DFile::setAttribute(AttributeID id, const QVariant &value)
 {
-    g_autoptr(GFile) gfile = g_file_new_for_uri(d->url.toString().toStdString().c_str());
+    g_autoptr(GFile) gfile = DFileHelper::fileNewForUrl(d->url);
     const std::string &key = DFileHelper::attributeKey(id);
     const AttributeType &type = DFileHelper::attributeType(id);
 
@@ -554,11 +556,11 @@ bool DFile::setAttribute(AttributeID id, const QVariant &value)
 
 bool DFile::setAttribute(const QByteArray &key, const QVariant &value, const AttributeType type, const FileQueryInfoFlags flag)
 {
-    g_autoptr(GFile) gfile = g_file_new_for_uri(d->url.toString().toStdString().c_str());
+    g_autoptr(GFile) gfile = DFileHelper::fileNewForUrl(d->url);
     g_autoptr(GCancellable) cancellabel = g_cancellable_new();
     g_autoptr(GError) gerror = nullptr;
 
-    bool succ = DFileHelper::setAttribute(gfile, key, type, value, G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, cancellabel, &gerror);
+    bool succ = DFileHelper::setAttribute(gfile, key, type, value, GFileQueryInfoFlags(flag), cancellabel, &gerror);
     return succ;
 }
 
