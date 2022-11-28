@@ -172,6 +172,7 @@ DExpected<QStringList> DDeviceManager::resolveDevice(QVariantMap devspec, QVaria
         const auto &devices = r.value();
         for (const auto &d : devices)
             ret.push_back(d.path());
+        return ret;
     }
     return DUnexpected<> { DError { r.error().type(), r.error().message() } };
 }

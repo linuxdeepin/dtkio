@@ -28,6 +28,7 @@ void DBlockDeviceMonitor::setWatchChanges(bool watchChanges)
     Q_D(DBlockDeviceMonitor);
     if (d->isWatching == watchChanges)
         return;
+    d->isWatching = watchChanges;
 
     OrgFreedesktopDBusObjectManagerInterface *objMng = UDisks2::objectManager();
     auto sysBus = QDBusConnection::systemBus();

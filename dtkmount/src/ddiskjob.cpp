@@ -11,7 +11,7 @@ DDiskJob::DDiskJob(const QString &path, QObject *parent)
     : QObject { parent }, d_ptr { new DDiskJobPrivate(this) }
 {
     Q_D(DDiskJob);
-    d->iface = new OrgFreedesktopUDisks2JobInterface(kUDisks2Service, path, QDBusConnection::systemBus());
+    d->iface = new OrgFreedesktopUDisks2JobInterface(kUDisks2Service, path, QDBusConnection::systemBus(), this);
     QDBusConnection::systemBus().connect(kUDisks2Service, d->iface->path(), "org.freedesktop.DBus.Properties",
                                          "PropertiesChanged", this, SLOT(onPropertiesChanged(const QString &, const QVariantMap &)));
     connect(d->iface, &OrgFreedesktopUDisks2JobInterface::Completed, this, &DDiskJob::completed);
