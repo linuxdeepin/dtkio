@@ -6,5 +6,9 @@
 
 #define DBURN_USE_NAMESPACE using namespace DBURN_NAMESPACE;
 
-#define DBURN_BEGIN_NAMESPACE namespace Dtk { namespace Burn {
-#define DBURN_END_NAMESPACE }}
+#define DBURN_BEGIN_NAMESPACE \
+    namespace Dtk {           \
+    namespace Burn {
+#define DBURN_END_NAMESPACE \
+    }                       \
+    }
