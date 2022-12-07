@@ -9,14 +9,34 @@
 #include <QString>
 #include <QSharedDataPointer>
 
+#include <DExpected>
+
 #include "dtkburn_global.h"
 #include "dtkburntypes.h"
 
 DBURN_BEGIN_NAMESPACE
 
+class DOpticalDiscInfo;
+namespace DOpticalDiscManager {
+DTK_CORE_NAMESPACE::DExpected<DOpticalDiscInfo *>
+createOpticalDiscInfo(const QString &dev, QObject *parent);
+}   // namespace DOpticalDiscManager
+
 class DOpticalDiscInfoPrivate;
-class DOpticalDiscInfo final
+class DOpticalDiscInfo final : public QObject
 {
+    Q_OBJECT
+
+    Q_PROPERTY(bool blank READ blank CONSTANT FINAL)
+    Q_PROPERTY(QString device READ device CONSTANT FINAL)
+    Q_PROPERTY(QString volumeName READ volumeName CONSTANT FINAL)
+    Q_PROPERTY(quint64 usedSize READ usedSize CONSTANT FINAL)
+    Q_PROPERTY(quint64 availableSize READ availableSize CONSTANT FINAL)
+    Q_PROPERTY(quint64 totalSize READ totalSize CONSTANT FINAL)
+    Q_PROPERTY(quint64 dataBlocks READ dataBlocks CONSTANT FINAL)
+    Q_PROPERTY(MediaType mediaType READ mediaType CONSTANT FINAL)
+    Q_PROPERTY(QStringList writeSpeed READ writeSpeed CONSTANT FINAL)
+
 public:
     DOpticalDiscInfo(const DOpticalDiscInfo &info);
     DOpticalDiscInfo &operator=(const DOpticalDiscInfo &info);
@@ -33,11 +53,13 @@ public:
     QStringList writeSpeed() const;
 
 private:
-    DOpticalDiscInfo();
-    DOpticalDiscInfo(const QString &dev);
+    explicit DOpticalDiscInfo(const QString &dev, QObject *parent = nullptr);
 
-protected:
-    // TODO(zhangs): QSharedDataPointer<DOpticalDiscInfoPrivate> d_ptr;
+    friend DTK_CORE_NAMESPACE::DExpected<DOpticalDiscInfo *>
+    DOpticalDiscManager::createOpticalDiscInfo(const QString &dev, QObject *parent);
+
+private:
+    QSharedDataPointer<DOpticalDiscInfoPrivate> d_ptr;
 };
 
 DBURN_END_NAMESPACE

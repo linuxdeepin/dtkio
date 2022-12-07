@@ -14,18 +14,32 @@
 
 DBURN_BEGIN_NAMESPACE
 
+class DOpticalDiscOperator;
+namespace DOpticalDiscManager {
+DTK_CORE_NAMESPACE::DExpected<DOpticalDiscOperator *>
+createOpticalDiscOperator(const QString &dev, QObject *parent);
+}   // namespace DOpticalDiscManager
+
 class DOpticalDiscOperatorPrivate;
 class DOpticalDiscOperator final : public QObject
 {
     Q_OBJECT
-    Q_DISABLE_COPY(DOpticalDiscOperator)
+    Q_DECLARE_PRIVATE(DOpticalDiscOperator)
+
+    Q_PROPERTY(int speed READ speed WRITE setSpeed)
+    Q_PROPERTY(QString volumeName READ volumeName WRITE setVolumeName)
+    Q_PROPERTY(double checkPrecision READ checkPrecision WRITE setCheckPrecision)
 
 public:
     ~DOpticalDiscOperator() override;
 
     void setSpeed(int speed);
     void setVolumeName(const QString &name);
-    void setCheckPrecision(double precision);
+    void setCheckPrecision(double checkPrecision);
+
+    int speed() const;
+    QString volumeName() const;
+    double checkPrecision() const;
 
     DTK_CORE_NAMESPACE::DExpected<bool> burn(const QString &stagePath, const BurnOptions &opts);
     DTK_CORE_NAMESPACE::DExpected<bool> erase();
@@ -37,10 +51,13 @@ Q_SIGNALS:
     void jobStatusChanged(JobStatus status, int progress, QString speed, QStringList message);
 
 private:
-    explicit DOpticalDiscOperator(QObject *parent = nullptr);
+    explicit DOpticalDiscOperator(const QString &dev, QObject *parent = nullptr);
+
+    friend DTK_CORE_NAMESPACE::DExpected<DOpticalDiscOperator *>
+    DOpticalDiscManager::createOpticalDiscOperator(const QString &dev, QObject *parent);
 
 private:
-    // TODO(zhangs): QScopedPointer<DOpticalDiscManagerPrivate> dptr;
+    QScopedPointer<DOpticalDiscOperatorPrivate> d_ptr;
 };
 
 DBURN_END_NAMESPACE

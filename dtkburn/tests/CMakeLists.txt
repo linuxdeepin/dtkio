@@ -25,13 +25,16 @@ add_executable(${BIN_NAME}
 )
 
 find_package(PkgConfig REQUIRED)
+pkg_check_modules(ISOBURN REQUIRED libisoburn-1)
 
 target_include_directories(${BIN_NAME} PUBLIC
     Qt${QT_VERSION_MAJOR}::Core
+    ${ISOBURN_INCLUDE_DIRS}
 )
 
 target_link_libraries(${BIN_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
+    ${ISOBURN_LIBRARIES}
     -lpthread
     -lgcov
     -lgtest

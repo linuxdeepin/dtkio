@@ -2,18 +2,37 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "dopticaldiscinfo.h"
+#include "dopticaldiscinfo_p.h"
 
 DBURN_BEGIN_NAMESPACE
 
-DOpticalDiscInfo::DOpticalDiscInfo(const DOpticalDiscInfo &info)
+void DOpticalDiscInfoPrivate::iniData()
 {
-    // TODO(zhangs): impl me!
+    if (!isoEngine->acquireDevice(devid)) {
+        qWarning() << "[dtkburn]: Init data failed, cannot acquire device";
+        devid = "";
+        return;
+    }
+    media = isoEngine->mediaTypeProperty();
+    isoEngine->mediaStorageProperty(&data, &avail, &datablocks);
+    formatted = isoEngine->mediaFormattedProperty();
+    volid = isoEngine->mediaVolIdProperty();
+    writespeed = isoEngine->mediaSpeedProperty();
+    isoEngine->clearResult();
+    isoEngine->releaseDevice();
+}
+
+DOpticalDiscInfo::DOpticalDiscInfo(const DOpticalDiscInfo &info)
+    : d_ptr(info.d_ptr)
+{
 }
 
 DOpticalDiscInfo &DOpticalDiscInfo::operator=(const DOpticalDiscInfo &info)
 {
-    // TODO(zhangs): impl me!
+    if (this == &info)
+        return *this;
+
+    d_ptr = info.d_ptr;
     return *this;
 }
 
@@ -23,63 +42,51 @@ DOpticalDiscInfo::~DOpticalDiscInfo()
 
 bool DOpticalDiscInfo::blank() const
 {
-    // TODO(zhangs): impl me!
-    return {};
+    return d_ptr->formatted;
 }
 
 QString DOpticalDiscInfo::device() const
 {
-    // TODO(zhangs): impl me!
-    return {};
+    return d_ptr->devid;
 }
 
 QString DOpticalDiscInfo::volumeName() const
 {
-    // TODO(zhangs): impl me!
-    return {};
+    return d_ptr->volid;
 }
 
 quint64 DOpticalDiscInfo::usedSize() const
 {
-    // TODO(zhangs): impl me!
-    return {};
+    return d_ptr->data;
 }
 
 quint64 DOpticalDiscInfo::availableSize() const
 {
-    // TODO(zhangs): impl me!
-    return {};
+    return d_ptr->avail;
 }
 
 quint64 DOpticalDiscInfo::totalSize() const
 {
-    // TODO(zhangs): impl me!
-    return {};
+    return usedSize() + availableSize();
 }
 
 quint64 DOpticalDiscInfo::dataBlocks() const
 {
-    // TODO(zhangs): impl me!
-    return {};
+    return d_ptr->datablocks;
 }
 
 MediaType DOpticalDiscInfo::mediaType() const
 {
-    // TODO(zhangs): impl me!
-    return {};
+    return d_ptr->media;
 }
 
 QStringList DOpticalDiscInfo::writeSpeed() const
 {
-    // TODO(zhangs): impl me!
-    return {};
+    return d_ptr->writespeed;
 }
 
-DOpticalDiscInfo::DOpticalDiscInfo()
-{
-}
-
-DOpticalDiscInfo::DOpticalDiscInfo(const QString &dev)
+DOpticalDiscInfo::DOpticalDiscInfo(const QString &dev, QObject *parent)
+    : QObject(parent), d_ptr(new DOpticalDiscInfoPrivate(dev))
 {
 }
 
