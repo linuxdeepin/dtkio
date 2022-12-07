@@ -23,7 +23,7 @@ DIO_BEGIN_NAMESPACE
 
 namespace DFileHelper {
 
-static std::map<AttributeID, AttributeDetails> attributeDetailsMap();
+std::map<AttributeID, AttributeDetails> attributeDetailsMap();
 
 std::string attributeKey(AttributeID id);
 QVariant attributeDefaultValue(AttributeID id);

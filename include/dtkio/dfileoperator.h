@@ -9,11 +9,11 @@
 #include <QScopedPointer>
 
 #include <DError>
+#include <DExpected>
 
 #include "dtkio_global.h"
 #include "dtkiotypes.h"
 
-DCORE_USE_NAMESPACE
 DIO_BEGIN_NAMESPACE
 class DFileFuture;
 class DFileOperatorPrivate;
@@ -23,18 +23,18 @@ public:
     explicit DFileOperator(const QUrl &url);
     ~DFileOperator();
 
-    QUrl url() const;
-    bool renameFile(const QString &newName);
-    bool copyFile(const QUrl &destUrl, CopyFlag flag);
-    bool moveFile(const QUrl &destUrl, CopyFlag flag);
-    bool trashFile();
-    bool deleteFile();
-    bool touchFile();
-    bool makeDirectory();
-    bool createLink(const QUrl &link);
-    bool restoreFile();
+    DTK_CORE_NAMESPACE::DExpected<QUrl> url() const;
+    DTK_CORE_NAMESPACE::DExpected<bool> renameFile(const QString &newName);
+    DTK_CORE_NAMESPACE::DExpected<bool> copyFile(const QUrl &destUrl, CopyFlag flag);
+    DTK_CORE_NAMESPACE::DExpected<bool> moveFile(const QUrl &destUrl, CopyFlag flag);
+    DTK_CORE_NAMESPACE::DExpected<bool> trashFile();
+    DTK_CORE_NAMESPACE::DExpected<bool> deleteFile();
+    DTK_CORE_NAMESPACE::DExpected<bool> touchFile();
+    DTK_CORE_NAMESPACE::DExpected<bool> makeDirectory();
+    DTK_CORE_NAMESPACE::DExpected<bool> createLink(const QUrl &link);
+    DTK_CORE_NAMESPACE::DExpected<bool> restoreFile();
 
-    DError lastError() const;
+    DTK_CORE_NAMESPACE::DError lastError() const;
 
     [[nodiscard]] DFileFuture *renameFileAsync(const QString &newName, int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *copyFileAsync(const QUrl &destUrl, CopyFlag flag, int ioPriority, QObject *parent = nullptr);

@@ -7,10 +7,17 @@
 
 #include <sys/stat.h>
 
+#include <QtConcurrent/QtConcurrentRun>
+
 #include <gio/gio.h>
 
 #include "dfileerror.h"
 #include "dfilehelper.h"
+#include "dfilefuture.h"
+
+using DTK_CORE_NAMESPACE::DError;
+using DTK_CORE_NAMESPACE::DExpected;
+using DTK_CORE_NAMESPACE::DUnexpected;
 
 DIO_BEGIN_NAMESPACE
 
@@ -100,10 +107,425 @@ GOutputStream *DFilePrivate::outputStream()
     return nullptr;
 }
 
+DFileFuture *DFilePrivate::openAsync(OpenFlags mode, int ioPriority, QObject *parent)
+{
+    Q_UNUSED(ioPriority);
+
+    DFileFuture *future = new DFileFuture(parent);
+
+    QPointer<DFilePrivate> me = this;
+    QtConcurrent::run([=]() {
+        q->open(mode);
+        if (!me)
+            return;
+        future->finished();
+    });
+    return future;
+}
+
+DFileFuture *DFilePrivate::closeAsync(int ioPriority, QObject *parent)
+{
+    Q_UNUSED(ioPriority);
+
+    DFileFuture *future = new DFileFuture(parent);
+
+    QPointer<DFilePrivate> me = this;
+    QtConcurrent::run([=]() {
+        q->close();
+        if (!me)
+            return;
+        future->finished();
+    });
+    return future;
+}
+
+DFileFuture *DFilePrivate::readAsync(qint64 maxSize, int ioPriority, QObject *parent)
+{
+    DFileFuture *future = new DFileFuture(parent);
+
+    GInputStream *inputStream = this->inputStream();
+    if (!inputStream) {
+        setError(IOErrorCode::OpenFailed);
+        return future;
+    }
+
+    QByteArray data;
+    ReadAllAsyncFutureOp *dataOp = g_new0(ReadAllAsyncFutureOp, 1);
+    dataOp->me = this;
+    dataOp->future = future;
+    dataOp->data = data;
+
+    g_autoptr(GCancellable) cancellable = g_cancellable_new();
+    g_input_stream_read_all_async(inputStream,
+                                  &data,
+                                  maxSize,
+                                  ioPriority,
+                                  cancellable,
+                                  readAsyncFutureCallback,
+                                  dataOp);
+    return future;
+}
+
+DFileFuture *DFilePrivate::readAllAsync(int ioPriority, QObject *parent)
+{
+    return readAsync(G_MAXSSIZE, ioPriority, parent);
+}
+
+DFileFuture *DFilePrivate::writeAsync(const QByteArray &data, qint64 len, int ioPriority, QObject *parent)
+{
+    DFileFuture *future = new DFileFuture(parent);
+
+    GOutputStream *outputStream = this->outputStream();
+    if (!outputStream) {
+        setError(IOErrorCode::OpenFailed);
+        return future;
+    }
+
+    NormalFutureAsyncOp *dataOp = g_new0(NormalFutureAsyncOp, 1);
+    dataOp->me = this;
+    dataOp->future = future;
+
+    g_autoptr(GCancellable) cancellable = g_cancellable_new();
+    g_output_stream_write_async(outputStream,
+                                data,
+                                static_cast<gsize>(len),
+                                ioPriority,
+                                cancellable,
+                                writeAsyncFutureCallback,
+                                dataOp);
+
+    return future;
+}
+
+DFileFuture *DFilePrivate::writeAsync(const QByteArray &data, int ioPriority, QObject *parent)
+{
+    return writeAsync(data, strlen(data), ioPriority, parent);
+}
+
+DFileFuture *DFilePrivate::flushAsync(int ioPriority, QObject *parent)
+{
+    DFileFuture *future = new DFileFuture(parent);
+
+    GOutputStream *outputStream = this->outputStream();
+    if (!outputStream) {
+        setError(IOErrorCode::OpenFailed);
+        return future;
+    }
+
+    NormalFutureAsyncOp *data = g_new0(NormalFutureAsyncOp, 1);
+    data->me = this;
+    data->future = future;
+
+    g_autoptr(GCancellable) cancellable = g_cancellable_new();
+    g_output_stream_flush_async(outputStream, ioPriority, cancellable, flushAsyncCallback, data);
+
+    return future;
+}
+
+DFileFuture *DFilePrivate::sizeAsync(int ioPriority, QObject *parent)
+{
+    DFileFuture *future = new DFileFuture(parent);
+
+    NormalFutureAsyncOp *data = g_new0(NormalFutureAsyncOp, 1);
+    data->me = this;
+    data->future = future;
+
+    g_autoptr(GFile) gfile = g_file_new_for_uri(url.toString().toStdString().c_str());
+    g_autoptr(GCancellable) cancellable = g_cancellable_new();
+    const std::string &attributeKey = DFileHelper::attributeKey(AttributeID::StandardSize);
+    g_file_query_info_async(gfile, attributeKey.c_str(), G_FILE_QUERY_INFO_NONE, ioPriority, cancellable, sizeAsyncCallback, data);
+
+    return future;
+}
+
+DFileFuture *DFilePrivate::existsAsync(int ioPriority, QObject *parent)
+{
+    DFileFuture *future = new DFileFuture(parent);
+
+    NormalFutureAsyncOp *data = g_new0(NormalFutureAsyncOp, 1);
+    data->me = this;
+    data->future = future;
+
+    g_autoptr(GFile) gfile = g_file_new_for_uri(url.toString().toStdString().c_str());
+    g_autoptr(GCancellable) cancellable = g_cancellable_new();
+    const std::string &attributeKey = DFileHelper::attributeKey(AttributeID::StandardType);
+    g_file_query_info_async(gfile, attributeKey.c_str(), G_FILE_QUERY_INFO_NONE, ioPriority, cancellable, existsAsyncCallback, data);
+
+    return future;
+}
+
+DFileFuture *DFilePrivate::permissionsAsync(int ioPriority, QObject *parent)
+{
+    DFileFuture *future = new DFileFuture(parent);
+
+    NormalFutureAsyncOp *data = g_new0(NormalFutureAsyncOp, 1);
+    data->me = this;
+    data->future = future;
+
+    g_autoptr(GFile) gfile = g_file_new_for_uri(url.toString().toStdString().c_str());
+    g_autoptr(GCancellable) cancellable = g_cancellable_new();
+    const std::string &attributeKey = DFileHelper::attributeKey(AttributeID::UnixMode);
+    g_file_query_info_async(gfile, attributeKey.c_str(), G_FILE_QUERY_INFO_NONE, ioPriority, cancellable, permissionsAsyncCallback, data);
+
+    return future;
+}
+
+DFileFuture *DFilePrivate::setPermissionsAsync(Permissions permission, int ioPriority, QObject *parent)
+{
+    Q_UNUSED(ioPriority)
+
+    DFileFuture *future = new DFileFuture(parent);
+
+    quint32 stMode = buildPermissions(permission);
+    g_autoptr(GFile) gfile = g_file_new_for_uri(url.toString().toStdString().c_str());
+    g_autoptr(GCancellable) cancellable = g_cancellable_new();
+    g_autoptr(GError) gerror = nullptr;
+    const std::string &attributeKey = DFileHelper::attributeKey(AttributeID::UnixMode);
+
+    QPointer<DFilePrivate> me = this;
+    QtConcurrent::run([=, &gerror]() {
+        g_file_set_attribute_uint32(gfile, attributeKey.c_str(), stMode, G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, cancellable, &gerror);
+        if (!me)
+            return;
+        if (gerror)
+            me->setError(IOErrorCode(gerror->code));
+        future->finished();
+    });
+    return future;
+}
+
+void DFilePrivate::permissionsAsyncCallback(GObject *sourceObject, GAsyncResult *res, gpointer userData)
+{
+    NormalFutureAsyncOp *data = static_cast<NormalFutureAsyncOp *>(userData);
+    if (!data)
+        return;
+
+    QPointer<DFilePrivate> me = data->me;
+    if (!me)
+        return;
+    DFileFuture *future = data->future;
+    g_autoptr(GFile) gfile = G_FILE(sourceObject);
+    g_autoptr(GError) gerror = nullptr;
+    g_autoptr(GFileInfo) gfileinfo = g_file_query_info_finish(gfile, res, &gerror);
+    if (gerror) {
+        me->setError(IOErrorCode(gerror->code));
+        me = nullptr;
+        future = nullptr;
+        g_free(data);
+        return;
+    }
+    auto permissions = data->me->permissionsFromGFileInfo(gfileinfo);
+    future->infoPermissions(permissions);
+    future->finished();
+
+    me = nullptr;
+    future = nullptr;
+    g_free(data);
+}
+
+void DFilePrivate::existsAsyncCallback(GObject *sourceObject, GAsyncResult *res, gpointer userData)
+{
+    NormalFutureAsyncOp *data = static_cast<NormalFutureAsyncOp *>(userData);
+    if (!data)
+        return;
+
+    QPointer<DFilePrivate> me = data->me;
+    if (!me)
+        return;
+    DFileFuture *future = data->future;
+    g_autoptr(GFile) gfile = G_FILE(sourceObject);
+    g_autoptr(GError) gerror = nullptr;
+    g_autoptr(GFileInfo) gfileinfo = g_file_query_info_finish(gfile, res, &gerror);
+    if (gerror) {
+        me->setError(IOErrorCode(gerror->code));
+        me = nullptr;
+        future = nullptr;
+        g_free(data);
+        return;
+    }
+
+    const std::string &attributeKey = DFileHelper::attributeKey(AttributeID::StandardType);
+    const quint32 exists = g_file_info_get_attribute_uint32(gfileinfo, attributeKey.c_str());
+
+    future->infoExists(exists != G_FILE_TYPE_UNKNOWN);
+    future->finished();
+
+    me = nullptr;
+    future = nullptr;
+    g_free(data);
+}
+
+void DFilePrivate::sizeAsyncCallback(GObject *sourceObject, GAsyncResult *res, gpointer userData)
+{
+    NormalFutureAsyncOp *data = static_cast<NormalFutureAsyncOp *>(userData);
+    if (!data)
+        return;
+
+    QPointer<DFilePrivate> me = data->me;
+    if (!me)
+        return;
+    DFileFuture *future = data->future;
+    g_autoptr(GFile) gfile = G_FILE(sourceObject);
+    g_autoptr(GError) gerror = nullptr;
+    g_autoptr(GFileInfo) gfileinfo = g_file_query_info_finish(gfile, res, &gerror);
+    if (gerror) {
+        me->setError(IOErrorCode(gerror->code));
+        me = nullptr;
+        future = nullptr;
+        g_free(data);
+        return;
+    }
+
+    const std::string &attributeKey = DFileHelper::attributeKey(AttributeID::StandardSize);
+    const quint64 size = g_file_info_get_attribute_uint64(gfileinfo, attributeKey.c_str());
+
+    future->infoSize(size);
+    future->finished();
+
+    me = nullptr;
+    future = nullptr;
+    g_free(data);
+}
+
+void DFilePrivate::flushAsyncCallback(GObject *sourceObject, GAsyncResult *res, gpointer userData)
+{
+    NormalFutureAsyncOp *data = static_cast<NormalFutureAsyncOp *>(userData);
+    QPointer<DFilePrivate> me = data->me;
+    DFileFuture *future = data->future;
+    g_autoptr(GOutputStream) stream = G_OUTPUT_STREAM(sourceObject);
+    g_autoptr(GError) gerror = nullptr;
+    g_output_stream_flush_finish(stream, res, &gerror);
+    if (gerror) {
+        me->setError(IOErrorCode(gerror->code));
+        me = nullptr;
+        future = nullptr;
+        g_free(data);
+        return;
+    }
+    future->finished();
+
+    me = nullptr;
+    future = nullptr;
+    g_free(data);
+}
+
+void DFilePrivate::writeAsyncFutureCallback(GObject *sourceObject, GAsyncResult *res, gpointer userData)
+{
+    NormalFutureAsyncOp *data = static_cast<NormalFutureAsyncOp *>(userData);
+    QPointer<DFilePrivate> me = data->me;
+    DFileFuture *future = data->future;
+    GOutputStream *stream = (GOutputStream *)(sourceObject);
+    g_autoptr(GError) gerror = nullptr;
+    gssize size = g_output_stream_write_finish(stream, res, &gerror);
+    if (gerror) {
+        me->setError(IOErrorCode(gerror->code));
+        me = nullptr;
+        future = nullptr;
+        g_free(data);
+        return;
+    }
+    future->writeAsyncSize(size);
+    future->finished();
+
+    me = nullptr;
+    future = nullptr;
+    g_free(data);
+}
+
+void DFilePrivate::readAsyncFutureCallback(GObject *sourceObject, GAsyncResult *res, gpointer userData)
+{
+    ReadAllAsyncFutureOp *data = static_cast<ReadAllAsyncFutureOp *>(userData);
+    GInputStream *stream = (GInputStream *)(sourceObject);
+    QPointer<DFilePrivate> me = data->me;
+    DFileFuture *future = data->future;
+
+    g_autoptr(GError) gerror = nullptr;
+    gsize size = 0;
+    bool succ = g_input_stream_read_all_finish(stream, res, &size, &gerror);
+    if (!succ || gerror) {
+        future->setError(IOErrorCode(gerror->code));
+        me->setError(IOErrorCode(gerror->code));
+    }
+
+    future->readData(data->data);
+    future->finished();
+
+    data->future = nullptr;
+    data->me = nullptr;
+    g_free(data);
+}
+
 void DFilePrivate::setError(IOErrorCode code)
 {
     error.setErrorCode(code);
     error.setErrorMessage(IOErrorMessage(code));
+}
+
+quint32 DFilePrivate::buildPermissions(Permissions permission)
+{
+    quint32 stMode = 0000;
+    if (permission.testFlag(Permission::ExeOwner) | permission.testFlag(Permission::ExeUser))
+        stMode |= S_IXUSR;
+    if (permission.testFlag(Permission::WriteOwner) | permission.testFlag(Permission::WriteUser))
+        stMode |= S_IWUSR;
+    if (permission.testFlag(Permission::ReadOwner) | permission.testFlag(Permission::ReadUser))
+        stMode |= S_IRUSR;
+
+    if (permission.testFlag(Permission::ExeGroup))
+        stMode |= S_IXGRP;
+    if (permission.testFlag(Permission::WriteGroup))
+        stMode |= S_IWGRP;
+    if (permission.testFlag(Permission::ReadGroup))
+        stMode |= S_IRGRP;
+
+    if (permission.testFlag(Permission::ExeOther))
+        stMode |= S_IXOTH;
+    if (permission.testFlag(Permission::WriteOther))
+        stMode |= S_IWOTH;
+    if (permission.testFlag(Permission::ReadOther))
+        stMode |= S_IROTH;
+    return stMode;
+}
+
+Permissions DFilePrivate::permissionsFromGFileInfo(GFileInfo *gfileinfo)
+{
+    Permissions retValue = Permission::NoPermission;
+    if (!gfileinfo)
+        return retValue;
+
+    const std::string &attributeKey = DFileHelper::attributeKey(AttributeID::UnixMode);
+    const quint32 &stMode = g_file_info_get_attribute_uint32(gfileinfo, attributeKey.c_str());
+    if (!stMode)
+        return retValue;
+
+    if ((stMode & S_IXUSR) == S_IXUSR) {
+        retValue |= Permission::ExeOwner;
+        retValue |= Permission::ExeUser;
+    }
+    if ((stMode & S_IWUSR) == S_IWUSR) {
+        retValue |= Permission::WriteOwner;
+        retValue |= Permission::WriteUser;
+    }
+    if ((stMode & S_IRUSR) == S_IRUSR) {
+        retValue |= Permission::ReadOwner;
+        retValue |= Permission::ReadUser;
+    }
+
+    if ((stMode & S_IXGRP) == S_IXGRP)
+        retValue |= Permission::ExeGroup;
+    if ((stMode & S_IWGRP) == S_IWGRP)
+        retValue |= Permission::WriteGroup;
+    if ((stMode & S_IRGRP) == S_IRGRP)
+        retValue |= Permission::ReadGroup;
+
+    if ((stMode & S_IXOTH) == S_IXOTH)
+        retValue |= Permission::ExeOther;
+    if ((stMode & S_IWOTH) == S_IWOTH)
+        retValue |= Permission::WriteOther;
+    if ((stMode & S_IROTH) == S_IROTH)
+        retValue |= Permission::ReadOther;
+
+    return retValue;
 }
 
 DFile::DFile(const QUrl &url)
@@ -116,20 +538,20 @@ DFile::~DFile()
 {
 }
 
-QUrl DFile::url() const
+DExpected<QUrl> DFile::url() const
 {
     return d->url;
 }
 
-bool DFile::open(OpenFlags mode)
+DExpected<bool> DFile::open(OpenFlags mode)
 {
     if (d->isOpen) {
         d->setError(IOErrorCode::FileAlreadyOpened);
-        return false;
+        return DUnexpected { d->error };
     }
 
     if (!d->checkOpenFlags(&mode)) {
-        return false;
+        return DUnexpected { d->error };
     }
 
     g_autoptr(GFile) gfile = DFileHelper::fileNewForUrl(d->url);
@@ -139,14 +561,14 @@ bool DFile::open(OpenFlags mode)
     if (mode & OpenFlag::ReadOnly && !(mode & OpenFlag::WriteOnly)) {
         if (!exists()) {
             d->setError(IOErrorCode::FileNotFound);
-            return false;
+            return DUnexpected { d->error };
         }
         d->iStream = (GInputStream *)g_file_read(gfile, cancellable, &gerror);
         if (gerror)
             d->setError(IOErrorCode(gerror->code));
 
         if (!d->iStream) {
-            return false;
+            return DUnexpected { d->error };
         }
         return true;
     } else if (mode & OpenFlag::WriteOnly && !(mode & OpenFlag::ReadOnly)) {
@@ -156,7 +578,7 @@ bool DFile::open(OpenFlags mode)
                 d->setError(IOErrorCode(gerror->code));
 
             if (!d->oStream) {
-                return false;
+                return DUnexpected { d->error };
             }
         } else if (mode & OpenFlag::Append) {
             d->oStream = (GOutputStream *)g_file_append_to(gfile, G_FILE_CREATE_NONE, cancellable, &gerror);
@@ -164,7 +586,7 @@ bool DFile::open(OpenFlags mode)
                 d->setError(IOErrorCode(gerror->code));
 
             if (!d->oStream) {
-                return false;
+                return DUnexpected { d->error };
             }
         } else {
             d->oStream = (GOutputStream *)g_file_replace(gfile, nullptr, false, G_FILE_CREATE_NONE, cancellable, &gerror);
@@ -172,7 +594,7 @@ bool DFile::open(OpenFlags mode)
                 d->setError(IOErrorCode(gerror->code));
 
             if (!d->oStream) {
-                return false;
+                return DUnexpected { d->error };
             }
         }
 
@@ -184,7 +606,7 @@ bool DFile::open(OpenFlags mode)
                 d->setError(IOErrorCode(gerror->code));
 
             if (!d->ioStream) {
-                return false;
+                return DUnexpected { d->error };
             }
         } else if (mode & OpenFlag::ExistingOnly) {
             d->ioStream = (GIOStream *)g_file_open_readwrite(gfile, cancellable, &gerror);
@@ -192,7 +614,7 @@ bool DFile::open(OpenFlags mode)
                 d->setError(IOErrorCode(gerror->code));
 
             if (!d->ioStream) {
-                return false;
+                return DUnexpected { d->error };
             }
         } else {
             d->ioStream = (GIOStream *)g_file_replace_readwrite(gfile, nullptr, false, G_FILE_CREATE_NONE, cancellable, &gerror);
@@ -200,7 +622,7 @@ bool DFile::open(OpenFlags mode)
                 d->setError(IOErrorCode(gerror->code));
 
             if (!d->ioStream) {
-                return false;
+                return DUnexpected { d->error };
             }
         }
         return true;
@@ -210,13 +632,13 @@ bool DFile::open(OpenFlags mode)
             d->setError(IOErrorCode(gerror->code));
 
         if (!d->ioStream) {
-            return false;
+            return DUnexpected { d->error };
         }
         return true;
     }
 }
 
-bool DFile::close()
+DExpected<bool> DFile::close()
 {
     g_autoptr(GError) gerror = nullptr;
     g_autoptr(GCancellable) cancellable = g_cancellable_new();
@@ -241,17 +663,17 @@ bool DFile::close()
     return true;
 }
 
-bool DFile::isOpen() const
+DExpected<bool> DFile::isOpen() const
 {
     return d->isOpen;
 }
 
-qint64 DFile::read(QByteArray &data, qint64 maxSize)
+DExpected<qint64> DFile::read(QByteArray &data, qint64 maxSize)
 {
     GInputStream *inputStream = d->inputStream();
     if (!inputStream) {
         d->setError(IOErrorCode::OpenFailed);
-        return -1;
+        return DUnexpected { d->error };
     }
 
     char cdata[maxSize + 1];
@@ -266,19 +688,19 @@ qint64 DFile::read(QByteArray &data, qint64 maxSize)
                                           &gerror);
     if (gerror) {
         d->setError(IOErrorCode(gerror->code));
-        return -1;
+        return DUnexpected { d->error };
     }
 
     data.append(cdata, readSize);
     return readSize;
 }
 
-QByteArray DFile::readAll()
+DExpected<QByteArray> DFile::readAll()
 {
     GInputStream *inputStream = d->inputStream();
     if (!inputStream) {
         d->setError(IOErrorCode::OpenFailed);
-        return QByteArray();
+        return DUnexpected { d->error };
     }
 
     QByteArray dataRet;
@@ -313,12 +735,12 @@ QByteArray DFile::readAll()
     return dataRet;
 }
 
-qint64 DFile::write(const QByteArray &data, qint64 len)
+DExpected<qint64> DFile::write(const QByteArray &data, qint64 len)
 {
     GOutputStream *outputStream = d->outputStream();
     if (!outputStream) {
         d->setError(IOErrorCode::OpenFailed);
-        return -1;
+        return DUnexpected { d->error };
     }
 
     g_autoptr(GCancellable) cancellable = g_cancellable_new();
@@ -335,28 +757,30 @@ qint64 DFile::write(const QByteArray &data, qint64 len)
     return write;
 }
 
-qint64 DFile::write(const QByteArray &data)
+DExpected<qint64> DFile::write(const QByteArray &data)
 {
     return write(data, data.length());
 }
 
-bool DFile::seek(qint64 pos, SeekType type) const
+DExpected<bool> DFile::seek(qint64 pos, SeekType type) const
 {
     GInputStream *inputStream = d->inputStream();
     if (!inputStream) {
         d->setError(IOErrorCode::OpenFailed);
-        return false;
+        return DUnexpected { d->error };
     }
 
     // seems g_seekable_can_seek only support local file, survey after. todo lanxs
     gboolean canSeek = G_IS_SEEKABLE(inputStream) /*&& g_seekable_can_seek(G_SEEKABLE(inputStream))*/;
     if (!canSeek) {
-        return false;
+        d->setError(IOErrorCode::OpenFailed);
+        return DUnexpected { d->error };
     }
 
     GSeekable *seekable = G_SEEKABLE(inputStream);
     if (!seekable) {
-        return false;
+        d->setError(IOErrorCode::OpenFailed);
+        return DUnexpected { d->error };
     }
 
     bool ret = false;
@@ -382,22 +806,24 @@ bool DFile::seek(qint64 pos, SeekType type) const
     return ret;
 }
 
-qint64 DFile::pos() const
+DExpected<qint64> DFile::pos() const
 {
     GInputStream *inputStream = d->inputStream();
     if (!inputStream) {
         d->setError(IOErrorCode::OpenFailed);
-        return -1;
+        return DUnexpected { d->error };
     }
 
     gboolean canSeek = G_IS_SEEKABLE(inputStream);
     if (!canSeek) {
-        return -1;
+        d->setError(IOErrorCode::OpenFailed);
+        return DUnexpected { d->error };
     }
 
     GSeekable *seekable = G_SEEKABLE(inputStream);
     if (!seekable) {
-        return -1;
+        d->setError(IOErrorCode::OpenFailed);
+        return DUnexpected { d->error };
     }
 
     goffset pos = g_seekable_tell(seekable);
@@ -405,24 +831,26 @@ qint64 DFile::pos() const
     return qint64(pos);
 }
 
-bool DFile::flush()
+DExpected<bool> DFile::flush()
 {
     GOutputStream *outputStream = d->outputStream();
     if (!outputStream) {
         d->setError(IOErrorCode::OpenFailed);
-        return false;
+        return DUnexpected { d->error };
     }
 
     g_autoptr(GCancellable) cancellable = g_cancellable_new();
     g_autoptr(GError) gerror = nullptr;
     gboolean ret = g_output_stream_flush(outputStream, cancellable, &gerror);
 
-    if (gerror)
+    if (gerror) {
         d->setError(IOErrorCode(gerror->code));
+        return DUnexpected { d->error };
+    }
     return ret;
 }
 
-qint64 DFile::size() const
+DExpected<qint64> DFile::size() const
 {
     g_autoptr(GFile) gfile = DFileHelper::fileNewForUrl(d->url);
 
@@ -435,7 +863,7 @@ qint64 DFile::size() const
         d->setError(IOErrorCode(gerror->code));
 
     if (!fileInfo)
-        return -1;
+        return DUnexpected { d->error };
 
     const QVariant &value = DFileHelper::attributeFromInfo(AttributeID::StandardSize, fileInfo);
     if (!value.isValid())
@@ -444,12 +872,12 @@ qint64 DFile::size() const
     return value.toLongLong();
 }
 
-bool DFile::exists() const
+DExpected<bool> DFile::exists() const
 {
     return d->exists();
 }
 
-Permissions DFile::permissions() const
+DExpected<Permissions> DFile::permissions() const
 {
     Permissions retValue = Permission::NoPermission;
 
@@ -463,45 +891,10 @@ Permissions DFile::permissions() const
     if (gerror)
         d->setError(IOErrorCode(gerror->code));
 
-    if (!fileInfo)
-        return retValue;
-
-    const QVariant &value = DFileHelper::attributeFromInfo(AttributeID::UnixMode, fileInfo);
-    if (!value.isValid())
-        return retValue;
-    const uint32_t stMode = value.toUInt();
-
-    if ((stMode & S_IXUSR) == S_IXUSR) {
-        retValue |= Permission::ExeOwner;
-        retValue |= Permission::ExeUser;
-    }
-    if ((stMode & S_IWUSR) == S_IWUSR) {
-        retValue |= Permission::WriteOwner;
-        retValue |= Permission::WriteUser;
-    }
-    if ((stMode & S_IRUSR) == S_IRUSR) {
-        retValue |= Permission::ReadOwner;
-        retValue |= Permission::ReadUser;
-    }
-
-    if ((stMode & S_IXGRP) == S_IXGRP)
-        retValue |= Permission::ExeGroup;
-    if ((stMode & S_IWGRP) == S_IWGRP)
-        retValue |= Permission::WriteGroup;
-    if ((stMode & S_IRGRP) == S_IRGRP)
-        retValue |= Permission::ReadGroup;
-
-    if ((stMode & S_IXOTH) == S_IXOTH)
-        retValue |= Permission::ExeOther;
-    if ((stMode & S_IWOTH) == S_IWOTH)
-        retValue |= Permission::WriteOther;
-    if ((stMode & S_IROTH) == S_IROTH)
-        retValue |= Permission::ReadOther;
-
-    return retValue;
+    return d->permissionsFromGFileInfo(fileInfo);
 }
 
-bool DFile::setPermissions(Permissions permission)
+DExpected<bool> DFile::setPermissions(Permissions permission)
 {
     uint32_t stMode = 0000;
     if (permission.testFlag(Permission::ExeOwner) | permission.testFlag(Permission::ExeUser))
@@ -536,7 +929,7 @@ bool DFile::setPermissions(Permissions permission)
     return succ;
 }
 
-bool DFile::setAttribute(AttributeID id, const QVariant &value)
+DExpected<bool> DFile::setAttribute(AttributeID id, const QVariant &value)
 {
     g_autoptr(GFile) gfile = DFileHelper::fileNewForUrl(d->url);
     const std::string &key = DFileHelper::attributeKey(id);
@@ -547,14 +940,14 @@ bool DFile::setAttribute(AttributeID id, const QVariant &value)
 
     if (key.empty() || type == AttributeType::TypeInvalid) {
         d->setError(IOErrorCode::InvalidArgument);
-        return false;
+        return DUnexpected { d->error };
     }
 
     bool succ = DFileHelper::setAttribute(gfile, key.c_str(), type, value, G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, cancellabel, &gerror);
     return succ;
 }
 
-bool DFile::setAttribute(const QByteArray &key, const QVariant &value, const AttributeType type, const FileQueryInfoFlags flag)
+DExpected<bool> DFile::setAttribute(const QByteArray &key, const QVariant &value, const AttributeType type, const FileQueryInfoFlags flag)
 {
     g_autoptr(GFile) gfile = DFileHelper::fileNewForUrl(d->url);
     g_autoptr(GCancellable) cancellabel = g_cancellable_new();
@@ -566,57 +959,57 @@ bool DFile::setAttribute(const QByteArray &key, const QVariant &value, const Att
 
 DFileFuture *DFile::openAsync(OpenFlags mode, int ioPriority, QObject *parent)
 {
-    return nullptr;
+    return d->openAsync(mode, ioPriority, parent);
 }
 
 DFileFuture *DFile::closeAsync(int ioPriority, QObject *parent)
 {
-    return nullptr;
+    return d->closeAsync(ioPriority, parent);
 }
 
 DFileFuture *DFile::readAsync(qint64 maxSize, int ioPriority, QObject *parent)
 {
-    return nullptr;
+    return d->readAsync(maxSize, ioPriority, parent);
 }
 
 DFileFuture *DFile::readAllAsync(int ioPriority, QObject *parent)
 {
-    return nullptr;
+    return d->readAllAsync(ioPriority, parent);
 }
 
 DFileFuture *DFile::writeAsync(const QByteArray &data, qint64 len, int ioPriority, QObject *parent)
 {
-    return nullptr;
+    return d->writeAsync(data, len, ioPriority, parent);
 }
 
 DFileFuture *DFile::writeAsync(const QByteArray &data, int ioPriority, QObject *parent)
 {
-    return nullptr;
+    return d->writeAsync(data, ioPriority, parent);
 }
 
 DFileFuture *DFile::flushAsync(int ioPriority, QObject *parent)
 {
-    return nullptr;
+    return d->flushAsync(ioPriority, parent);
 }
 
 DFileFuture *DFile::sizeAsync(int ioPriority, QObject *parent)
 {
-    return nullptr;
+    return d->sizeAsync(ioPriority, parent);
 }
 
 DFileFuture *DFile::existsAsync(int ioPriority, QObject *parent)
 {
-    return nullptr;
+    return d->existsAsync(ioPriority, parent);
 }
 
 DFileFuture *DFile::permissionsAsync(int ioPriority, QObject *parent)
 {
-    return nullptr;
+    return d->permissionsAsync(ioPriority, parent);
 }
 
 DFileFuture *DFile::setPermissionsAsync(Permissions permission, int ioPriority, QObject *parent)
 {
-    return nullptr;
+    return d->setPermissionsAsync(permission, ioPriority, parent);
 }
 
 DError DFile::lastError() const

@@ -425,12 +425,12 @@ bool fileIsHidden(const DFileInfo *dfileinfo, const QSet<QString> &hideList)
     if (!dfileinfo)
         return false;
 
-    const QString &fileName = dfileinfo->attribute(AttributeID::StandardName, nullptr).toString();
+    const QString &fileName = dfileinfo->attribute(AttributeID::StandardName, nullptr)->toString();
     if (fileName.startsWith(".")) {
         return true;
     } else {
         if (hideList.isEmpty()) {
-            const QString &hiddenPath = dfileinfo->attribute(AttributeID::StandardParentPath, nullptr).toString() + "/.hidden";
+            const QString &hiddenPath = dfileinfo->attribute(AttributeID::StandardParentPath, nullptr)->toString() + "/.hidden";
             const QSet<QString> &hideList = DFileHelper::hideListFromUrl(QUrl::fromLocalFile(hiddenPath));
 
             if (hideList.contains(fileName))

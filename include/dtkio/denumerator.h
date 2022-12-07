@@ -9,11 +9,11 @@
 #include <QScopedPointer>
 
 #include <DError>
+#include <DExpected>
 
 #include "dtkio_global.h"
 #include "dtkiotypes.h"
 
-DCORE_USE_NAMESPACE
 DIO_BEGIN_NAMESPACE
 class DFileFuture;
 class DFileInfo;
@@ -24,27 +24,27 @@ public:
     explicit DEnumerator(const QUrl &url);
     ~DEnumerator();
 
-    QUrl url() const;
+    DTK_CORE_NAMESPACE::DExpected<QUrl> url() const;
 
-    void setNameFilters(const QStringList &nameFilters);
-    void setDirFilters(DirFilters dirFilters);
-    void setIteratorFlags(IteratorFlags flags);
-    QStringList nameFilters() const;
-    DirFilters dirFilters() const;
-    IteratorFlags iteratorFlags() const;
-    void setTimeout(quint64 timeout);
-    quint64 timeout() const;
+    DTK_CORE_NAMESPACE::DExpected<void> setNameFilters(const QStringList &nameFilters);
+    DTK_CORE_NAMESPACE::DExpected<void> setDirFilters(DirFilters dirFilters);
+    DTK_CORE_NAMESPACE::DExpected<void> setIteratorFlags(IteratorFlags flags);
+    DTK_CORE_NAMESPACE::DExpected<QStringList> nameFilters() const;
+    DTK_CORE_NAMESPACE::DExpected<DirFilters> dirFilters() const;
+    DTK_CORE_NAMESPACE::DExpected<IteratorFlags> iteratorFlags() const;
+    DTK_CORE_NAMESPACE::DExpected<void> setTimeout(quint64 timeout);
+    DTK_CORE_NAMESPACE::DExpected<quint64> timeout() const;
 
-    bool createEnumerator();
+    DTK_CORE_NAMESPACE::DExpected<bool> createEnumerator();
     [[nodiscard]] DFileFuture *createEnumeratorAsync(int ioPriority, QObject *parent = nullptr);
 
-    bool hasNext() const;
-    QUrl next() const;
+    DTK_CORE_NAMESPACE::DExpected<bool> hasNext() const;
+    DTK_CORE_NAMESPACE::DExpected<QUrl> next() const;
 
-    quint64 fileCount();
+    DTK_CORE_NAMESPACE::DExpected<quint64> fileCount();
     [[nodiscard]] DFileInfo *createFileInfo(QObject *parent = nullptr) const;
 
-    DError lastError() const;
+    DTK_CORE_NAMESPACE::DError lastError() const;
 
 private:
     QScopedPointer<DEnumeratorPrivate> d;

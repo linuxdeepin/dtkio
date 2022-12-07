@@ -15,7 +15,6 @@
 #include "dtkiotypes.h"
 #include "dfileerror.h"
 
-DCORE_USE_NAMESPACE
 DIO_BEGIN_NAMESPACE
 class DFileMonitor;
 class DFileMonitorPrivate
@@ -36,7 +35,7 @@ public:
     GFileMonitor *gmonitor = nullptr;
     GFile *gfile = nullptr;
 
-    DError error { IOErrorCode::NoError, IOErrorMessage(IOErrorCode::NoError) };
+    DTK_CORE_NAMESPACE::DError error { IOErrorCode::NoError, IOErrorMessage(IOErrorCode::NoError) };
 };
 DIO_END_NAMESPACE
 
