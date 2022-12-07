@@ -6,6 +6,7 @@
 #define DFILE_P_H
 
 #include <QUrl>
+#include <QPointer>
 
 #include <gio/gio.h>
 
@@ -15,26 +16,62 @@
 #include "dtkiotypes.h"
 #include "dfileerror.h"
 
-DCORE_USE_NAMESPACE
 DIO_BEGIN_NAMESPACE
+class DFileFuture;
 class DFile;
-class DFilePrivate
+class DFilePrivate : public QObject
 {
 public:
     explicit DFilePrivate(DFile *q);
     ~DFilePrivate();
+
+    typedef struct
+    {
+        DFileFuture *future = nullptr;
+        QPointer<DFilePrivate> me;
+    } NormalFutureAsyncOp;
+
+    typedef struct
+    {
+        QByteArray data;
+        DFileFuture *future = nullptr;
+        QPointer<DFilePrivate> me;
+    } ReadAllAsyncFutureOp;
 
     bool exists();
     bool checkOpenFlags(OpenFlags *mode);
     GInputStream *inputStream();
     GOutputStream *outputStream();
 
+    // future
+    [[nodiscard]] DFileFuture *openAsync(OpenFlags mode, int ioPriority, QObject *parent = nullptr);
+    [[nodiscard]] DFileFuture *closeAsync(int ioPriority, QObject *parent = nullptr);
+    [[nodiscard]] DFileFuture *readAsync(qint64 maxSize, int ioPriority, QObject *parent = nullptr);
+    [[nodiscard]] DFileFuture *readAllAsync(int ioPriority, QObject *parent = nullptr);
+    [[nodiscard]] DFileFuture *writeAsync(const QByteArray &data, qint64 len, int ioPriority, QObject *parent = nullptr);
+    [[nodiscard]] DFileFuture *writeAsync(const QByteArray &data, int ioPriority, QObject *parent = nullptr);
+    [[nodiscard]] DFileFuture *flushAsync(int ioPriority, QObject *parent = nullptr);
+    [[nodiscard]] DFileFuture *sizeAsync(int ioPriority, QObject *parent = nullptr);
+    [[nodiscard]] DFileFuture *existsAsync(int ioPriority, QObject *parent = nullptr);
+    [[nodiscard]] DFileFuture *permissionsAsync(int ioPriority, QObject *parent = nullptr);
+    [[nodiscard]] DFileFuture *setPermissionsAsync(Permissions permission, int ioPriority, QObject *parent = nullptr);
+
+    static void permissionsAsyncCallback(GObject *sourceObject, GAsyncResult *res, gpointer userData);
+    static void existsAsyncCallback(GObject *sourceObject, GAsyncResult *res, gpointer userData);
+    static void sizeAsyncCallback(GObject *sourceObject, GAsyncResult *res, gpointer userData);
+    static void flushAsyncCallback(GObject *sourceObject, GAsyncResult *res, gpointer userData);
+    static void writeAsyncFutureCallback(GObject *sourceObject, GAsyncResult *res, gpointer userData);
+    static void readAsyncFutureCallback(GObject *sourceObject, GAsyncResult *res, gpointer userData);
+
     void setError(IOErrorCode code);
+
+    quint32 buildPermissions(Permissions permission);
+    Permissions permissionsFromGFileInfo(GFileInfo *gfileinfo);
 
     DFile *q = nullptr;
     QUrl url;
     bool isOpen { false };
-    DError error { IOErrorCode::NoError, IOErrorMessage(IOErrorCode::NoError) };
+    DTK_CORE_NAMESPACE::DError error { IOErrorCode::NoError, IOErrorMessage(IOErrorCode::NoError) };
 
     GIOStream *ioStream = nullptr;
     GInputStream *iStream = nullptr;

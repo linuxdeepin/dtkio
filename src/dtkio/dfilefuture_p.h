@@ -8,6 +8,7 @@
 #include <QUrl>
 
 #include "dtkio_global.h"
+#include "dfileerror.h"
 
 DIO_BEGIN_NAMESPACE
 class DFileFuture;
@@ -18,6 +19,7 @@ public:
     ~DFuturePrivate();
 
     DFileFuture *q = nullptr;
+    IOErrorCode error;
 };
 DIO_END_NAMESPACE
 

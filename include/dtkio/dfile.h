@@ -10,11 +10,11 @@
 #include <QScopedPointer>
 
 #include <DError>
+#include <DExpected>
 
 #include "dtkio_global.h"
 #include "dtkiotypes.h"
 
-DCORE_USE_NAMESPACE
 DIO_BEGIN_NAMESPACE
 class DFileFuture;
 class DFilePrivate;
@@ -24,26 +24,26 @@ public:
     explicit DFile(const QUrl &url);
     ~DFile();
 
-    QUrl url() const;
-    bool open(OpenFlags mode);
-    bool close();
-    bool isOpen() const;
+    DTK_CORE_NAMESPACE::DExpected<QUrl> url() const;
+    DTK_CORE_NAMESPACE::DExpected<bool> open(OpenFlags mode);
+    DTK_CORE_NAMESPACE::DExpected<bool> close();
+    DTK_CORE_NAMESPACE::DExpected<bool> isOpen() const;
 
-    qint64 read(QByteArray &data, qint64 maxSize);
-    QByteArray readAll();
-    qint64 write(const QByteArray &data, qint64 len);
-    qint64 write(const QByteArray &data);
+    DTK_CORE_NAMESPACE::DExpected<qint64> read(QByteArray &data, qint64 maxSize);
+    DTK_CORE_NAMESPACE::DExpected<QByteArray> readAll();
+    DTK_CORE_NAMESPACE::DExpected<qint64> write(const QByteArray &data, qint64 len);
+    DTK_CORE_NAMESPACE::DExpected<qint64> write(const QByteArray &data);
 
-    bool seek(qint64 pos, SeekType type = SeekType::Begin) const;
-    qint64 pos() const;
-    bool flush();
-    qint64 size() const;
-    bool exists() const;
+    DTK_CORE_NAMESPACE::DExpected<bool> seek(qint64 pos, SeekType type = SeekType::Begin) const;
+    DTK_CORE_NAMESPACE::DExpected<qint64> pos() const;
+    DTK_CORE_NAMESPACE::DExpected<bool> flush();
+    DTK_CORE_NAMESPACE::DExpected<qint64> size() const;
+    DTK_CORE_NAMESPACE::DExpected<bool> exists() const;
 
-    Permissions permissions() const;
-    bool setPermissions(Permissions permission);
-    bool setAttribute(AttributeID id, const QVariant &value);
-    bool setAttribute(const QByteArray &key, const QVariant &value, const AttributeType type, const FileQueryInfoFlags flag = FileQueryInfoFlags::TypeNoFollowSymlinks);
+    DTK_CORE_NAMESPACE::DExpected<Permissions> permissions() const;
+    DTK_CORE_NAMESPACE::DExpected<bool> setPermissions(Permissions permission);
+    DTK_CORE_NAMESPACE::DExpected<bool> setAttribute(AttributeID id, const QVariant &value);
+    DTK_CORE_NAMESPACE::DExpected<bool> setAttribute(const QByteArray &key, const QVariant &value, const AttributeType type, const FileQueryInfoFlags flag = FileQueryInfoFlags::TypeNoFollowSymlinks);
 
     [[nodiscard]] DFileFuture *openAsync(OpenFlags mode, int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *closeAsync(int ioPriority, QObject *parent = nullptr);
@@ -57,7 +57,7 @@ public:
     [[nodiscard]] DFileFuture *permissionsAsync(int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *setPermissionsAsync(Permissions permission, int ioPriority, QObject *parent = nullptr);
 
-    DError lastError() const;
+    DTK_CORE_NAMESPACE::DError lastError() const;
 
 private:
     QScopedPointer<DFilePrivate> d;

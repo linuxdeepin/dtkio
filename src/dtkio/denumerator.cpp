@@ -11,11 +11,14 @@
 
 #include "dfilehelper.h"
 #include "dfileinfo.h"
+#include "dfilefuture.h"
 
 #define FILE_DEFAULT_ATTRIBUTES "standard::*,etag::*,id::*,access::*,mountable::*,time::*,unix::*,dos::*,\
 owner::*,thumbnail::*,preview::*,filesystem::*,gvfs::*,selinux::*,trash::*,recent::*,metadata::*"
 
 DIO_BEGIN_NAMESPACE
+using DTK_CORE_NAMESPACE::DError;
+using DTK_CORE_NAMESPACE::DExpected;
 
 DEnumeratorPrivate::DEnumeratorPrivate(DEnumerator *enumerator)
     : q(enumerator)
@@ -93,7 +96,7 @@ bool DEnumeratorPrivate::checkFilter()
     if (!fileInfo)
         return false;
 
-    const bool isDir = fileInfo->attribute(AttributeID::StandardIsDir).toBool();
+    const bool isDir = fileInfo->attribute(AttributeID::StandardIsDir)->toBool();
     if ((dirFilters & DirFilter::AllDirs) == DirFilters(DirFilter::AllDirs)) {   // all dir, no apply filters rules
         if (isDir)
             return true;
@@ -102,9 +105,9 @@ bool DEnumeratorPrivate::checkFilter()
     // dir filter
     bool ret = true;
 
-    const bool readable = fileInfo->attribute(AttributeID::AccessCanRead).toBool();
-    const bool writable = fileInfo->attribute(AttributeID::AccessCanWrite).toBool();
-    const bool executable = fileInfo->attribute(AttributeID::AccessCanExecute).toBool();
+    const bool readable = fileInfo->attribute(AttributeID::AccessCanRead)->toBool();
+    const bool writable = fileInfo->attribute(AttributeID::AccessCanWrite)->toBool();
+    const bool executable = fileInfo->attribute(AttributeID::AccessCanExecute)->toBool();
 
     auto checkRWE = [&]() -> bool {
         if ((dirFilters & DirFilter::Readable) == DirFilters(DirFilter::Readable)) {
@@ -136,7 +139,7 @@ bool DEnumeratorPrivate::checkFilter()
                 ret = false;
         }
     } else if ((dirFilters & DirFilter::Files) == DirFilters(DirFilter::Files)) {
-        const bool isFile = fileInfo->attribute(AttributeID::StandardIsFile).toBool();
+        const bool isFile = fileInfo->attribute(AttributeID::StandardIsFile)->toBool();
         if (!isFile) {
             ret = false;
         } else {
@@ -147,15 +150,15 @@ bool DEnumeratorPrivate::checkFilter()
     }
 
     if ((dirFilters & DirFilter::NoSymLinks) == DirFilters(DirFilter::NoSymLinks)) {
-        const bool isSymlinks = fileInfo->attribute(AttributeID::StandardIsSymlink).toBool();
+        const bool isSymlinks = fileInfo->attribute(AttributeID::StandardIsSymlink)->toBool();
         if (isSymlinks)
             ret = false;
     }
 
-    const QString &fileInfoName = fileInfo->attribute(AttributeID::StandardName).toString();
+    const QString &fileInfoName = fileInfo->attribute(AttributeID::StandardName)->toString();
     const bool showHidden = (dirFilters & DirFilter::Hidden) == DirFilters(DirFilter::Hidden);
     if (!showHidden) {   // hide files
-        const QString &parentPath = fileInfo->attribute(AttributeID::StandardParentPath).toString();
+        const QString &parentPath = fileInfo->attribute(AttributeID::StandardParentPath)->toString();
         const QUrl &urlHidden = QUrl::fromLocalFile(parentPath + "/.hidden");
 
         QSet<QString> hideList;
@@ -186,6 +189,58 @@ bool DEnumeratorPrivate::checkFilter()
     return ret;
 }
 
+DFileFuture *DEnumeratorPrivate::createEnumeratorAsync(int ioPriority, QObject *parent)
+{
+    DFileFuture *future = new DFileFuture(parent);
+
+    NormalFutureAsyncOp *dataOp = g_new0(NormalFutureAsyncOp, 1);
+    dataOp->me = this;
+    dataOp->future = future;
+
+    const bool enumLinks = iteratorflags & IteratorFlag::FollowSymlinks;
+
+    g_autoptr(GFile) gfile = g_file_new_for_uri(url.toString().toStdString().c_str());
+    g_autoptr(GCancellable) cancellable = g_cancellable_new();
+
+    g_file_enumerate_children_async(gfile,
+                                    FILE_DEFAULT_ATTRIBUTES,
+                                    enumLinks ? G_FILE_QUERY_INFO_NONE : G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS,
+                                    ioPriority,
+                                    cancellable,
+                                    createEnumeratorAsyncCallback, dataOp);
+    return future;
+}
+
+void DEnumeratorPrivate::createEnumeratorAsyncCallback(GObject *sourceObject, GAsyncResult *res, gpointer userData)
+{
+    NormalFutureAsyncOp *data = static_cast<NormalFutureAsyncOp *>(userData);
+    QPointer<DEnumeratorPrivate> me = data->me;
+    DFileFuture *future = data->future;
+    if (!me) {
+        data->me = nullptr;
+        data->future = nullptr;
+        g_free(data);
+        return;
+    }
+
+    GFile *gfile = G_FILE(sourceObject);
+    g_autoptr(GError) gerror = nullptr;
+    GFileEnumerator *genumerator = g_file_enumerate_children_finish(gfile, res, &gerror);
+
+    if (gerror)
+        me->setError(IOErrorCode(gerror->code));
+
+    if (genumerator)
+        me->stackEnumerator.push_back(genumerator);
+    me->enumeratorInited = true;
+
+    future->finished();
+
+    data->me = nullptr;
+    data->future = nullptr;
+    g_free(data);
+}
+
 DEnumerator::DEnumerator(const QUrl &url)
     : d(new DEnumeratorPrivate(this))
 {
@@ -196,62 +251,62 @@ DEnumerator::~DEnumerator()
 {
 }
 
-QUrl DEnumerator::url() const
+DExpected<QUrl> DEnumerator::url() const
 {
     return d->url;
 }
 
-void DEnumerator::setNameFilters(const QStringList &nameFilters)
+DExpected<void> DEnumerator::setNameFilters(const QStringList &nameFilters)
 {
     d->nameFilters = nameFilters;
 }
 
-void DEnumerator::setDirFilters(DirFilters dirFilters)
+DExpected<void> DEnumerator::setDirFilters(DirFilters dirFilters)
 {
     d->dirFilters = dirFilters;
 }
 
-void DEnumerator::setIteratorFlags(IteratorFlags flags)
+DExpected<void> DEnumerator::setIteratorFlags(IteratorFlags flags)
 {
     d->iteratorflags = flags;
 }
 
-QStringList DEnumerator::nameFilters() const
+DExpected<QStringList> DEnumerator::nameFilters() const
 {
     return d->nameFilters;
 }
 
-DirFilters DEnumerator::dirFilters() const
+DExpected<DirFilters> DEnumerator::dirFilters() const
 {
     return d->dirFilters;
 }
 
-IteratorFlags DEnumerator::iteratorFlags() const
+DExpected<IteratorFlags> DEnumerator::iteratorFlags() const
 {
     return d->iteratorflags;
 }
 
-void DEnumerator::setTimeout(quint64 timeout)
+DExpected<void> DEnumerator::setTimeout(quint64 timeout)
 {
     d->timeout = timeout;
 }
 
-quint64 DEnumerator::timeout() const
+DExpected<quint64> DEnumerator::timeout() const
 {
     return d->timeout;
 }
 
-bool DEnumerator::createEnumerator()
+DExpected<bool> DEnumerator::createEnumerator()
 {
     return d->createEnumerator(d->url);
 }
 
 DFileFuture *DEnumerator::createEnumeratorAsync(int ioPriority, QObject *parent)
 {
-    return nullptr;
+    return d->createEnumeratorAsync(ioPriority, parent);
 }
 
-bool DEnumerator::hasNext() const
+DExpected<bool> DEnumerator::hasNext() const
 {
     if (!d->enumeratorInited) {
         bool succ = d->createEnumerator(d->url);
@@ -264,9 +319,9 @@ bool DEnumerator::hasNext() const
     const bool enumSubDir = d->iteratorflags & IteratorFlag::Subdirectories;
     const bool enumLinks = d->iteratorflags & IteratorFlag::FollowSymlinks;
     // sub dir enumerator
-    if (enumSubDir && d->fileInfo && d->fileInfo->attribute(AttributeID::StandardIsDir).toBool()) {
+    if (enumSubDir && d->fileInfo && d->fileInfo->attribute(AttributeID::StandardIsDir)->toBool()) {
         bool showDir = true;
-        if (d->fileInfo->attribute(AttributeID::StandardIsSymlink).toBool()) {
+        if (d->fileInfo->attribute(AttributeID::StandardIsSymlink)->toBool()) {
             // is symlink, need enumSymlink
             showDir = enumLinks;
         }
@@ -315,7 +370,7 @@ bool DEnumerator::hasNext() const
     return false;
 }
 
-QUrl DEnumerator::next() const
+DExpected<QUrl> DEnumerator::next() const
 {
     return d->nextUrl;
 }
@@ -333,7 +388,7 @@ DError DEnumerator::lastError() const
     return d->error;
 }
 
-quint64 DEnumerator::fileCount()
+DExpected<quint64> DEnumerator::fileCount()
 {
     if (!d->enumeratorInited) {
         bool succ = d->createEnumerator(d->url);

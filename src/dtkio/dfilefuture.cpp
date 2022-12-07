@@ -39,4 +39,9 @@ bool DFileFuture::hasError() const
     return false;
 }
 
+void DFileFuture::setError(IOErrorCode error)
+{
+    d->error = error;
+}
+
 DIO_END_NAMESPACE

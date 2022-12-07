@@ -10,13 +10,12 @@
 #include <QScopedPointer>
 
 #include <DError>
+#include <DExpected>
 
 #include "dtkio_global.h"
 #include "dtkiotypes.h"
 
-DCORE_USE_NAMESPACE
 DIO_BEGIN_NAMESPACE
-class DFileFuture;
 class DFileMonitorPrivate;
 class DFileMonitor : public QObject
 {
@@ -25,19 +24,19 @@ public:
     explicit DFileMonitor(const QUrl &url, QObject *parent = nullptr);
     ~DFileMonitor();
 
-    QUrl url() const;
-    void setTimeRate(quint32 msec);
-    quint32 timeRate() const;
-    void setWatchType(WatchType type);
-    WatchType watchType() const;
-    bool running() const;
-    bool start();
-    bool start(quint32 timeRate = 200);
-    [[nodiscard]] DFileFuture *startAsync(int ioPriority, QObject *parent = nullptr);
+    DTK_CORE_NAMESPACE::DExpected<QUrl> url() const;
+    DTK_CORE_NAMESPACE::DExpected<void> setTimeRate(quint32 msec);
+    DTK_CORE_NAMESPACE::DExpected<quint32> timeRate() const;
+    DTK_CORE_NAMESPACE::DExpected<void> setWatchType(WatchType type);
+    DTK_CORE_NAMESPACE::DExpected<WatchType> watchType() const;
 
-    bool stop();
+    DTK_CORE_NAMESPACE::DExpected<bool> running() const;
+    DTK_CORE_NAMESPACE::DExpected<bool> start();
+    DTK_CORE_NAMESPACE::DExpected<bool> start(quint32 timeRate = 200);
 
-    DError lastError() const;
+    DTK_CORE_NAMESPACE::DExpected<bool> stop();
+
+    DTK_CORE_NAMESPACE::DError lastError() const;
 
 Q_SIGNALS:
     void fileChanged(const QUrl &url);

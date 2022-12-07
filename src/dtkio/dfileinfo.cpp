@@ -10,12 +10,33 @@
 #include <gio/gio.h>
 
 #include "dfilehelper.h"
+#include "dfilefuture.h"
 
 DIO_BEGIN_NAMESPACE
+using DTK_CORE_NAMESPACE::DError;
+using DTK_CORE_NAMESPACE::DExpected;
+using DTK_CORE_NAMESPACE::DUnexpected;
 
 DFileInfoPrivate::DFileInfoPrivate(DFileInfo *fileInfo)
     : q(fileInfo)
 {
+}
+
+DFileInfoPrivate::DFileInfoPrivate(const DFileInfoPrivate &other)
+{
+    q = other.q;
+}
+
+DFileInfoPrivate &DFileInfoPrivate::operator=(DFileInfoPrivate &&other) noexcept
+{
+    qSwap(q, other.q);
+    return *this;
+}
+
+DFileInfoPrivate &DFileInfoPrivate::operator=(const DFileInfoPrivate &other)
+{
+    q = other.q;
+    return *this;
 }
 
 DFileInfoPrivate::~DFileInfoPrivate()
@@ -60,49 +81,210 @@ void DFileInfoPrivate::setError(IOErrorCode code)
     error.setErrorMessage(IOErrorMessage(code));
 }
 
+DFileFuture *DFileInfoPrivate::initQuerierAsync(int ioPriority, QObject *parent)
+{
+    const char *attributes = q->queryAttributes()->toStdString().data();
+    auto flag = q->queryInfoFlag();
+
+    DFileFuture *future = new DFileFuture(parent);
+    NormalFutureAsyncOp *dataOp = g_new0(NormalFutureAsyncOp, 1);
+    dataOp->future = future;
+    dataOp->me = this;
+
+    g_autoptr(GFile) gfile = DFileHelper::fileNewForUrl(url);
+    g_autoptr(GCancellable) cancellable = g_cancellable_new();
+    g_file_query_info_async(gfile, attributes, GFileQueryInfoFlags(flag.value()), ioPriority, cancellable, initQuerierAsyncCallback, dataOp);
+    return future;
+}
+
+DFileFuture *DFileInfoPrivate::attributeAsync(AttributeID id, int ioPriority, QObject *parent)
+{
+    DFileFuture *futureRet = new DFileFuture(parent);
+    if (!querierInit) {
+        DFileFuture *future = this->initQuerierAsync(ioPriority, nullptr);
+        connect(future, &DFileFuture::finished, this, [=]() {
+            if (!future->hasError()) {
+                futureRet->infoAttribute(id, q->attribute(id).value());
+                futureRet->finished();
+            }
+            future->deleteLater();
+        });
+    }
+    QTimer::singleShot(10, this, [=]() {
+        futureRet->infoAttribute(id, q->attribute(id).value());
+        futureRet->finished();
+    });
+    return futureRet;
+}
+
+DFileFuture *DFileInfoPrivate::attributeAsync(const QByteArray &key, const AttributeType type, int ioPriority, QObject *parent)
+{
+    DFileFuture *futureRet = new DFileFuture(parent);
+    if (!querierInit) {
+        DFileFuture *future = this->initQuerierAsync(ioPriority, nullptr);
+        connect(future, &DFileFuture::finished, this, [=]() {
+            if (!future->hasError()) {
+                futureRet->infoAttribute(key, q->attribute(key, type).value());
+                futureRet->finished();
+            }
+            future->deleteLater();
+        });
+    }
+    QTimer::singleShot(10, this, [=]() {
+        futureRet->infoAttribute(key, q->attribute(key, type).value());
+        futureRet->finished();
+    });
+    return futureRet;
+}
+
+DFileFuture *DFileInfoPrivate::existsAsync(int ioPriority, QObject *parent)
+{
+    DFileFuture *futureRet = new DFileFuture(parent);
+    if (!querierInit) {
+        DFileFuture *future = this->initQuerierAsync(ioPriority, nullptr);
+        connect(future, &DFileFuture::finished, this, [=]() {
+            if (!future->hasError()) {
+                const bool exists = q->exists().value();
+                futureRet->infoExists(exists);
+                futureRet->finished();
+            }
+            future->deleteLater();
+        });
+    }
+    QTimer::singleShot(10, this, [=]() {
+        const bool exists = q->exists().value();
+        futureRet->infoExists(exists);
+        futureRet->finished();
+    });
+    return futureRet;
+}
+
+DFileFuture *DFileInfoPrivate::refreshAsync(int ioPriority, QObject *parent)
+{
+    DFileFuture *future = this->initQuerierAsync(ioPriority, parent);
+    connect(future, &DFileFuture::finished, this, [=]() {
+        future->finished();
+    });
+    return future;
+}
+
+DFileFuture *DFileInfoPrivate::permissionsAsync(int ioPriority, QObject *parent)
+{
+    DFileFuture *future = this->initQuerierAsync(ioPriority, parent);
+    connect(future, &DFileFuture::finished, this, [=]() {
+        future->infoPermissions(q->permissions().value());
+        future->finished();
+    });
+    return future;
+}
+
+void DFileInfoPrivate::initQuerierAsyncCallback(GObject *sourceObject, GAsyncResult *res, gpointer userData)
+{
+    NormalFutureAsyncOp *data = static_cast<NormalFutureAsyncOp *>(userData);
+    if (!data)
+        return;
+
+    DFileFuture *future = data->future;
+    QPointer<DFileInfoPrivate> me = data->me;
+    if (!future) {
+        me = nullptr;
+        g_free(data);
+        return;
+    }
+
+    GFile *file = G_FILE(sourceObject);
+    g_autoptr(GError) gerror = nullptr;
+    GFileInfo *fileinfo = g_file_query_info_finish(file, res, &gerror);
+
+    if (gerror) {
+        me->setError(IOErrorCode(gerror->code));
+        future = nullptr;
+        me = nullptr;
+        g_free(data);
+
+        return;
+    }
+    if (me->gFileInfo) {
+        g_object_unref(me->gFileInfo);
+        me->gFileInfo = nullptr;
+    }
+
+    me->gFileInfo = fileinfo;
+    me->querierInit = true;
+
+    future->finished();
+
+    future = nullptr;
+    me = nullptr;
+    g_free(data);
+}
+
 DFileInfo::DFileInfo(const QUrl &url, QObject *parent)
     : QObject(parent), d(new DFileInfoPrivate(this))
 {
     d->url = url;
 }
 
+DFileInfo::DFileInfo(const DFileInfo &other)
+{
+    d = other.d;
+}
+
+DFileInfo::DFileInfo(DFileInfo &&other) noexcept
+{
+    d = other.d;
+    other.d = nullptr;
+}
+
+DFileInfo &DFileInfo::operator=(DFileInfo &&other) noexcept
+{
+    qSwap(d, other.d);
+    return *this;
+}
+
+DFileInfo &DFileInfo::operator=(const DFileInfo &other)
+{
+    d = other.d;
+    return *this;
+}
+
 DFileInfo::~DFileInfo()
 {
 }
 
-QUrl DFileInfo::url() const
+DExpected<QUrl> DFileInfo::url() const
 {
     return d->url;
 }
 
-void DFileInfo::setQueryAttributes(const QByteArray &attributes)
+DExpected<void> DFileInfo::setQueryAttributes(const QByteArray &attributes)
 {
     d->queryAttributes = attributes;
 }
 
-void DFileInfo::setQueryInfoFlags(const FileQueryInfoFlags flags)
+DExpected<void> DFileInfo::setQueryInfoFlags(const FileQueryInfoFlags flags)
 {
     d->queryInfoFlags = flags;
 }
 
-QByteArray DFileInfo::queryAttributes() const
+DExpected<QByteArray> DFileInfo::queryAttributes() const
 {
     return d->queryAttributes;
 }
 
-FileQueryInfoFlags DFileInfo::queryInfoFlag() const
+DExpected<FileQueryInfoFlags> DFileInfo::queryInfoFlag() const
 {
     return d->queryInfoFlags;
 }
 
-bool DFileInfo::initQuerier()
+DExpected<bool> DFileInfo::initQuerier()
 {
     return d->initQuerier();
 }
 
-QVariant DFileInfo::attribute(AttributeID id, bool *success) const
+DExpected<QVariant> DFileInfo::attribute(AttributeID id, bool *success) const
 {
-    if (!d->checkQuerier()) {
+    if (!(const_cast<DFileInfoPrivate *>(d.data()))->checkQuerier()) {
         if (success)
             *success = false;
         return DFileHelper::attributeDefaultValue(id);
@@ -115,50 +297,50 @@ QVariant DFileInfo::attribute(AttributeID id, bool *success) const
     return value;
 }
 
-QVariant DFileInfo::attribute(const QByteArray &key, const AttributeType type) const
+DExpected<QVariant> DFileInfo::attribute(const QByteArray &key, const AttributeType type) const
 {
-    if (!d->checkQuerier())
+    if (!(const_cast<DFileInfoPrivate *>(d.data()))->checkQuerier())
         return QVariant();
 
     const QVariant &value = DFileHelper::attribute(key, type, d->gFileInfo);
     return value;
 }
 
-bool DFileInfo::hasAttribute(AttributeID id) const
+DExpected<bool> DFileInfo::hasAttribute(AttributeID id) const
 {
-    if (!d->checkQuerier())
+    if (!(const_cast<DFileInfoPrivate *>(d.data()))->checkQuerier())
         return false;
 
     const std::string &key = DFileHelper::attributeKey(id);
     return g_file_info_has_attribute(d->gFileInfo, key.c_str());
 }
 
-bool DFileInfo::hasAttribute(const QByteArray &key) const
+DExpected<bool> DFileInfo::hasAttribute(const QByteArray &key) const
 {
-    if (!d->checkQuerier())
+    if (!(const_cast<DFileInfoPrivate *>(d.data()))->checkQuerier())
         return false;
 
     return g_file_info_has_attribute(d->gFileInfo, key);
 }
 
-bool DFileInfo::exists() const
+DExpected<bool> DFileInfo::exists() const
 {
-    if (!d->checkQuerier())
+    if (!(const_cast<DFileInfoPrivate *>(d.data()))->checkQuerier())
         return false;
 
     return g_file_info_get_file_type(d->gFileInfo) != G_FILE_TYPE_UNKNOWN;
 }
 
-bool DFileInfo::refresh()
+DExpected<bool> DFileInfo::refresh()
 {
     return d->initQuerier();
 }
 
-Permissions DFileInfo::permissions() const
+DExpected<Permissions> DFileInfo::permissions() const
 {
     Permissions retValue = Permission::NoPermission;
 
-    if (!d->checkQuerier())
+    if (!(const_cast<DFileInfoPrivate *>(d.data()))->checkQuerier())
         return retValue;
 
     const QVariant &value = DFileHelper::attributeFromInfo(AttributeID::UnixMode, d->gFileInfo);
@@ -198,32 +380,32 @@ Permissions DFileInfo::permissions() const
 
 DFileFuture *DFileInfo::initQuerierAsync(int ioPriority, QObject *parent)
 {
-    return nullptr;
+    return d->initQuerierAsync(ioPriority, parent);
 }
 
 DFileFuture *DFileInfo::attributeAsync(AttributeID id, int ioPriority, QObject *parent) const
 {
-    return nullptr;
+    return (const_cast<DFileInfoPrivate *>(d.data()))->attributeAsync(id, ioPriority, parent);
 }
 
 DFileFuture *DFileInfo::attributeAsync(const QByteArray &key, const AttributeType type, int ioPriority, QObject *parent) const
 {
-    return nullptr;
+    return (const_cast<DFileInfoPrivate *>(d.data()))->attributeAsync(key, type, ioPriority, parent);
 }
 
 DFileFuture *DFileInfo::existsAsync(int ioPriority, QObject *parent) const
 {
-    return nullptr;
+    return (const_cast<DFileInfoPrivate *>(d.data()))->existsAsync(ioPriority, parent);
 }
 
 DFileFuture *DFileInfo::refreshAsync(int ioPriority, QObject *parent)
 {
-    return nullptr;
+    return d->refreshAsync(ioPriority, parent);
 }
 
 DFileFuture *DFileInfo::permissionsAsync(int ioPriority, QObject *parent)
 {
-    return nullptr;
+    return d->permissionsAsync(ioPriority, parent);
 }
 
 DError DFileInfo::lastError() const

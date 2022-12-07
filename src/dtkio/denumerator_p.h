@@ -7,6 +7,7 @@
 
 #include <QUrl>
 #include <QStack>
+#include <QPointer>
 
 #include <gio/gio.h>
 
@@ -16,27 +17,37 @@
 #include "dtkiotypes.h"
 #include "dfileerror.h"
 
-DCORE_USE_NAMESPACE
 DIO_BEGIN_NAMESPACE
+class DFileFuture;
 class DFileInfo;
 class DEnumerator;
-class DEnumeratorPrivate
+class DEnumeratorPrivate : public QObject
 {
 public:
     explicit DEnumeratorPrivate(DEnumerator *q);
     ~DEnumeratorPrivate();
 
+    struct NormalFutureAsyncOp
+    {
+        DFileFuture *future = nullptr;
+        QPointer<DEnumeratorPrivate> me;
+    };
+
     void setError(IOErrorCode code);
     bool createEnumerator(const QUrl &url);
     bool checkFilter();
 
+    [[nodiscard]] DFileFuture *createEnumeratorAsync(int ioPriority, QObject *parent = nullptr);
+    static void createEnumeratorAsyncCallback(GObject *sourceObject, GAsyncResult *res, gpointer userData);
+
+public:
     DEnumerator *q = nullptr;
     QUrl url;
     QStringList nameFilters;
     DirFilters dirFilters;
     IteratorFlags iteratorflags;
     quint64 timeout = 0;
-    DError error { IOErrorCode::NoError, IOErrorMessage(IOErrorCode::NoError) };
+    DTK_CORE_NAMESPACE::DError error { IOErrorCode::NoError, IOErrorMessage(IOErrorCode::NoError) };
     bool enumeratorInited = false;
 
     QStack<GFileEnumerator *> stackEnumerator;
