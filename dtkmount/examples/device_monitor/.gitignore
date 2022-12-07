@@ -1,0 +1,5 @@
+/build
+/.vscode
+*.user
+.clang-format
+device_monitor

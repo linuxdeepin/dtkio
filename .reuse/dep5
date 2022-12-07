@@ -28,6 +28,11 @@ Files: */misc/*
 Copyright: None
 License: CC0-1.0
 
+# examples
+Files: */examples/*
+Copyright: None
+License: CC0-1.0
+
 # debian
 Files: debian/*
 Copyright: None
