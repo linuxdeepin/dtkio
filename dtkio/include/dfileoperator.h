@@ -8,9 +8,12 @@
 #include <QUrl>
 #include <QScopedPointer>
 
+#include <DError>
+
 #include "dtkio_global.h"
 #include "dtkiotypes.h"
 
+DCORE_USE_NAMESPACE
 DIO_BEGIN_NAMESPACE
 class DFileFuture;
 class DFileOperatorPrivate;
@@ -29,14 +32,15 @@ public:
     bool touchFile();
     bool makeDirectory();
     bool createLink(const QUrl &link);
-    //!<@~english DError lastError() const; // TODO(lanxs): deal error
+    bool restoreFile();
+
+    DError lastError() const;
 
     [[nodiscard]] DFileFuture *renameFileAsync(const QString &newName, int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *copyFileAsync(const QUrl &destUrl, CopyFlag flag, int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *moveFileAsync(const QUrl &destUrl, CopyFlag flag, int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *trashFileAsync(int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *deleteFileAsync(int ioPriority, QObject *parent = nullptr);
-    [[nodiscard]] DFileFuture *restoreFile(QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *restoreFileAsync(int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *touchFileAsync(int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *makeDirectoryAsync(int ioPriority, QObject *parent = nullptr);

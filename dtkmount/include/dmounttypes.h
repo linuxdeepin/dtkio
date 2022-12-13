@@ -5,7 +5,7 @@
 #ifndef DMOUNTTYPES_H
 #define DMOUNTTYPES_H
 
-#include "dtkmount_global.h"
+#include <DtkMountGlobal>
 
 DMOUNT_BEGIN_NAMESPACE
 

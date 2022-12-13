@@ -2,14 +2,13 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "dprotocoldevicemonitor.h"
+#include <DProtocolDeviceMonitor>
 #include "dprotocoldevicemonitor_p.h"
+#include "utils.h"
 
 #include <gio/gunixmounts.h>
 
 #include <QRegularExpression>
-
-#include "utils.h"
 
 DMOUNT_USE_NAMESPACE
 

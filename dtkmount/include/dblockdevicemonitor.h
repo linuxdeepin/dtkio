@@ -5,11 +5,16 @@
 #ifndef DBLOCKDEVICEMONITOR_H
 #define DBLOCKDEVICEMONITOR_H
 
+#include <DtkMountGlobal>
+
 #include <QObject>
 
-#include "dtkmount_global.h"
-
 DMOUNT_BEGIN_NAMESPACE
+
+class DBlockDeviceMonitor;
+namespace DDeviceManager {
+DBlockDeviceMonitor *globalBlockDeviceMonitor();
+}
 
 enum class BlockDeviceProperty;
 class DBlockDeviceMonitorPrivate;
@@ -17,6 +22,7 @@ class DBlockDeviceMonitor : public QObject
 {
     Q_OBJECT
     Q_DECLARE_PRIVATE(DBlockDeviceMonitor)
+    friend DBlockDeviceMonitor *DDeviceManager::globalBlockDeviceMonitor();
 
 public:
     ~DBlockDeviceMonitor() override;

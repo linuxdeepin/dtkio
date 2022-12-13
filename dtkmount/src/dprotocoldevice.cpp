@@ -2,8 +2,9 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "dprotocoldevice.h"
+#include <DProtocolDevice>
 #include "dprotocoldevice_p.h"
+#include "utils.h"
 
 #include <QTimer>
 #include <QRegularExpression>
@@ -12,8 +13,6 @@
 #include <QDBusConnection>
 #include <QDBusConnectionInterface>
 #include <QtConcurrent/QtConcurrent>
-
-#include "utils.h"
 
 DMOUNT_USE_NAMESPACE
 

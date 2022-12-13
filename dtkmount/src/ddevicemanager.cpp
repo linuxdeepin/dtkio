@@ -2,14 +2,16 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "ddevicemanager.h"
-
-#include "objectmanager_interface.h"
+#include <DDeviceManager>
+#include <DBlockDevice>
+#include <DDiskDrive>
+#include <DDiskJob>
+#include <DBlockPartition>
+#include <DBlockDeviceMonitor>
+#include <DProtocolDeviceMonitor>
+#include <DProtocolDevice>
 #include "udisks2_interface.h"
 #include "dbus/udisks2_dbus_common.h"
-#include "dblockdevice.h"
-#include "ddiskdrive.h"
-#include "dblockpartition.h"
 
 DMOUNT_BEGIN_NAMESPACE
 
@@ -37,14 +39,14 @@ static QStringList getDBusNodeNameList(const QString &service, const QString &pa
 
 DBlockDeviceMonitor *DDeviceManager::globalBlockDeviceMonitor()
 {
-    // TODO(zhangs): impl me
-    return {};
+    static DBlockDeviceMonitor monitor;
+    return &monitor;
 }
 
 DProtocolDeviceMonitor *DDeviceManager::globalProtocolDeviceMonitor()
 {
-    // TODO(xust): impl me
-    return {};
+    static DProtocolDeviceMonitor monitor;
+    return &monitor;
 }
 
 DExpected<QStringList> DDeviceManager::blockDevices(const QVariantMap &options)
@@ -65,8 +67,7 @@ DExpected<QStringList> DDeviceManager::blockDevices(const QVariantMap &options)
 
 QStringList DDeviceManager::protocolDevices()
 {
-    // TODO(xust): impl me
-    return {};
+    return globalProtocolDeviceMonitor()->devices();
 }
 
 QStringList DDeviceManager::diskDrives()
@@ -141,14 +142,12 @@ DExpected<DDiskDrive *> DDeviceManager::createDiskDrive(const QString &path, QOb
 
 DExpected<DDiskJob *> DDeviceManager::createDiskJob(const QString &path, QObject *parent)
 {
-    // TODO(zhangs): impl me
-    return {};
+    return new DDiskJob(path, parent);
 }
 
 DExpected<DProtocolDevice *> DDeviceManager::createProtocolDevice(const QString &path, QObject *parent)
 {
-    // TODO(xust): impl me
-    return {};
+    return new DProtocolDevice(path, parent);
 }
 
 QStringList DDeviceManager::supportedFilesystems()
@@ -173,6 +172,7 @@ DExpected<QStringList> DDeviceManager::resolveDevice(QVariantMap devspec, QVaria
         const auto &devices = r.value();
         for (const auto &d : devices)
             ret.push_back(d.path());
+        return ret;
     }
     return DUnexpected<> { DError { r.error().type(), r.error().message() } };
 }

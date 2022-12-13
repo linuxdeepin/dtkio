@@ -5,12 +5,12 @@
 #ifndef DDEVICEMANAGER_H
 #define DDEVICEMANAGER_H
 
+#include <DtkMountGlobal>
+
 #include <QObject>
 #include <QVariantMap>
 
 #include <DExpected>
-
-#include "dtkmount_global.h"
 
 DCORE_USE_NAMESPACE
 DMOUNT_BEGIN_NAMESPACE

@@ -2,9 +2,8 @@
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
-#include "dblockdevicemonitor.h"
+#include <DBlockDeviceMonitor>
 #include "dblockdevicemonitor_p.h"
-
 #include "dbus/udisks2_dbus_common.h"
 #include "objectmanager_interface.h"
 
@@ -29,6 +28,7 @@ void DBlockDeviceMonitor::setWatchChanges(bool watchChanges)
     Q_D(DBlockDeviceMonitor);
     if (d->isWatching == watchChanges)
         return;
+    d->isWatching = watchChanges;
 
     OrgFreedesktopDBusObjectManagerInterface *objMng = UDisks2::objectManager();
     auto sysBus = QDBusConnection::systemBus();
@@ -114,7 +114,11 @@ void DBlockDeviceMonitorPrivate::onPropertiesChanged(const QString &iface, const
             else
                 Q_EMIT q->mountAdded(objPath, mpts.first());
         }
+    }
 
-        // TODO(xust): other properties report
+    if (iface == kIfaceBlock) {
+        if (changedProperties.contains("HintIgnore")) {
+            // TODO(xust): report propertychanged.
+        }
     }
 }

@@ -5,7 +5,7 @@
 #ifndef DBLOCKDEVICE_P_H
 #define DBLOCKDEVICE_P_H
 
-#include "dblockdevice.h"
+#include <DBlockDevice>
 
 QT_BEGIN_NAMESPACE
 class QDBusObjectPath;

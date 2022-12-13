@@ -5,7 +5,7 @@
 #ifndef DBLOCKDEVICEMONITOR_P_H
 #define DBLOCKDEVICEMONITOR_P_H
 
-#include "dblockdevicemonitor.h"
+#include <DBlockDeviceMonitor>
 
 #include <QDBusObjectPath>
 #include <QDBusMessage>

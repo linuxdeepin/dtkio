@@ -3,6 +3,7 @@
 // SPDX-License-Identifier: LGPL-3.0-or-later
 
 #include "ddevicemanager.h"
+#include "dblockdevice.h"
 
 #include <QDBusPendingReply>
 
@@ -20,6 +21,7 @@ public:
     void TearDown() override { m_stub.clear(); }
 
     stub_ext::StubExt m_stub;
+    QObject m_obj;
 };
 
 TEST_F(TestDDeviceManager, globalBlockDeviceMonitor)
@@ -40,19 +42,22 @@ TEST_F(TestDDeviceManager, blockDevices)
     });
     m_stub.set_lamda(&QDBusPendingReply<QList<QDBusObjectPath>>::waitForFinished,
                      []() { __DBG_STUB_INVOKE__ });
+    m_stub.set_lamda(&QDBusPendingReply<QList<QDBusObjectPath>>::isError, [] { __DBG_STUB_INVOKE__ return false; });
     m_stub.set_lamda(&QDBusPendingReply<QList<QDBusObjectPath>>::value,
                      []() {
                          __DBG_STUB_INVOKE__
                          return QList<QDBusObjectPath>() << QDBusObjectPath("/test");
                      });
     auto &&devices = DDeviceManager::blockDevices();
-    //    EXPECT_EQ(devices.value().size(), 1); // FIXME(xust):
-    //    EXPECT_TRUE(devices.value().at(0) == "/test");
+    EXPECT_TRUE(devices.hasValue());
+    EXPECT_EQ(devices.value().size(), 1);
+    EXPECT_TRUE(devices.value().at(0) == "/test");
 }
 
 TEST_F(TestDDeviceManager, protocolDevices)
 {
-    // TODO(zhangs): imple me!
+    EXPECT_NO_FATAL_FAILURE(DDeviceManager::protocolDevices());
+    EXPECT_EQ(0, DDeviceManager::protocolDevices().count());
 }
 
 TEST_F(TestDDeviceManager, diskDrives)
@@ -72,37 +77,76 @@ TEST_F(TestDDeviceManager, diskDrives)
 
 TEST_F(TestDDeviceManager, createBlockDevice)
 {
-    // TODO(zhangs): imple me!
+    m_stub.set_lamda(DDeviceManager::blockDevices, [] { __DBG_STUB_INVOKE__ return DUnexpected<> { DError { 0, "test" } }; });
+    EXPECT_TRUE(!DDeviceManager::createBlockDevice("test").hasValue());
+
+    m_stub.set_lamda(DDeviceManager::blockDevices, [] { __DBG_STUB_INVOKE__ return QStringList("test"); });
+    auto blk = DDeviceManager::createBlockDevice("test", &m_obj);
+    EXPECT_TRUE(blk.value());
 }
 
 TEST_F(TestDDeviceManager, createBlockDeviceByDevicePath)
 {
-    // TODO(zhangs): imple me!
+    m_stub.set_lamda(DDeviceManager::blockDevices, [] { __DBG_STUB_INVOKE__ return DUnexpected<> { DError { 0, "test" } }; });
+    EXPECT_TRUE(!DDeviceManager::createBlockDeviceByDevicePath("test").hasValue());
+
+    m_stub.set_lamda(DDeviceManager::blockDevices, [] { __DBG_STUB_INVOKE__ return QStringList(); });
+    EXPECT_TRUE(!DDeviceManager::createBlockDeviceByDevicePath("test").hasValue());
+
+    m_stub.set_lamda(DDeviceManager::blockDevices, [] { __DBG_STUB_INVOKE__ return QStringList("test"); });
+    m_stub.set_lamda(&DBlockDevice::device, [] { __DBG_STUB_INVOKE__ return "test"; });
+    auto dev = DDeviceManager::createBlockDeviceByDevicePath("test", &m_obj);
+    EXPECT_TRUE(dev.value());
 }
 
 TEST_F(TestDDeviceManager, createBlockPartition)
 {
-    // TODO(zhangs): imple me!
+    m_stub.set_lamda(DDeviceManager::blockDevices, [] { __DBG_STUB_INVOKE__ return DUnexpected<> { DError { 0, "test" } }; });
+    EXPECT_TRUE(!DDeviceManager::createBlockPartition("test").hasValue());
+
+    m_stub.set_lamda(DDeviceManager::blockDevices, [] { __DBG_STUB_INVOKE__ return QStringList(); });
+    EXPECT_TRUE(!DDeviceManager::createBlockPartition("test").hasValue());
+
+    m_stub.set_lamda(DDeviceManager::blockDevices, [] { __DBG_STUB_INVOKE__ return QStringList("test"); });
+    auto dev = DDeviceManager::createBlockPartition("test", &m_obj);
+    EXPECT_TRUE(dev.value());
 }
 
 TEST_F(TestDDeviceManager, createBlockPartitionByMountPoint)
 {
-    // TODO(zhangs): imple me!
+    m_stub.set_lamda(DDeviceManager::blockDevices, [] { __DBG_STUB_INVOKE__ return DUnexpected<> { DError { 0, "test" } }; });
+    EXPECT_TRUE(!DDeviceManager::createBlockPartitionByMountPoint("test").hasValue());
+
+    m_stub.set_lamda(DDeviceManager::blockDevices, [] { __DBG_STUB_INVOKE__ return QStringList(); });
+    EXPECT_TRUE(!DDeviceManager::createBlockPartitionByMountPoint("test").hasValue());
+
+    m_stub.set_lamda(DDeviceManager::blockDevices, [] { __DBG_STUB_INVOKE__ return QStringList("test"); });
+    m_stub.set_lamda(&DBlockDevice::mountPoints, [] { __DBG_STUB_INVOKE__ return QByteArrayList { "test" }; });
+    auto dev = DDeviceManager::createBlockPartitionByMountPoint("test", &m_obj);
+    EXPECT_TRUE(dev.value());
 }
 
 TEST_F(TestDDeviceManager, createDiskDrive)
 {
-    // TODO(zhangs): imple me!
+    m_stub.set_lamda(DDeviceManager::diskDrives, [] { __DBG_STUB_INVOKE__ return QStringList("test"); });
+    auto dev = DDeviceManager::createDiskDrive("test", &m_obj);
+    EXPECT_TRUE(dev);
+
+    dev = DDeviceManager::createDiskDrive("test2");
+    EXPECT_TRUE(!dev.hasValue());
+    EXPECT_TRUE(dev.error().getErrorCode() == -1);
 }
 
 TEST_F(TestDDeviceManager, createDiskJob)
 {
-    // TODO(zhangs): imple me!
+    auto job = DDeviceManager::createDiskJob("test", &m_obj);
+    EXPECT_TRUE(job);
 }
 
 TEST_F(TestDDeviceManager, createProtocolDevice)
 {
-    // TODO(zhangs): imple me!
+    auto dev = DDeviceManager::createProtocolDevice("test", &m_obj);
+    EXPECT_TRUE(dev.hasValue());
 }
 
 TEST_F(TestDDeviceManager, supportedFilesystems)
@@ -142,8 +186,8 @@ TEST_F(TestDDeviceManager, resolveDevice)
                      });
 
     auto devices = DDeviceManager::resolveDevice({}, {});
-    //    EXPECT_EQ(devices.value().size(), 1); // FIXME(xust):
-    //    EXPECT_TRUE(devices.value().at(0) == "/test");
+    EXPECT_EQ(devices.value().size(), 1);
+    EXPECT_TRUE(devices.value().at(0) == "/test");
 }
 
 TEST_F(TestDDeviceManager, canCheck)
@@ -248,14 +292,16 @@ TEST_F(TestDDeviceManager, loopSetup)
         __DBG_STUB_INVOKE__
         return QDBusPendingReply<QDBusObjectPath>();
     });
-    m_stub.set_lamda(&QDBusPendingReply<QDBusPendingReply<QDBusObjectPath>>::waitForFinished,
+    m_stub.set_lamda(&QDBusPendingReply<QDBusObjectPath>::waitForFinished,
                      []() { __DBG_STUB_INVOKE__ });
+    m_stub.set_lamda(&QDBusPendingReply<QDBusObjectPath>::isError,
+                     []() { __DBG_STUB_INVOKE__ return false; });
     m_stub.set_lamda(&QDBusPendingReply<QDBusObjectPath>::value,
                      []() {
                          __DBG_STUB_INVOKE__
                          return QDBusObjectPath("/test");
                      });
-    //    EXPECT_EQ(DDeviceManager::loopSetup(10, {}), "/test"); // FIXME(xust):
+    EXPECT_EQ(DDeviceManager::loopSetup(10, {}), "/test");
 }
 
 DMOUNT_END_NAMESPACE

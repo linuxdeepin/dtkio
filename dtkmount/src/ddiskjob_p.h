@@ -5,7 +5,7 @@
 #ifndef DDISKJOB_P_H
 #define DDISKJOB_P_H
 
-#include "ddiskjob.h"
+#include <DDiskJob>
 #include "udisks2_interface.h"
 
 DMOUNT_BEGIN_NAMESPACE

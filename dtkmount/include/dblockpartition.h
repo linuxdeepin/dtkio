@@ -5,7 +5,7 @@
 #ifndef DBLOCKPARTITION_H
 #define DBLOCKPARTITION_H
 
-#include "dblockdevice.h"
+#include <DBlockDevice>
 
 DMOUNT_BEGIN_NAMESPACE
 
