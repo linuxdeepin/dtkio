@@ -6,6 +6,7 @@ Build-Depends:
  debhelper-compat (= 12),
  cmake,
  doxygen,
+ pkg-config,
  qhelpgenerator-qt5 | qttools5-dev-tools,
  librsvg2-dev,
  qtbase5-dev,
