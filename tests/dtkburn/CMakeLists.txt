@@ -1,0 +1,50 @@
+# SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+#
+# SPDX-License-Identifier: LGPL-3.0-or-later
+
+set(BIN_NAME ut-dtkburn)
+
+# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-access-control -fno-inline -Wno-pmf-conversions")
+
+file(GLOB_RECURSE INCLUDE_FILES "${PROJECT_SOURCE_DIR}/include/dtkburn/*")
+file(GLOB_RECURSE SRCS
+    "${PROJECT_SOURCE_DIR}/src/dtkburn/*.h"
+    "${PROJECT_SOURCE_DIR}/src/dtkburn/*.cpp"
+)
+file(GLOB_RECURSE TEST_FILES "./*.h" "./*.cpp")
+
+add_executable(${BIN_NAME}
+    ${INCLUDE_FILES}
+    ${SRCS}
+    ${TEST_FILES}
+)
+
+target_include_directories(${BIN_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/include/dtkburn/)
+
+
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(ISOBURN REQUIRED libisoburn-1)
+
+target_include_directories(${BIN_NAME} PUBLIC
+    Qt${QT_VERSION_MAJOR}::Core
+    ${ISOBURN_INCLUDE_DIRS}
+)
+
+target_link_libraries(${BIN_NAME} PRIVATE
+    Qt${QT_VERSION_MAJOR}::Core
+    Dtk::Core
+    ${ISOBURN_LIBRARIES}
+    -lpthread
+    -lgcov
+    -lgtest
+)
+
+if (CMAKE_CXX_COMPILER_ID STREQUAL "Clang")
+    target_compile_options(${BIN_NAME} PRIVATE -fprofile-instr-generate -ftest-coverage)
+endif()
+if (CMAKE_CXX_COMPILER_ID STREQUAL "GNU")
+    target_compile_options(${BIN_NAME} PRIVATE -fprofile-arcs -ftest-coverage)
+endif()
+
+enable_testing()
+add_test(NAME ${BIN_NAME} COMMAND ${BIN_NAME})
