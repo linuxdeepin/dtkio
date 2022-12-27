@@ -1,5 +1,6 @@
 /*!
 @~chinese
+@ingroup dtkmount
 @file ddiskdrive.h
 
 @class Dtk::Mount::DDiskDrive ddiskdrive.h

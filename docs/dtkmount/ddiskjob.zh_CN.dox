@@ -1,5 +1,6 @@
 /*!
 @~chinese
+@ingroup dtkmount
 @file ddiskjob.h
 
 @class Dtk::Mount::DDiskJob ddiskjob.h

@@ -1,5 +1,6 @@
 /*!
 @~chinese
+@ingroup dtkmount
 @file dblockpartition.h
 
 @class Dtk::Mount::DBlockPartition dblockpartition.h
