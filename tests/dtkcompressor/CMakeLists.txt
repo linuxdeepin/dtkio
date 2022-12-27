@@ -8,14 +8,16 @@ set(BIN_NAME ut-dtkcompressor)
 
 file(GLOB_RECURSE INCLUDE_FILES "${PROJECT_SOURCE_DIR}/include/dtkcompressor/*")
 file(GLOB_RECURSE SRCS
-    "${PROJECT_SOURCE_DIR}/src/dtkcompressor/*.h"
-    "${PROJECT_SOURCE_DIR}/src/dtkcompressor/*.cpp"
-    "${PROJECT_SOURCE_DIR}/src/3rdparty/libzipplugin/*.cpp"
+    "${PROJECT_SOURCE_DIR}/src/dtkcompressor/archivemanager/*.h"
+    "${PROJECT_SOURCE_DIR}/src/dtkcompressor/archivemanager/*.cpp"
+    "${PROJECT_SOURCE_DIR}/src/dtkcompressor/3rdparty/libzipplugin/*.cpp"
 )
 file(GLOB_RECURSE TEST_FILES "./*.h" "./*.cpp")
 
 include_directories(
     ${PROJECT_SOURCE_DIR}/include/dtkcompressor/
+    "../3rdparty/cpp-stub"
+    "../3rdparty/stub-ext"
 )
 add_definitions(-DUSE_FAKE_INTERFACE)
 add_executable(${BIN_NAME}
@@ -31,8 +33,8 @@ find_package(KF5Codecs REQUIRED)
 find_package(ZLIB REQUIRED)
 
 target_include_directories(${BIN_NAME} PUBLIC
-    ${HFILES_OUTPUT_PATH}
-    ${PROJECT_SOURCE_DIR}/src/3rdparty/libzipplugin
+    ${CMAKE_BINARY_DIR}/include
+    ${PROJECT_SOURCE_DIR}/src/dtkcompressor/3rdparty/libzipplugin
     ${PROJECT_SOURCE_DIR}/src/dtkcompressor/archivemanager
 )
 
