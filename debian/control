@@ -6,6 +6,7 @@ Build-Depends:
  debhelper-compat (= 12),
  cmake,
  doxygen,
+ graphviz,
  pkg-config,
  qhelpgenerator-qt5 | qttools5-dev-tools,
  librsvg2-dev,
