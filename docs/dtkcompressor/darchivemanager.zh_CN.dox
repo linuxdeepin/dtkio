@@ -1,5 +1,6 @@
 /*!
 @~chinese
+@ingroup dtkcompressor
 @file darchivemanager.h
 
 @class Dtk::Compressor::DArchiveManager darchivemanager.h
