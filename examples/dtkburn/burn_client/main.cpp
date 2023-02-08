@@ -1,26 +1,7 @@
-@page dtkburn dtkburn
-@brief dtk 光驱业务模块
+// SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
 
-# 项目介绍
-
-dtkburn 是对 deepin/UOS 系统上的底层光驱业务接口的封装，为应用层开发者提供了光盘的信息获取、光盘数据刻录、光盘镜像刻录、光盘镜像导出、光盘擦除、光盘校验的常见业务功能，其目的是在于方便第三方开发者轻松且快速的调用接口进行开发。<br>@ref group_dtkburn "接口文档"
-
-
-## 项目结构
-
-对外暴露出` dopticaldiscinfo.h ` 、`dopticaldiscmanager.h	`、`dopticaldiscoperator.h` 、`dtkburn_global.h` 和 `dtkburntypes.h` 这 5 个头文件。
-
-# 如何使用项目
-
-如果要使用此项目，可以阅读相关文档再参照以下示例进行调用。
-
-## 使用示例
-
-可以参考以下 Demo：
-
-`main.cpp`
-
-```cpp
 #include <QCoreApplication>
 #include <QCommandLineParser>
 #include <QMetaProperty>
@@ -170,20 +151,3 @@ int main(int argc, char *argv[])
 
     return app.exec();
 }
-
-```
-
-
-
-
-
-@defgroup dtkburn
-
-@brief dtk 光驱业务模块
-
-@details 示例文档:
-
-@subpage dtkburn
-
-@anchor group_dtkburn
-

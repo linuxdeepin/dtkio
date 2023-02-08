@@ -30,11 +30,11 @@ private:
 
     void initItems();
 
-private slots:
+private Q_SLOTS:
     void deviceMountAdd(const QString &devPath, const QString &mountPoint);
     void deviceMountRemove(const QString &devPath);
     void deviceAdd(const QString &devPath);
     void deviceRemove(const QString &devPath);
 };
 
-#endif  // WINDOW_H
+#endif   // WINDOW_H

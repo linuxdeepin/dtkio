@@ -62,7 +62,7 @@ DExpected<QStringList> DDeviceManager::blockDevices(const QVariantMap &options)
     QStringList dbusPaths;
     for (const QDBusObjectPath &singleResult : resultList)
         dbusPaths << singleResult.path();
-    return dbusPaths;
+    return std::move(dbusPaths);
 }
 
 QStringList DDeviceManager::protocolDevices()

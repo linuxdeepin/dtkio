@@ -14,12 +14,12 @@
         <translation>系统盘</translation>
     </message>
     <message>
-        <location filename="../src/itemdelegate.cpp" line="61"/>
+        <location filename="../src/itemdelegate.cpp" line="65"/>
         <source> Volume</source>
         <translation> 卷</translation>
     </message>
     <message>
-        <location filename="../src/itemdelegate.cpp" line="88"/>
+        <location filename="../src/itemdelegate.cpp" line="94"/>
         <source>Unmounted</source>
         <translation>未挂载</translation>
     </message>

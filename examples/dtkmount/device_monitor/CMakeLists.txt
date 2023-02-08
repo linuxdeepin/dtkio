@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.13)
 
 project(device_monitor VERSION 1.0 LANGUAGES CXX)
 
@@ -11,7 +11,7 @@ SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 
 find_package(Qt5 COMPONENTS Widgets Core Gui DBus LinguistTools REQUIRED)
 find_package(Dtk COMPONENTS Widget Core Gui REQUIRED)
-find_package(dtkmount REQUIRED)
+#find_package(dtkmount REQUIRED)
 
 file(GLOB TS_FILES CONFIGURE_DEPENDS translations/*.ts)
 file(GLOB PROJECT_SOURCES CONFIGURE_DEPENDS src/*.cpp include/*.h ${TS_FILES})
@@ -34,7 +34,7 @@ target_link_libraries(
     ${PROJECT_NAME} PRIVATE
     ${DtkWidget_LIBRARIES}
     ${DtkCore_LIBRARIES}
-    ${dtkmount_LIBRARIES}
+    dtkmount
     Qt5::Widgets
     Qt5::Core
     Qt5::DBus

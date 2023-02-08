@@ -25,6 +25,7 @@ public Q_SLOTS:
 public:
     DOpticalDiscOperator *q_ptr;
 
+    QObject *currentEngine { nullptr };
     QString curDev;
     int curSpeed { 0 };
     QString curVolName;

@@ -14,12 +14,12 @@
         <translation>Root</translation>
     </message>
     <message>
-        <location filename="../src/itemdelegate.cpp" line="61"/>
+        <location filename="../src/itemdelegate.cpp" line="65"/>
         <source> Volume</source>
         <translation> Volume</translation>
     </message>
     <message>
-        <location filename="../src/itemdelegate.cpp" line="88"/>
+        <location filename="../src/itemdelegate.cpp" line="94"/>
         <source>Unmounted</source>
         <translation>Unmounted</translation>
     </message>
