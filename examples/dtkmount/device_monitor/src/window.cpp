@@ -111,7 +111,7 @@ void Window::initItems()
 
     for (QString devPath : deviceList.value()) {
         DExpected<Dtk::Mount::DBlockDevice *> device(Dtk::Mount::DDeviceManager::createBlockDevice(devPath, this));
-        if (!device.hasValue() || device.value()->isLoopDevice() || device.value()->size() == 0)
+        if (!device.hasValue() || device.value()->isLoopDevice() || device.value()->size() == 0 || !device.value()->hasFileSystem())
             continue;
 
         QStandardItem *Item = new QStandardItem;

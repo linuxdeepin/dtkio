@@ -24,6 +24,7 @@ using DTK_CORE_NAMESPACE::DUnexpected;
 DOpticalDiscOperatorPrivate::DOpticalDiscOperatorPrivate(const QString &dev, DOpticalDiscOperator *qq)
     : q_ptr(qq), curDev(dev)
 {
+    qRegisterMetaType<JobStatus>("JobStatus");
 }
 
 bool DOpticalDiscOperatorPrivate::makeStageFiles(const QString &stagePath, QString *errMsg)
@@ -50,9 +51,13 @@ void DOpticalDiscOperatorPrivate::onUDFEngineJobStatusChanged(JobStatus status, 
 {
     Q_Q(DOpticalDiscOperator);
 
-    auto engine { qobject_cast<DUDFBurnEngine *>(sender()) };
+    if (sender())
+        currentEngine = sender();
+
+    auto engine { qobject_cast<DUDFBurnEngine *>(currentEngine) };
     if (!engine) {
         qWarning() << "[dtkburn] null udf engine pointer";
+        Q_EMIT q->jobStatusChanged(status, progress, {}, {});
         return;
     }
 
@@ -66,9 +71,13 @@ void DOpticalDiscOperatorPrivate::onXorrisoEngineJobStatusChanged(JobStatus stat
 {
     Q_Q(DOpticalDiscOperator);
 
-    auto engine { qobject_cast<DXorrisoEngine *>(sender()) };
+    if (sender())
+        currentEngine = sender();
+
+    auto engine { qobject_cast<DXorrisoEngine *>(currentEngine) };
     if (!engine) {
         qWarning() << "[dtkburn] null xorriso engine pointer";
+        Q_EMIT q->jobStatusChanged(status, progress, speed, {});
         return;
     }
 
@@ -133,7 +142,7 @@ DExpected<bool> DOpticalDiscOperator::burn(const QString &stagePath, const BurnO
     if (opts.testFlag(BurnOption::UDF102Supported)) {
         QScopedPointer<DUDFBurnEngine> udfEngine { new DUDFBurnEngine };
         connect(udfEngine.data(), &DUDFBurnEngine::jobStatusChanged,
-                d, &DOpticalDiscOperatorPrivate::onUDFEngineJobStatusChanged, Qt::DirectConnection);
+                d, &DOpticalDiscOperatorPrivate::onUDFEngineJobStatusChanged);
         ret = udfEngine->doBurn(d->curDev, d->files, d->curVolName);
     } else {
         QScopedPointer<DXorrisoEngine> xorrisoEngine { new DXorrisoEngine };

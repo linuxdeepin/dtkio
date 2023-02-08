@@ -33,6 +33,7 @@ set(CMAKE_CXX_FLAGS Release CACHE STRING "define CXXFLAGS")
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")
     set(BUILD_TESTING ON)
+    set(BUILD_EXAMPLES ON)
     set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
 endif ()
 
@@ -51,6 +52,11 @@ find_package(Doxygen)
 if (BUILD_DOCS AND DOXYGEN_FOUND)
     add_subdirectory(docs)
 endif ()
+
+# example
+if (BUILD_EXAMPLES)
+    add_subdirectory(examples)
+endif()
 
 # test
 if (BUILD_TESTING)

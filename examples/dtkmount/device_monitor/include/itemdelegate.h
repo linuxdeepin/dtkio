@@ -12,10 +12,11 @@
 class ItemDelegate : public QStyledItemDelegate
 {
     Q_OBJECT
-signals:
+
+Q_SIGNALS:
 
 public:
-    explicit ItemDelegate(QObject *parent = 0);
+    explicit ItemDelegate(QObject *parent = nullptr);
     ~ItemDelegate();
 
     // 重写绘画函数
@@ -26,4 +27,4 @@ private:
     static QStringList m_unit;
 };
 
-#endif  // ITEMDELEGATE_H
+#endif   // ITEMDELEGATE_H

@@ -4,6 +4,7 @@
 
 #ifndef SORTPROXY_H
 #define SORTPROXY_H
+
 #include <QSortFilterProxyModel>
 
 class SortProxy : public QSortFilterProxyModel
@@ -11,9 +12,9 @@ class SortProxy : public QSortFilterProxyModel
     Q_OBJECT
 public:
     SortProxy(QObject *parent = nullptr);
-    ~SortProxy();
+    ~SortProxy() override;
 
 protected:
     bool lessThan(const QModelIndex &sourceLeft, const QModelIndex &sourceRight) const override;
 };
-#endif  // SORTPROXY_H
+#endif   // SORTPROXY_H

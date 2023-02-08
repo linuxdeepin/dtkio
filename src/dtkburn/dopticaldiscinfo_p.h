@@ -18,7 +18,7 @@ class DOpticalDiscInfoPrivate : public QSharedData
 {
 public:
     inline explicit DOpticalDiscInfoPrivate(const QString &dev)
-        : devid(dev)
+        : isoEngine(std::make_unique<DXorrisoEngine>()), devid(dev)
     {
         iniData();
     }
