@@ -49,7 +49,7 @@ public:
 
     DFileInfo *q = nullptr;
     QUrl url;
-    QByteArray queryAttributes;
+    QByteArray queryAttributes = "*";
     FileQueryInfoFlags queryInfoFlags = FileQueryInfoFlags::TypeNone;
     bool querierInit = false;
     GFileInfo *gFileInfo = nullptr;

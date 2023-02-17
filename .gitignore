@@ -38,3 +38,9 @@ lupdate.sh
 
 # ctest
 Testing/
+
+#example
+examples/dtkmount/device_monitor/device_monitor
+examples/dtkio/io_client/io_client
+examples/dtkburn/burn_client/burn_client
+

@@ -1,26 +1,3 @@
-@page dtkio dtkio
-@brief dtk 文件基本业务模块
-
-# 项目介绍
-
-dtkio是为 deepin/UOS 系统上的通用 I/O程序功能提供有用类，为应用层开发者提供了文件操作常见业务功能，其目的是在于方便第三方开发者轻松且快速的调用接口进行开发。<br>@ref group_dtkio "接口文档"
-
-
-## 项目结构
-
-对外暴露出  `dfileerror.h`  ，`dfilefuture.h`，`denumerator.h` ， `dfile.h`，  `dfileinfo.h` ， `dfilemonitor.h`  ，`dfileoperator.h`  ，`dtkio_global.h`  ，`dtkiotypes.h`这9 个头文件。
-
-# 如何使用项目
-
-如果要使用此项目，可以阅读相关文档再参照以下示例进行调用。
-
-## 使用示例
-
-可以参考以下 Demo：
-
-`main.cpp`
-
-```cpp
 // SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
 //
 // SPDX-License-Identifier: LGPL-3.0-or-later
@@ -217,17 +194,3 @@ int main(int argc, char *argv[])
 
     return app.exec();
 }
-```
-
-
-
-@defgroup dtkio
-
-@brief 文件基本业务模块
-
-@details 示例文档:
-
-@subpage dtkio
-
-@anchor group_dtkio
-

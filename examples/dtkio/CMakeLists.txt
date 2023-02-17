@@ -4,6 +4,4 @@
 
 cmake_minimum_required(VERSION 3.13)
 
-add_subdirectory(dtkmount)
-add_subdirectory(dtkburn)
-add_subdirectory(dtkio)
+add_subdirectory(io_client)
