@@ -1,0 +1,21 @@
+/*!
+接口还没实现，暂留
+
+@~chinese
+@ingroup dtkio
+@file dfilefuture.h
+
+@namespace Dtk::IO::DFileFuture
+
+@class Dtk::IO::DFileFuture dfilefuture.h
+@brief 处理文件异步操作的结果
+
+@fn DFileFuture::DFileFuture(QObject *parent)
+@brief 构造函数
+@param[in] parent 默认为空
+
+@fn bool DFileFuture::cancel()
+@brief 构造函数
+@param[in] parent 默认为空
+
+*/
