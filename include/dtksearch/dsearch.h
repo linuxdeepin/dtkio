@@ -33,7 +33,6 @@ public:
     bool stop();
     QStringList matchedResults() const;
 
-    using ResultFilterFunc = std::function<bool (const QString &)>;
     void setResultFilter(const ResultFilterFunc &filter);
 
     void setMaxResultCount(quint32 maxResultCount);
@@ -42,13 +41,6 @@ public:
     SearchFlags searchFlags() const;
     void setIndexPath(const QString &path);
     QString indexPath() const;
-
-    // index manager
-    void setAutoIndex(bool index);
-    bool createIndex(const QString &path, SearchFlags flags);
-    bool updateIndex(const QString &path, SearchFlags flags);
-    bool clearIndex(SearchFlags flags);
-    QMap<SearchFlag, IndexState> indexState(SearchFlags flags);
 
 Q_SIGNALS:
     void matched();

@@ -120,3 +120,13 @@ Copyright: 2009 Harald Hvaal <haraldhv@stud.ntnu.no>
            2016 Vladyslav Batyrenko <mvlabat@gmail.com> 
 License: GPL-2.0-or-later
 
+# src/dtksearch/3rdparty/fulltext
+Files: src/dtksearch/3rdparty/fulltext/*
+Copyright: 2009-2014 Alan Wright
+License: LGPL-3.0-or-later
+
+# resources
+Files: src/dtksearch/qrc/*
+Copyright: None
+License: CC0-1.0
+

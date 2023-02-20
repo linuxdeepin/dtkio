@@ -10,16 +10,21 @@
 
 DSEARCH_BEGIN_NAMESPACE
 
+class MainController;
+class DSearch;
 class DSearchPrivate : public QObject
 {
 public:
-    DSearchPrivate(quint32 maxCount = UINT32_MAX, SearchFlags flags = SearchFlag::FileName);
+    DSearchPrivate(DSearch *qq, quint32 maxCount = UINT32_MAX, SearchFlags flags = SearchFlag::FileName);
 
+    QVariantMap packOptions();
+
+    DSearch *q_ptr {nullptr};
     quint32 maxResultCount;
     SearchFlags searchFlags;
     QString indexPath;
-    DSearch::ResultFilterFunc resultFilter;
-    bool autoIndex { false };
+    ResultFilterFunc resultFilter { nullptr };
+    MainController *mainController { nullptr };
 };
 
 DSEARCH_END_NAMESPACE

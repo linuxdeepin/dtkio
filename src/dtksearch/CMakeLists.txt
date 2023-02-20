@@ -10,9 +10,13 @@ file(GLOB_RECURSE SRCS
     "./*.cpp"
 )
 
+set(QRC_FILE qrc/resources.qrc)
+qt5_add_resources(QRC_RESOURCES ${QRC_FILE})
+
 add_library(${BIN_NAME} SHARED
     ${INCLUDE_FILES}
     ${SRCS}
+    ${QRC_RESOURCES}
 )
 
 target_include_directories(${BIN_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include/${BIN_NAME}/)
@@ -23,12 +27,22 @@ set_target_properties(${BIN_NAME} PROPERTIES
 
 target_compile_definitions(${BIN_NAME} PRIVATE VERSION="${CMAKE_PROJECT_VERSION}")
 
+find_package(PkgConfig REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Concurrent)
+pkg_check_modules(Lucene REQUIRED IMPORTED_TARGET liblucene++ liblucene++-contrib)
+pkg_check_modules(Docparser REQUIRED IMPORTED_TARGET docparser)
+
 target_include_directories(${BIN_NAME} PUBLIC
     Qt${QT_VERSION_MAJOR}::Core
+    ${Lucene_INCLUDE_DIRS}
+    ${Docparser_INCLUDE_DIRS}
 )
 
 target_link_libraries(${BIN_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Concurrent
+    ${Lucene_LIBRARIES}
+    ${Docparser_LIBRARIES}
 )
 
 install(FILES ${INCLUDE_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${BIN_NAME})

@@ -25,7 +25,10 @@ Build-Depends:
  libkf5archive-dev,
  libminizip-dev,
  libisoburn-dev,
- qttools5-dev
+ qttools5-dev,
+ liblucene++-dev,
+ libdocparser-dev,
+ libboost-filesystem-dev
 Standards-Version: 4.5.0
 
 Package: libdtkmount

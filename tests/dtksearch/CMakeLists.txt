@@ -15,6 +15,7 @@ file(GLOB_RECURSE TEST_FILES "./*.h" "./*.cpp")
 
 include_directories(
     "${PROJECT_SOURCE_DIR}/include/dtksearch/"
+    "${PROJECT_SOURCE_DIR}/src/dtksearch/"
 )
 add_definitions(-DUSE_FAKE_INTERFACE)
 add_executable(${BIN_NAME}
@@ -24,14 +25,24 @@ add_executable(${BIN_NAME}
     ${DFAKE_INTERFACE_DBUS_XML}
 )
 
+find_package(Boost REQUIRED COMPONENTS system)
+find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Concurrent)
 find_package(PkgConfig REQUIRED)
+pkg_check_modules(Lucene REQUIRED IMPORTED_TARGET liblucene++ liblucene++-contrib)
+pkg_check_modules(Docparser REQUIRED IMPORTED_TARGET docparser)
 
 target_include_directories(${BIN_NAME} PUBLIC
     Qt${QT_VERSION_MAJOR}::Core
+    ${Lucene_INCLUDE_DIRS}
+    ${Docparser_INCLUDE_DIRS}
 )
 
 target_link_libraries(${BIN_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::Concurrent
+    ${Lucene_LIBRARIES}
+    ${Docparser_LIBRARIES}
+    ${Boost_LIBRARIES}
     -lpthread
     -lgcov
     -lgtest
