@@ -5,11 +5,16 @@
 #ifndef DTKSEARCHTYPES_H
 #define DTKSEARCHTYPES_H
 
+#include <functional>
+
 #include <QFlags>
+#include <QMetaType>
 
 #include "dtksearch_global.h"
 
 DSEARCH_BEGIN_NAMESPACE
+
+using ResultFilterFunc = std::function<bool (const QString &)>;
 
 //!<@~english The search flags
 enum class SearchFlag : uint8_t {
@@ -20,13 +25,9 @@ enum class SearchFlag : uint8_t {
 };
 Q_DECLARE_FLAGS(SearchFlags, SearchFlag)
 
-//!<@~english The index states
-enum IndexState : uint8_t {
-    NotExists,  //!<@~english The index files are not exists.
-    Creating,   //!<@~english The index files are being creating.
-    Completed   //!<@~english The index files has been created.
-};
-
 DSEARCH_END_NAMESPACE
+
+Q_DECLARE_METATYPE(DSEARCH_NAMESPACE::SearchFlags)
+Q_DECLARE_METATYPE(DSEARCH_NAMESPACE::ResultFilterFunc)
 
 #endif // DTKSEARCHTYPES_H
