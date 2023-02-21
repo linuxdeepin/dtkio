@@ -14,7 +14,7 @@ int main(int argc, char **argv)
     int ret = RUN_ALL_TESTS();
 
 #ifdef QT_DEBUG
-    __sanitizer_set_report_path("asan_demo.log");
+    __sanitizer_set_report_path("asan_dtkio.log");
 #endif
 
     return ret;   // app.exec();

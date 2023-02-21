@@ -5,9 +5,9 @@
 
 @namespace Dtk::IO
 
-@enum Dtk::IO::OpenFlag
+@enum Dtk::IO::OpenFlag dtkiotypes.h
     @brief 打开文件时的标志
-    @var Dtk::IO::OpenFlag::NotOpen
+    @var Dtk::IO::OpenFlag OpenFlag::NotOpen
         不打开
     @var Dtk::IO::OpenFlag::ReadOnly
         只读模式
@@ -30,7 +30,7 @@
     @var Dtk::IO::OpenFlag::CustomStart
         ？
         
-@enum Dtk::IO::CopyFlag
+@enum Dtk::IO::CopyFlag dtkiotypes.h
     @brief 复制文件时的标志
     @var Dtk::IO::CopyFlag::None
         不设置标志
@@ -49,7 +49,7 @@
     @var Dtk::IO::CopyFlag::UserFlag
         用户标志
         
-@enum Dtk::IO::AttributeID
+@enum Dtk::IO::AttributeID dtkiotypes.h
     @brief 文件属性（ID）
     @var Dtk::IO::AttributeID::StandardType
         标准类型
@@ -255,7 +255,7 @@
     @var Dtk::IO::AttributeID::AttributeIDMax
         属性ID的最大值
     
-@enum Dtk::IO::SeekType
+@enum Dtk::IO::SeekType dtkiotypes.h
     @brief 文件偏移类型
     @var Dtk::IO::SeekType::Begin
         从头开始计算
@@ -264,7 +264,7 @@
     @var Dtk::IO::SeekType::End
         从末尾开始计算
     
-@enum Dtk::IO::Permission
+@enum Dtk::IO::Permission dtkiotypes.h
     @brief 文件权限类型
     @var Dtk::IO::SeekType::NoPermission
         无权限
@@ -297,7 +297,7 @@
     @var Dtk::IO::SeekType::ReadOwner
         文件拥有者可读
     
-@enum Dtk::IO::AttributeType
+@enum Dtk::IO::AttributeType dtkiotypes.h
     @brief 文件属性类型
     @var Dtk::IO::AttributeType::TypeInvalid
         无效类型
@@ -320,14 +320,14 @@
     @var Dtk::IO::AttributeType::TypeStringV
         无效终止符的字符
     
-@enum Dtk::IO::FileQueryInfoFlags
+@enum Dtk::IO::FileQueryInfoFlags dtkiotypes.h
     @brief 查询文件信息的标志
     @var Dtk::IO::FileQueryInfoFlags::TypeNone
         不设置标志
     @var Dtk::IO::FileQueryInfoFlags::TypeNoFollowSymlinks
         不处理链接
     
-@enum Dtk::IO::DirFilter
+@enum Dtk::IO::DirFilter dtkiotypes.h
     @brief 过滤文件夹类型
     @var Dtk::IO::DirFilter::NoFilter
         不过滤
@@ -367,7 +367,7 @@
     @var Dtk::IO::DirFilter::NoDotAndDotDot
         不列出特殊目录 .和..
         
-@enum Dtk::IO::IteratorFlag
+@enum Dtk::IO::IteratorFlag dtkiotypes.h
     @brief 迭代器标志
     @var Dtk::IO::IteratorFlag::NoIteratorFlags
         不设置标志，返回指定路径的条目
@@ -376,7 +376,7 @@
     @var Dtk::IO::IteratorFlag::Subdirectories
         列出所有子目录中的条目。
     
-@enum Dtk::IO::WatchType
+@enum Dtk::IO::WatchType dtkiotypes.h
     @brief 监听器类型
     @var Dtk::IO::IteratorFlag::Auto
         自动选择
@@ -385,6 +385,6 @@
     @var Dtk::IO::IteratorFlag::File
         文件
     
-@struct AttributeDetails
+@struct Dtk::IO::AttributeDetails dtkiotypes.h
     @brief 文件属性细节
 */
