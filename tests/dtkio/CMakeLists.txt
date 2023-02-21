@@ -4,36 +4,38 @@
 
 set(BIN_NAME ut-dtkio)
 
-#add_definitions(-DUSE_MOCK_INTERFACE)
-
-# set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-access-control -fno-inline -Wno-pmf-conversions")
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fno-access-control -fno-inline -Wno-pmf-conversions")
 
 file(GLOB_RECURSE INCLUDE_FILES "${PROJECT_SOURCE_DIR}/include/dtkio/*")
 file(GLOB_RECURSE SRCS
     "${PROJECT_SOURCE_DIR}/src/dtkio/*.h"
     "${PROJECT_SOURCE_DIR}/src/dtkio/*.cpp"
 )
-file(GLOB_RECURSE TEST_FILES "./*.h" "./*.cpp")
+file(GLOB_RECURSE TEST_FILES "./*.h" "./*.cpp"
+    "${PROJECT_SOURCE_DIR}/tests/3rdparty/stub-ext/*.cpp"
+    "${PROJECT_SOURCE_DIR}/tests/3rdparty/cpp-stub/*.cpp"
+    )
 
 
 add_executable(${BIN_NAME}
     ${INCLUDE_FILES}
     ${SRCS}
     ${TEST_FILES}
-    ${DFAKE_INTERFACE_DBUS_XML}
 )
-
-target_include_directories(${BIN_NAME} PRIVATE ${PROJECT_SOURCE_DIR}/include/dtkio/)
 
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GLIB REQUIRED glib-2.0)
 pkg_check_modules(GIOUNIX REQUIRED gio-unix-2.0)
 
-target_include_directories(${BIN_NAME} PUBLIC
+target_include_directories(${BIN_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
     ${GLIB_INCLUDE_DIRS}
     ${GIOUNIX_INCLUDE_DIRS}
+    ${PROJECT_SOURCE_DIR}/src/dtkio
+    ${PROJECT_SOURCE_DIR}/include/dtkio
+    ${PROJECT_SOURCE_DIR}/tests/3rdparty/stub-ext
+    ${PROJECT_SOURCE_DIR}/tests/3rdparty/cpp-stub
 )
 
 target_link_libraries(${BIN_NAME} PRIVATE

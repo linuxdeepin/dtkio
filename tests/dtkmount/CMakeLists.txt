@@ -25,8 +25,6 @@ set_source_files_properties(
 qt5_add_dbus_interface(SRCS ${UDISKS2_OBJECT_XML} objectmanager_interface)
 qt5_add_dbus_interface(SRCS ${UDISKS2_XML} udisks2_interface)
 
-# defines to determind whether to show invoke log at stub function.
-add_definitions(-DDEBUG_STUB_INVOKE)
 
 include_directories(
     "${PROJECT_SOURCE_DIR}/include/dtkmount/"
@@ -39,7 +37,6 @@ add_executable(${BIN_NAME}
     ${SRCS}
     ${TEST_FILES}
 )
-
 
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GLIB REQUIRED glib-2.0)

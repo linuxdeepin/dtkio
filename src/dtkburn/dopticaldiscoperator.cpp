@@ -29,15 +29,10 @@ DOpticalDiscOperatorPrivate::DOpticalDiscOperatorPrivate(const QString &dev, DOp
 
 bool DOpticalDiscOperatorPrivate::makeStageFiles(const QString &stagePath, QString *errMsg)
 {
-    QUrl diskUrl { stagePath };
-    QUrl isoUrl { "/" };
+    QUrl diskUrl { QUrl::fromLocalFile(stagePath) };
 
     if (diskUrl.isEmpty() || !diskUrl.isValid()) {
         *errMsg = "Invalid disk path";
-        return false;
-    }
-    if (isoUrl.isEmpty() || !isoUrl.isValid()) {
-        *errMsg = "Invalid iso path";
         return false;
     }
 
