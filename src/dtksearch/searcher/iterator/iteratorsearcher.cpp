@@ -106,7 +106,7 @@ void IteratorSearcher::doSearch()
 
             if (hasMatched) {
                 const auto &filePath = info.absoluteFilePath();
-                if (m_filterFunc && !m_filterFunc(filePath)) {
+                if (!m_filterFunc || !m_filterFunc(filePath)) {
                     ++resultCount;
                     QMutexLocker lk(&mutex);
                     allResults << filePath;
