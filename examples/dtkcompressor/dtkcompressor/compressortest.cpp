@@ -1,69 +1,6 @@
-@page dtkcompressor dtkcompressor
-@brief dtk 文件压缩与压缩文件解压业务模块
-
-# 项目介绍
-
-dtkcompressor 是对 deepin/UOS 系统上的文件压缩与压缩文件解压业务接口的封装，为应用层开发者提供了文件的压缩、压缩文件解压的常见业务功能，其目的是在于方便第三方开发者轻松且快速的调用接口进行开发。<br>@ref group_dtkcompressor "接口文档"
-
-
-## 项目结构
-
-对外暴露出 ` darchivemanager.h ` 这 1 个头文件。
-
-# 如何使用项目
-
-如果要使用此项目，可以阅读相关文档再参照以下示例进行调用。
-
-## 使用示例
-
-可以参考以下 Demo：
-
-`main.cpp`
-```cpp
-#include "compressortest.h"
-
-#include <QApplication>
-#include <QCommandLineParser>
-#include <QCommandLineOption>
-#include <QDir>
-
-int main(int argc, char *argv[])
-{
-    QApplication app(argc, argv);
-
-    CompressorTest compressor;
-
-    compressor.show();
-    return app.exec();
-}
-```
-
-`compressortest.h`
-```h
-#ifndef COMPRESSORTEST_H
-#define COMPRESSORTEST_H
-
-#include <QWidget>
-#include <QFileInfo>
-#include "darchivemanager.h"
-DCOMPRESSOR_USE_NAMESPACE
-
-class CompressorTest : public QWidget
-{
-    Q_OBJECT
-public:
-    explicit CompressorTest(QWidget *parent = nullptr);
-
-private:
-    DArchiveManager::MgrFileEntry fileInfo2Entry(const QFileInfo &fileInfo);
-
-};
-
-#endif   // COMPRESSORTEST_H
-```
-
-`compressortest.cpp`
-```cpp
+// SPDX-FileCopyrightText: 2023 UnionTech Software Technology Co., Ltd.
+//
+// SPDX-License-Identifier: LGPL-3.0-or-later
 #include "compressortest.h"
 #include <QVBoxLayout>
 #include <QHBoxLayout>
@@ -167,9 +104,3 @@ CompressorTest::CompressorTest(QWidget *parent)
     vLay->addStretch();
     setLayout(vLay);
 }
-
-```
-@defgroup dtkcompressor
-@brief 文件压缩业务模块
-@details 示例文档:
-@subpage dtkcompressor
