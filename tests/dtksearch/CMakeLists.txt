@@ -11,11 +11,16 @@ file(GLOB_RECURSE SRCS
     "${PROJECT_SOURCE_DIR}/src/dtksearch/*.h"
     "${PROJECT_SOURCE_DIR}/src/dtksearch/*.cpp"
 )
-file(GLOB_RECURSE TEST_FILES "./*.h" "./*.cpp")
+file(GLOB_RECURSE TEST_FILES "./*.h" "./*.cpp"
+    "${PROJECT_SOURCE_DIR}/tests/3rdparty/stub-ext/*.cpp"
+    "${PROJECT_SOURCE_DIR}/tests/3rdparty/cpp-stub/*.cpp"
+)
 
 include_directories(
     "${PROJECT_SOURCE_DIR}/include/dtksearch/"
     "${PROJECT_SOURCE_DIR}/src/dtksearch/"
+    "${PROJECT_SOURCE_DIR}/tests/3rdparty/stub-ext"
+    "${PROJECT_SOURCE_DIR}/tests/3rdparty/cpp-stub"
 )
 add_definitions(-DUSE_FAKE_INTERFACE)
 add_executable(${BIN_NAME}

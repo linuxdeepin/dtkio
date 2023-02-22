@@ -26,7 +26,7 @@ bool MainController::doSearchTask(const QVariantMap &options)
     task = new TaskCommander(options, this);
 
     connect(task, &TaskCommander::matched, this, &MainController::matched, Qt::DirectConnection);
-    connect(task, &TaskCommander::finished, this, &MainController::matched, Qt::DirectConnection);
+    connect(task, &TaskCommander::finished, this, &MainController::completed, Qt::DirectConnection);
 
     if (task->start())
         return true;

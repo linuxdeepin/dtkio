@@ -68,9 +68,6 @@ QStringList FullTextSearcher::takeAll()
 
 bool FullTextSearcher::createIndex(const QString &path)
 {
-    if (!status.testAndSetRelease(AbstractSearcher::Ready, AbstractSearcher::Runing))
-        return false;
-
     QDir dir;
     if (!dir.exists(path)) {
         qWarning() << "Source directory doesn't exist: " << path;
@@ -226,7 +223,7 @@ void FullTextSearcher::doSearch(const QString &path, const QString &keyword)
                     if (hasTransform)
                         resultPath.replace(0, static_cast<unsigned long>(searchPath.length()), path.toStdWString());
 
-                    if (m_filterFunc && !m_filterFunc(StringUtils::toUTF8(resultPath).c_str())) {
+                    if (!m_filterFunc || !m_filterFunc(StringUtils::toUTF8(resultPath).c_str())) {
                         QMutexLocker lk(&mutex);
                         allResults.append(StringUtils::toUTF8(resultPath).c_str());
                     }
