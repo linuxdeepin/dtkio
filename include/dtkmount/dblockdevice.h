@@ -130,8 +130,6 @@ public:
 
     QList<QPair<QString, QVariantMap>> childConfiguration() const;
 
-    // TODO(zhangs): QDBusError lastError() const;
-
 public Q_SLOTS:
     void format(const QString &type, const QVariantMap &options);
     // TODO(zhangs): void format(const FSType &type, const QVariantMap &options);

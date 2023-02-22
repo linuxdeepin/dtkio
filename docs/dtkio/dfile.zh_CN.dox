@@ -11,8 +11,12 @@
 
 @fn DFile::DFile(const QUrl &url)
 @brief 构造函数, 通过 传入的url字符串 创建一个Dfile对象管理该url指向的文件
-@param[in] info 目标文件的url字符串
+@param[in] url 目标文件的url字符串
 
+
+@fn DExpected<QUrl> DFile::url() const
+@brief 返回构造当前文件的url参数
+@return 构造当前文件的url参数
 
 @fn DExpected<bool> DFile::open(OpenFlags mode)
 @brief 以指定模式来打开目标文件
@@ -91,7 +95,7 @@
 @retval true 操作成功
 @retval DError对象 包含错误信息
 
-@fn DExpected<bool> DFile::setAttribute(const QByteArray &key, const QVariant &value, const AttributeType type, const FileQueryInfoFlags flag)
+@fn DExpected<bool> Dtk::IO::DFile::setAttribute(const QByteArray &key, const QVariant &value, const AttributeType type, const FileQueryInfoFlags flag)
 @brief 设置文件属性
 @param[in] key 要设置的属性的键值
 @param[in] value 要设置的属性
@@ -108,13 +112,13 @@
 @param[in] parent 父对象，默认为nullptr
 @return 操作成功DFileFutur对象表示异步计算的结果
 
-@fn DFileFuture *DFilePrivate::closeAsync(int ioPriority, QObject *parent)
+@fn DFileFuture *DFile::closeAsync(int ioPriority, QObject *parent)
 @brief 以异步的方式关闭文件
 @param[in] ioPriority 暂未使用到的参数
 @param[in] parent 父对象，默认为nullptr
 @return 操作成功DFileFutur对象表示异步计算的结果
 
-@fn DFileFuture *DFilePrivate::readAsync(qint64 maxSize, int ioPriority, QObject *parent)
+@fn DFileFuture *DFile::readAsync(qint64 maxSize, int ioPriority, QObject *parent)
 @brief 以异步的方式读取文件数据
 @param[in] maxSize 要读取数据的最大长度
 @param[in] ioPriority 优先级控制
@@ -127,7 +131,7 @@
 @param[in] parent 父对象，默认为nullptr
 @return 操作成功DFileFutur对象表示异步计算的结果
 
-@fn DFileFuture *DFile::writeAsync(const QByteArray &data, qint64 len, int ioPriority, QObject *parent)
+@fn DFileFuture *Dtk::IO::DFile::writeAsync(const QByteArray &data, qint64 len, int ioPriority, QObject *parent)
 @brief 以异步的方式写入文件数据
 @param[in] data 要写入的数据
 @param[in] len 写入数据的长度
@@ -135,7 +139,7 @@
 @param[in] parent 父对象，默认为nullptr
 @return 操作成功DFileFutur对象表示异步计算的结果
 
-@fn DFileFuture *DFile::writeAsync(const QByteArray &data, int ioPriority, QObject *parent)
+@fn DFileFuture *Dtk::IO::DFile::writeAsync(const QByteArray &data, int ioPriority, QObject *parent)
 @brief 以异步的方式写入文件数据
 @param[in] data 要写入的数据
 @param[in] ioPriority 优先级控制

@@ -369,7 +369,7 @@ DExpected<bool> DFileOperator::renameFile(const QString &newName)
 
     if (!gfileNew) {
         d->setError(IOErrorCode(gerror->code));
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
     }
 
     return true;
@@ -387,7 +387,7 @@ DExpected<bool> DFileOperator::copyFile(const QUrl &destUrl, CopyFlag flag)
 
     if (gerror) {
         d->setError(IOErrorCode(gerror->code));
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
     }
 
     return ret;

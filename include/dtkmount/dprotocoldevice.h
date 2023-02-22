@@ -50,14 +50,14 @@ class DProtocolDevice : public QObject
     Q_DECLARE_PRIVATE(DProtocolDevice)
     friend DCORE_NAMESPACE::DExpected<DProtocolDevice *> DDeviceManager::createProtocolDevice(const QString &, QObject *);
 
-    Q_PROPERTY(QString path READ path CONSTANT FINAL);
-    Q_PROPERTY(QString mountPoint READ mountPoint CONSTANT FINAL);
-    Q_PROPERTY(QString displayName READ displayName CONSTANT FINAL);
-    Q_PROPERTY(QString fileSystem READ fileSystem CONSTANT FINAL);
-    Q_PROPERTY(quint64 sizeTotal READ sizeTotal CONSTANT FINAL);
-    Q_PROPERTY(quint64 sizeFree READ sizeFree CONSTANT FINAL);
-    Q_PROPERTY(quint64 sizeUsage READ sizeUsage CONSTANT FINAL);
-    Q_PROPERTY(QStringList iconNames READ iconNames CONSTANT FINAL);
+    Q_PROPERTY(QString path READ path CONSTANT FINAL)
+    Q_PROPERTY(QString mountPoint READ mountPoint CONSTANT FINAL)
+    Q_PROPERTY(QString displayName READ displayName CONSTANT FINAL)
+    Q_PROPERTY(QString fileSystem READ fileSystem CONSTANT FINAL)
+    Q_PROPERTY(quint64 sizeTotal READ sizeTotal CONSTANT FINAL)
+    Q_PROPERTY(quint64 sizeFree READ sizeFree CONSTANT FINAL)
+    Q_PROPERTY(quint64 sizeUsage READ sizeUsage CONSTANT FINAL)
+    Q_PROPERTY(QStringList iconNames READ iconNames CONSTANT FINAL)
 
 public:
     ~DProtocolDevice() override;

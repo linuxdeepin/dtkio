@@ -246,7 +246,7 @@ DExpected<QString> DDeviceManager::loopSetup(int fd, QVariantMap options)
     auto r = udisksmgr.LoopSetup(dbusfd, options);
     r.waitForFinished();
     if (r.isError())
-        return DUnexpected { DError { r.error().type(), r.error().message() } };
+        return DUnexpected<> { DError { r.error().type(), r.error().message() } };
     return r.value().path();
 }
 

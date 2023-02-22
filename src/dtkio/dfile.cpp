@@ -547,11 +547,11 @@ DExpected<bool> DFile::open(OpenFlags mode)
 {
     if (d->isOpen) {
         d->setError(IOErrorCode::FileAlreadyOpened);
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
     }
 
     if (!d->checkOpenFlags(&mode)) {
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
     }
 
     g_autoptr(GFile) gfile = DFileHelper::fileNewForUrl(d->url);
@@ -561,14 +561,14 @@ DExpected<bool> DFile::open(OpenFlags mode)
     if (mode & OpenFlag::ReadOnly && !(mode & OpenFlag::WriteOnly)) {
         if (!exists()) {
             d->setError(IOErrorCode::FileNotFound);
-            return DUnexpected { d->error };
+            return DUnexpected<> { d->error };
         }
         d->iStream = (GInputStream *)g_file_read(gfile, cancellable, &gerror);
         if (gerror)
             d->setError(IOErrorCode(gerror->code));
 
         if (!d->iStream) {
-            return DUnexpected { d->error };
+            return DUnexpected<> { d->error };
         }
         return true;
     } else if (mode & OpenFlag::WriteOnly && !(mode & OpenFlag::ReadOnly)) {
@@ -578,7 +578,7 @@ DExpected<bool> DFile::open(OpenFlags mode)
                 d->setError(IOErrorCode(gerror->code));
 
             if (!d->oStream) {
-                return DUnexpected { d->error };
+                return DUnexpected<> { d->error };
             }
         } else if (mode & OpenFlag::Append) {
             d->oStream = (GOutputStream *)g_file_append_to(gfile, G_FILE_CREATE_NONE, cancellable, &gerror);
@@ -586,7 +586,7 @@ DExpected<bool> DFile::open(OpenFlags mode)
                 d->setError(IOErrorCode(gerror->code));
 
             if (!d->oStream) {
-                return DUnexpected { d->error };
+                return DUnexpected<> { d->error };
             }
         } else {
             d->oStream = (GOutputStream *)g_file_replace(gfile, nullptr, false, G_FILE_CREATE_NONE, cancellable, &gerror);
@@ -594,7 +594,7 @@ DExpected<bool> DFile::open(OpenFlags mode)
                 d->setError(IOErrorCode(gerror->code));
 
             if (!d->oStream) {
-                return DUnexpected { d->error };
+                return DUnexpected<> { d->error };
             }
         }
 
@@ -606,7 +606,7 @@ DExpected<bool> DFile::open(OpenFlags mode)
                 d->setError(IOErrorCode(gerror->code));
 
             if (!d->ioStream) {
-                return DUnexpected { d->error };
+                return DUnexpected<> { d->error };
             }
         } else if (mode & OpenFlag::ExistingOnly) {
             d->ioStream = (GIOStream *)g_file_open_readwrite(gfile, cancellable, &gerror);
@@ -614,7 +614,7 @@ DExpected<bool> DFile::open(OpenFlags mode)
                 d->setError(IOErrorCode(gerror->code));
 
             if (!d->ioStream) {
-                return DUnexpected { d->error };
+                return DUnexpected<> { d->error };
             }
         } else {
             d->ioStream = (GIOStream *)g_file_replace_readwrite(gfile, nullptr, false, G_FILE_CREATE_NONE, cancellable, &gerror);
@@ -622,7 +622,7 @@ DExpected<bool> DFile::open(OpenFlags mode)
                 d->setError(IOErrorCode(gerror->code));
 
             if (!d->ioStream) {
-                return DUnexpected { d->error };
+                return DUnexpected<> { d->error };
             }
         }
         return true;
@@ -632,7 +632,7 @@ DExpected<bool> DFile::open(OpenFlags mode)
             d->setError(IOErrorCode(gerror->code));
 
         if (!d->ioStream) {
-            return DUnexpected { d->error };
+            return DUnexpected<> { d->error };
         }
         return true;
     }
@@ -673,7 +673,7 @@ DExpected<qint64> DFile::read(QByteArray &data, qint64 maxSize)
     GInputStream *inputStream = d->inputStream();
     if (!inputStream) {
         d->setError(IOErrorCode::OpenFailed);
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
     }
 
     char cdata[maxSize + 1];
@@ -688,7 +688,7 @@ DExpected<qint64> DFile::read(QByteArray &data, qint64 maxSize)
                                           &gerror);
     if (gerror) {
         d->setError(IOErrorCode(gerror->code));
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
     }
 
     data.append(cdata, readSize);
@@ -700,7 +700,7 @@ DExpected<QByteArray> DFile::readAll()
     GInputStream *inputStream = d->inputStream();
     if (!inputStream) {
         d->setError(IOErrorCode::OpenFailed);
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
     }
 
     QByteArray dataRet;
@@ -740,7 +740,7 @@ DExpected<qint64> DFile::write(const QByteArray &data, qint64 len)
     GOutputStream *outputStream = d->outputStream();
     if (!outputStream) {
         d->setError(IOErrorCode::OpenFailed);
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
     }
 
     g_autoptr(GCancellable) cancellable = g_cancellable_new();
@@ -767,20 +767,20 @@ DExpected<bool> DFile::seek(qint64 pos, SeekType type) const
     GInputStream *inputStream = d->inputStream();
     if (!inputStream) {
         d->setError(IOErrorCode::OpenFailed);
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
     }
 
     // seems g_seekable_can_seek only support local file, survey after. todo lanxs
     gboolean canSeek = G_IS_SEEKABLE(inputStream) /*&& g_seekable_can_seek(G_SEEKABLE(inputStream))*/;
     if (!canSeek) {
         d->setError(IOErrorCode::OpenFailed);
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
     }
 
     GSeekable *seekable = G_SEEKABLE(inputStream);
     if (!seekable) {
         d->setError(IOErrorCode::OpenFailed);
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
     }
 
     bool ret = false;
@@ -811,19 +811,19 @@ DExpected<qint64> DFile::pos() const
     GInputStream *inputStream = d->inputStream();
     if (!inputStream) {
         d->setError(IOErrorCode::OpenFailed);
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
     }
 
     gboolean canSeek = G_IS_SEEKABLE(inputStream);
     if (!canSeek) {
         d->setError(IOErrorCode::OpenFailed);
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
     }
 
     GSeekable *seekable = G_SEEKABLE(inputStream);
     if (!seekable) {
         d->setError(IOErrorCode::OpenFailed);
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
     }
 
     goffset pos = g_seekable_tell(seekable);
@@ -836,7 +836,7 @@ DExpected<bool> DFile::flush()
     GOutputStream *outputStream = d->outputStream();
     if (!outputStream) {
         d->setError(IOErrorCode::OpenFailed);
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
     }
 
     g_autoptr(GCancellable) cancellable = g_cancellable_new();
@@ -845,7 +845,7 @@ DExpected<bool> DFile::flush()
 
     if (gerror) {
         d->setError(IOErrorCode(gerror->code));
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
     }
     return ret;
 }
@@ -863,7 +863,7 @@ DExpected<qint64> DFile::size() const
         d->setError(IOErrorCode(gerror->code));
 
     if (!fileInfo)
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
 
     const QVariant &value = DFileHelper::attributeFromInfo(AttributeID::StandardSize, fileInfo);
     if (!value.isValid())
@@ -940,7 +940,7 @@ DExpected<bool> DFile::setAttribute(AttributeID id, const QVariant &value)
 
     if (key.empty() || type == AttributeType::TypeInvalid) {
         d->setError(IOErrorCode::InvalidArgument);
-        return DUnexpected { d->error };
+        return DUnexpected<> { d->error };
     }
 
     bool succ = DFileHelper::setAttribute(gfile, key.c_str(), type, value, G_FILE_QUERY_INFO_NOFOLLOW_SYMLINKS, cancellabel, &gerror);

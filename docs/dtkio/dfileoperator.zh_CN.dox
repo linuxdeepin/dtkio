@@ -77,6 +77,7 @@
 @fn DFileFuture *DFileOperator::copyFileAsync(const QUrl &destUrl, CopyFlag flag, int ioPriority, QObject *parent)
 @brief 以异步的方式拷贝文件
 @param[in] destUrl 拷贝文件的目标路径
+@param[in] flag 复制文件操作的选项
 @param[in] ioPriority 优先级控制
 @param[in] parent 父对象，默认为nullptr
 @return 操作成功DFileFutur对象表示异步计算的结果
@@ -84,6 +85,7 @@
 @fn DFileFuture *DFileOperator::moveFileAsync(const QUrl &destUrl, CopyFlag flag, int ioPriority, QObject *parent)
 @brief 以异步的方式移动文件
 @param[in] destUrl 移动文件的目标路径
+@param[in] flag 移动文件操作的选项
 @param[in] ioPriority 优先级控制
 @param[in] parent 父对象，默认为nullptr
 @return 操作成功DFileFutur对象表示异步计算的结果
@@ -106,7 +108,7 @@
 @param[in] parent 父对象，默认为nullptr
 @return 操作成功DFileFutur对象表示异步计算的结果
 
-@fn DFileFuture *DFileOperator::touchFileAsync(int ioPriority, QObject *parent))
+@fn DFileFuture *DFileOperator::touchFileAsync(int ioPriority, QObject *parent)
 @brief 以异步的方式新建文件
 @param[in] ioPriority 优先级控制
 @param[in] parent 父对象，默认为nullptr
