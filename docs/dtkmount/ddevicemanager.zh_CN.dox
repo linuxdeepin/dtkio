@@ -59,8 +59,8 @@
     
 @fn DDiskJob *Dtk::Mount::DDeviceManager::createDiskJob(const QString &path, QObject *parent = nullptr);
     @brief 通过任务路径，创建任务类型对象
-    @param[in] 任务节点路径
-    @param parent 对象父指针，可用于管理内存
+    @param[in] path 任务节点路径
+    @param[in] parent 对象父指针，可用于管理内存
     @return 任务对象指针
     
 @fn DProtocolDevice *Dtk::Mount::DDeviceManager::createProtocolDevice(const QString &path, QObject *parent = nullptr);

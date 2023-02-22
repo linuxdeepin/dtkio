@@ -8,19 +8,24 @@
 @class Dtk::IO::DFileInfo dfileinfo.h
 @brief 用以获取文件的信息
 
-@fn DFileInfoPrivate::DFileInfoPrivate(const DFileInfoPrivate &other)
-@brief 复制构造函数, 通过 other 构造一个新的 DFileInfoPrivate 对象
+@fn Dtk::IO::DFileInfo::DFileInfo(const QUrl &url, QObject *parent)
+@brief 构造函数，通过文件的 url 构造一个新的 DFileInfo 对象
+@param[in] url 文件的url
+@param[in] parent 父类对象，用于内存管理
+
+@fn DFileInfo::DFileInfo(const DFileInfo &other)
+@brief 复制构造函数, 通过 other 构造一个新的 DFileInfo 对象
 @param[in] other 原始对象
 
-@fn DFileInfo::DFileInfo(DFileInfo &&other) noexcept
-@brief 移动构造函数, 通过 other 构造一个新的 DFileInfoPrivate 对象
+@fn Dtk::IO::DFileInfo::DFileInfo(DFileInfo &&other) noexcept
+@brief 移动构造函数, 通过 other 构造一个新的 DFileInfo 对象
 @param[in] other 原始对象
 
 @fn DFileInfo &DFileInfo::operator=(const DFileInfo &other)
 @brief 重载赋值操作，创建一个相同的对象
 @param[in] other 原始对象
 
-@fn DFileInfo &DFileInfo::operator=(DFileInfo &&other) noexcept
+@fn DFileInfo &Dtk::IO::DFileInfo::operator=(DFileInfo &&other) noexcept
 @brief 以右值引用的方式进行赋值操作
 @param[in] other 原始对象
 
@@ -49,7 +54,7 @@
 @brief 根据查询属性和标志对文件信息进行初始化
 @return 操作成功true，否则返回DError对象，包含错误信息
 
-@fn DExpected<QVariant> DFileInfo::attribute(AttributeID id, bool *success) const
+@fn DExpected<QVariant> Dtk::IO::DFileInfo::attribute(AttributeID id, bool *success) const
 @brief 根据输入的id获取文件对应的属性
 @param[in] id 要查询的属性的id
 @param[out] success 查询操作是否成功
@@ -89,14 +94,14 @@
 @param[in] parent 默认为空
 @return 操作成功返回DFileFutur对象表示异步计算的结果
 
-@fn DFileFuture *DFileInfo::attributeAsync(AttributeID id, int ioPriority, QObject *parent) const
+@fn DFileFuture *Dtk::IO::DFileInfo::attributeAsync(AttributeID id, int ioPriority, QObject *parent) const
 @brief 异步的方式获取文件属性
 @param[in] id 要查询的属性id
 @param[in] ioPriority 优先级控制
 @param[in] parent 默认为空
 @return 操作成功返回DFileFutur对象表示异步计算的结果
 
-@fn DFileFuture *DFileInfo::attributeAsync(const QByteArray &key, const AttributeType type, int ioPriority, QObject *parent) const
+@fn DFileFuture *Dtk::IO::DFileInfo::attributeAsync(const QByteArray &key, const AttributeType type, int ioPriority, QObject *parent) const
 @brief 异步的方式获取文件属性
 @param[in] key 要查询的属性键值
 @param[in] type 查询的属性的类型（字符、字节、布尔值等）

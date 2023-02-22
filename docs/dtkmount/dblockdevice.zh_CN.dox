@@ -179,26 +179,26 @@
 
 @fn static bool DBlockDevice::hasFileSystem(const QString &path)
     @brief 获取设备是否有文件系统
-    @param[in] 设备路径
+    @param[in] path 设备路径
     @return 是否有文件系统
     @see bool DBlockDevice::hasFileSystem() const
 
 @fn static bool DBlockDevice::hasPartition(const QString &path)
     @brief 获取设备是否有分区
-    @param[in] 设备路径
+    @param[in] path 设备路径
     @return 设备是否有分区
     @see bool DBlockDevice::hasPartition() const
 
 @fn static bool DBlockDevice::isEncrypted(const QString &path)
     @brief 获取设备是否是加密
-    @param[in] 设备路径
+    @param[in] path 设备路径
     @return 设备是否加密
     @see QString DBlockDevice::cryptoBackingDevice() const
     @see bool DBlockDevice::isEncrypted(const QString &path)
 
 @fn static bool DBlockDevice::isLoopDevice(const QString &path)
     @brief 获取是否为回环设备
-    @param[in] 设备路径
+    @param[in] path 设备路径
     @return 是否为回环设备
     @see bool DBlockDevice::isLoopDevice() const
     
@@ -330,7 +330,7 @@
 @fn void DBlockDevice::setLabel(const QString &label, const QVariantMap &options)
     @brief 设置磁盘卷标
     @param[in] label 新的磁盘卷标
-    @prram[in] options 参数
+    @param[in] options 参数
     @see bool DBlockDevice::canSetLabel() const
     @see void DBlockDevice::idLabelChanged(QString idLabel)
     @see QString DBlockDevice::idLabel() const
@@ -338,7 +338,7 @@
 @fn void DBlockDevice::changePassphrase(const QString &passphrase, const QString &newPassphrase, const QVariantMap &options)
     @brief 修改磁盘密码
     @param[in] passphrase 旧密码
-    @param[in] new_passphrase 新密码
+    @param[in] newPassphrase 新密码
     @param[in] options 设置选项
     @note 参数包括：
     @note > old_keyfile_contents(string/stringlist)
@@ -383,7 +383,7 @@
 
 @fn void DBlockDevice::cryptoBackingDeviceChanged(QString cryptoBackingDevice)
     @brief 通知加密设备路径发生变化
-    @param[out] 新的加密设备路径
+    @param[out] cryptoBackingDevice 新的加密设备路径
 
 @fn void DBlockDevice::hintAutoChanged(bool hintAuto)
     @brief 通知自动开启属性变化

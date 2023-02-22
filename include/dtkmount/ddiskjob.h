@@ -25,17 +25,17 @@ class DDiskJob : public QObject
     Q_DECLARE_PRIVATE(DDiskJob)
     friend DCORE_NAMESPACE::DExpected<DDiskJob *> DDeviceManager::createDiskJob(const QString &, QObject *);
 
-    Q_PROPERTY(QString path READ path CONSTANT FINAL);
-    Q_PROPERTY(QStringList objects READ objects CONSTANT FINAL);
-    Q_PROPERTY(bool cancelable READ cancelable CONSTANT FINAL);
-    Q_PROPERTY(bool progressValid READ progressValid CONSTANT FINAL);
-    Q_PROPERTY(double progress READ progress NOTIFY progressChanged FINAL);
-    Q_PROPERTY(QString operation READ operation CONSTANT FINAL);
-    Q_PROPERTY(quint32 startedByUid READ startedByUid CONSTANT FINAL);
-    Q_PROPERTY(quint64 bytes READ bytes CONSTANT FINAL);
-    Q_PROPERTY(quint64 expectedEndTime READ expectedEndTime NOTIFY expectedEndTimeChanged FINAL);
-    Q_PROPERTY(quint64 rate READ rate NOTIFY rateChanged FINAL);
-    Q_PROPERTY(quint64 startTime READ startTime CONSTANT FINAL);
+    Q_PROPERTY(QString path READ path CONSTANT FINAL)
+    Q_PROPERTY(QStringList objects READ objects CONSTANT FINAL)
+    Q_PROPERTY(bool cancelable READ cancelable CONSTANT FINAL)
+    Q_PROPERTY(bool progressValid READ progressValid CONSTANT FINAL)
+    Q_PROPERTY(double progress READ progress NOTIFY progressChanged FINAL)
+    Q_PROPERTY(QString operation READ operation CONSTANT FINAL)
+    Q_PROPERTY(quint32 startedByUid READ startedByUid CONSTANT FINAL)
+    Q_PROPERTY(quint64 bytes READ bytes CONSTANT FINAL)
+    Q_PROPERTY(quint64 expectedEndTime READ expectedEndTime NOTIFY expectedEndTimeChanged FINAL)
+    Q_PROPERTY(quint64 rate READ rate NOTIFY rateChanged FINAL)
+    Q_PROPERTY(quint64 startTime READ startTime CONSTANT FINAL)
 
 public:
     ~DDiskJob() override;

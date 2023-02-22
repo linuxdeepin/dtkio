@@ -21,18 +21,18 @@ class DBlockPartition : public DBlockDevice
     Q_OBJECT
     Q_DECLARE_PRIVATE(DBlockPartition)
 
-    Q_PROPERTY(quint64 flags READ flags NOTIFY flagsChanged);
-    Q_PROPERTY(bool isContained READ isContained NOTIFY isContainedChanged);
-    Q_PROPERTY(bool isContainer READ isContainer NOTIFY isContainerChanged);
-    Q_PROPERTY(QString name READ name NOTIFY nameChanged);
-    Q_PROPERTY(uint number READ number NOTIFY numberChanged);
-    Q_PROPERTY(quint64 offset READ offset NOTIFY offsetChanged);
-    Q_PROPERTY(quint64 size READ size NOTIFY sizeChanged);
-    Q_PROPERTY(QString table READ table CONSTANT);
-    Q_PROPERTY(QString type READ type NOTIFY typeChanged);
-    Q_PROPERTY(MbrPartitionType mbrType READ mbrType NOTIFY mbrPartitionTypeChanged);
-    Q_PROPERTY(GptPartitionType gptType READ gptType NOTIFY gptPartitionTypeChanged);
-    Q_PROPERTY(QString UUID READ UUID NOTIFY UUIDChanged);
+    Q_PROPERTY(quint64 flags READ flags NOTIFY flagsChanged)
+    Q_PROPERTY(bool isContained READ isContained NOTIFY isContainedChanged)
+    Q_PROPERTY(bool isContainer READ isContainer NOTIFY isContainerChanged)
+    Q_PROPERTY(QString name READ name NOTIFY nameChanged)
+    Q_PROPERTY(uint number READ number NOTIFY numberChanged)
+    Q_PROPERTY(quint64 offset READ offset NOTIFY offsetChanged)
+    Q_PROPERTY(quint64 size READ size NOTIFY sizeChanged)
+    Q_PROPERTY(QString table READ table CONSTANT)
+    Q_PROPERTY(QString type READ type NOTIFY typeChanged)
+    Q_PROPERTY(MbrPartitionType mbrType READ mbrType NOTIFY mbrPartitionTypeChanged)
+    Q_PROPERTY(GptPartitionType gptType READ gptType NOTIFY gptPartitionTypeChanged)
+    Q_PROPERTY(QString UUID READ UUID NOTIFY UUIDChanged)
 
 public:
     //! @~english @see https://en.wikipedia.org/wiki/Partition_type

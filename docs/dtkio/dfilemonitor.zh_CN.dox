@@ -41,7 +41,7 @@
 @brief 开始以设置的轮询间隔监听文件变化
 @return 成功返回true，反之false
 
-@fn DExpected<bool> DFileMonitor::start(quint32 timeRate)
+@fn DExpected<bool> Dtk::IO::DFileMonitor::start(quint32 timeRate)
 @brief 开始以输入的轮询间隔监听文件变化
 @param[in] timeRate 轮询间隔
 @return 成功返回true，反之false
@@ -53,5 +53,22 @@
 @fn DError DFileMonitor::lastError() const
 @brief 获取当前文件操作的错误码
 @return 当前文件操作的错误码
+
+@fn void DFileMonitor::fileChanged(const QUrl &url)
+@brief 监听的文件数据被改变
+@param[out] url 数据被改变文件的url
+
+@fn void DFileMonitor::fileDeleted(const QUrl &url)
+@brief 监听的文件被删除
+@param[out] url 被删除文件的url
+
+@fn void DFileMonitor::fileAdded(const QUrl &url)
+@brief 监听的文件下有新增的文件
+@param[out] url 新增文件的url
+
+@fn void DFileMonitor::fileRenamed(const QUrl &fromUrl, const QUrl &toUrl)
+@brief 监听的文件被重命名（当前目录）
+@param[out] fromUrl 文件被重命名前的url
+@param[out] toUrl 文件被重命名后的url
 
 */

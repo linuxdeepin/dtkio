@@ -196,7 +196,7 @@
 
 @fn void DBlockPartition::nameChanged(const QString &name)
     @brief 告知分区名称改变
-    @param[out] 新分区名称
+    @param[name] 新分区名称
     @see void DBlockPartition::setName(const QString &name, const QVariantMap &options)
     @see QString DBlockPartition::name() const
 
