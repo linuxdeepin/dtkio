@@ -58,7 +58,7 @@ void copyfile(const QString &fromFile, const QString &toFile)
         return;
 
     auto expected = fileOperator->copyFile(toUrl, CopyFlag::None);
-    hanldeResult(&expected);
+    hanldeResult(expected);
 
     delete fileOperator;
 }
@@ -75,7 +75,7 @@ void deletefile(const QString &file)
     if (!fileOperator)
         return;
     auto expected = fileOperator->deleteFile();
-    hanldeResult(&expected);
+    hanldeResult(expected);
 
     delete fileOperator;
 }
@@ -84,6 +84,7 @@ void deletefile(const QString &file)
 void renamefile(const QString &file, const QString &newName)
 {
     QUrl url = localFileUrl(file);
+    QUrl newUrl = localFileUrl(newName);
 
     if (!exist(url))
         return;
@@ -92,7 +93,7 @@ void renamefile(const QString &file, const QString &newName)
     if (!fileOperator)
         return;
     auto expected = fileOperator->renameFile(newName);
-    hanldeResult(&expected);
+    hanldeResult(expected);
 
     delete fileOperator;
 }
@@ -132,7 +133,7 @@ void movefile(const QString &file, const QString &toUrl)
     if (!fileOperator)
         return;
     auto expected = fileOperator->moveFile(destUrl, CopyFlag::None);
-    hanldeResult(&expected);
+    hanldeResult(expected);
 
     delete fileOperator;
 }

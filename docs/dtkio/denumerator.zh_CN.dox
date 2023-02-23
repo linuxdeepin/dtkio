@@ -7,7 +7,7 @@
 @brief 允许您对一组进行操作DFiles
 
 @fn DEnumerator::DEnumerator(const QUrl &url);
-@brief 构造函数, 通过 info 构造一个新的 DOpticalDiscInfo 对象
+@brief 构造函数, 通过 info 构造一个新的 DEnumerator 对象
 @param[in] url 原始对象
 
 @fn DTK_CORE_NAMESPACE::DExpected< QUrl > DEnumerator::url () const

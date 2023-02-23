@@ -343,7 +343,7 @@ DExpected<bool> DEnumerator::hasNext() const
         if (!gfileInfo || !gfile) {
             GFileEnumerator *enumeratorPop = d->stackEnumerator.pop();
             g_object_unref(enumeratorPop);
-            return this->hasNext();
+            return this->hasNext().value();
         }
 
         g_autofree gchar *path = g_file_get_path(gfile);
@@ -359,7 +359,7 @@ DExpected<bool> DEnumerator::hasNext() const
         d->fileInfo->initQuerier();
 
         if (!d->checkFilter())
-            return this->hasNext();
+            return this->hasNext().value();
 
         return true;
     }
@@ -398,7 +398,7 @@ DExpected<quint64> DEnumerator::fileCount()
 
     quint64 count = 0;
 
-    while (hasNext()) {
+    while (hasNext().value()) {
         ++count;
     }
 
