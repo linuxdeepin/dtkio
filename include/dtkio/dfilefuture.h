@@ -20,23 +20,25 @@ class DFileFuture : public QObject
     Q_DISABLE_COPY(DFileFuture)
 public:
     explicit DFileFuture(QObject *parent = nullptr);
-    ~DFileFuture();
+    virtual ~DFileFuture() override;
 
-    bool cancel();
-    bool isFinished() const;
+    // TODO: add control interfaces
+
+    IOErrorCode error() const;
     bool hasError() const;
     void setError(IOErrorCode error);
 
 Q_SIGNALS:
     void finished();
-    void progressNotify(qint64 current, qint64 total);
-    void infoAttribute(AttributeID id, const QVariant &value);
-    void infoAttribute(const QByteArray &key, const QVariant &value);
-    void infoExists(const bool exists);
-    void infoPermissions(const Permissions permissions);
-    void readData(const QByteArray &data);
-    void writeAsyncSize(const qint64 &size);
-    void infoSize(const quint64 &size);
+    // TODO: refactor follow signals
+    // TODO: void progressChanged(qint64 current, qint64 total);
+    void fileAttributeRequired(AttributeID id, const QVariant &value);
+    void fileAttributeRequired(const QByteArray &key, const QVariant &value);
+    void fileExistsStateRequired(const bool exists);
+    void filePermissionsRequired(const Permissions permissions);
+    void fileSizeRequired(const quint64 &size);
+    void dataReaded(const QByteArray &data);
+    void dataWrited(const qint64 &size);
 
 private:
     QScopedPointer<DFuturePrivate> d;

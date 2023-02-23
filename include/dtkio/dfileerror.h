@@ -10,9 +10,12 @@
 #include "dtkio_global.h"
 
 DIO_BEGIN_NAMESPACE
-enum IOErrorCode {
-    NoError = 0,   //!<@~english No error
 
+// TODO: refactor it
+enum IOErrorCode {
+    NoError = -1,   //!<@~english No error
+
+    Failed = 0,   /// !<@~english Generic error condition for when an operation fails and no more specific DFMIOErrorEnum value is defined
     FileNotFound,   //!<@~english File not found
     FileExists,   //!<@~english//!<@~english File already exists
     FileIsDirectory,   //!<@~english File is a directory
@@ -63,7 +66,7 @@ enum IOErrorCode {
     NotConnected,   //!<@~english Transport endpoint is not connected
     MessageTooLarge,   //!<@~english Message too large
 
-    Failed = 1000,   //!<@~english Generic error condition for when an operation fails and no more specific DFMIOErrorEnum value is defined
+    CustomFailed = 1000,   //!<@~english custom failed
     OpenFailed,   //!<@~english File open failed
     OpenFlagError,   //!<@~english File open flag is error
     FileAlreadyOpened,   //!<@~english File is already opened
@@ -73,6 +76,8 @@ enum IOErrorCode {
 inline const QString IOErrorMessage(IOErrorCode errorCode)
 {
     switch (errorCode) {
+    case Failed:
+        return QString("Generic error condition for when an operation fails and no more specific DFMIOErrorEnum value is defined");
     case NoError:
         return QString("No error");
     case FileNotFound:
@@ -169,8 +174,8 @@ inline const QString IOErrorMessage(IOErrorCode errorCode)
         return QString("Transport endpoint is not connected");
     case MessageTooLarge:
         return QString("Message too large");
-    case Failed:
-        return QString("Generic error condition for when an operation fails and no more specific DFMIOErrorEnum value is defined");
+    case CustomFailed:
+        return QString("Custom failed");
     case OpenFailed:
         return QString("File open failed");
     case OpenFlagError:

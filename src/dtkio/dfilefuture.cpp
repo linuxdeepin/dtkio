@@ -7,7 +7,8 @@
 
 DIO_BEGIN_NAMESPACE
 
-DFuturePrivate::DFuturePrivate(DFileFuture *q)
+DFuturePrivate::DFuturePrivate(DFileFuture *qq)
+    : q(qq)
 {
 }
 
@@ -24,19 +25,14 @@ DFileFuture::~DFileFuture()
 {
 }
 
-bool DFileFuture::cancel()
+IOErrorCode DFileFuture::error() const
 {
-    return false;
-}
-
-bool DFileFuture::isFinished() const
-{
-    return false;
+    return d->error;
 }
 
 bool DFileFuture::hasError() const
 {
-    return false;
+    return d->error != IOErrorCode::NoError;
 }
 
 void DFileFuture::setError(IOErrorCode error)

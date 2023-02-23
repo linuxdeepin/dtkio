@@ -15,11 +15,11 @@ class DFileFuture;
 class DFuturePrivate
 {
 public:
-    explicit DFuturePrivate(DFileFuture *q);
+    explicit DFuturePrivate(DFileFuture *qq);
     ~DFuturePrivate();
 
     DFileFuture *q = nullptr;
-    IOErrorCode error;
+    IOErrorCode error { IOErrorCode::NoError };
 };
 DIO_END_NAMESPACE
 

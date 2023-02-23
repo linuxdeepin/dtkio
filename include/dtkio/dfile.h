@@ -27,18 +27,18 @@ public:
     DTK_CORE_NAMESPACE::DExpected<QUrl> url() const;
     DTK_CORE_NAMESPACE::DExpected<bool> open(OpenFlags mode);
     DTK_CORE_NAMESPACE::DExpected<bool> close();
-    DTK_CORE_NAMESPACE::DExpected<bool> isOpen() const;
+    bool isOpen() const;
 
-    DTK_CORE_NAMESPACE::DExpected<qint64> read(QByteArray &data, qint64 maxSize);
+    DTK_CORE_NAMESPACE::DExpected<size_t> read(QByteArray *data, size_t maxSize);
     DTK_CORE_NAMESPACE::DExpected<QByteArray> readAll();
-    DTK_CORE_NAMESPACE::DExpected<qint64> write(const QByteArray &data, qint64 len);
-    DTK_CORE_NAMESPACE::DExpected<qint64> write(const QByteArray &data);
+    DTK_CORE_NAMESPACE::DExpected<size_t> write(const QByteArray &data, size_t len);
+    DTK_CORE_NAMESPACE::DExpected<size_t> write(const QByteArray &data);
 
-    DTK_CORE_NAMESPACE::DExpected<bool> seek(qint64 pos, SeekType type = SeekType::Begin) const;
-    DTK_CORE_NAMESPACE::DExpected<qint64> pos() const;
+    DTK_CORE_NAMESPACE::DExpected<bool> seek(ssize_t pos, SeekType type = SeekType::Begin) const;
+    DTK_CORE_NAMESPACE::DExpected<ssize_t> pos() const;
     DTK_CORE_NAMESPACE::DExpected<bool> flush();
-    DTK_CORE_NAMESPACE::DExpected<qint64> size() const;
-    DTK_CORE_NAMESPACE::DExpected<bool> exists() const;
+    DTK_CORE_NAMESPACE::DExpected<size_t> size() const;
+    bool exists() const;
 
     DTK_CORE_NAMESPACE::DExpected<Permissions> permissions() const;
     DTK_CORE_NAMESPACE::DExpected<bool> setPermissions(Permissions permission);
@@ -47,9 +47,9 @@ public:
 
     [[nodiscard]] DFileFuture *openAsync(OpenFlags mode, int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *closeAsync(int ioPriority, QObject *parent = nullptr);
-    [[nodiscard]] DFileFuture *readAsync(qint64 maxSize, int ioPriority, QObject *parent = nullptr);
+    [[nodiscard]] DFileFuture *readAsync(size_t maxSize, int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *readAllAsync(int ioPriority, QObject *parent = nullptr);
-    [[nodiscard]] DFileFuture *writeAsync(const QByteArray &data, qint64 len, int ioPriority, QObject *parent = nullptr);
+    [[nodiscard]] DFileFuture *writeAsync(const QByteArray &data, size_t len, int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *writeAsync(const QByteArray &data, int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *flushAsync(int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *sizeAsync(int ioPriority, QObject *parent = nullptr);
