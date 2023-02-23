@@ -234,7 +234,7 @@ void DEnumeratorPrivate::createEnumeratorAsyncCallback(GObject *sourceObject, GA
         me->stackEnumerator.push_back(genumerator);
     me->enumeratorInited = true;
 
-    future->finished();
+    Q_EMIT future->finished();
 
     data->me = nullptr;
     data->future = nullptr;

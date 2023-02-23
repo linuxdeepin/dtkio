@@ -40,15 +40,16 @@ public:
 
     bool exists();
     bool checkOpenFlags(OpenFlags *mode);
+    bool checkSeekable(GInputStream *stream, GSeekable **seekable);
     GInputStream *inputStream();
     GOutputStream *outputStream();
 
     // future
     [[nodiscard]] DFileFuture *openAsync(OpenFlags mode, int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *closeAsync(int ioPriority, QObject *parent = nullptr);
-    [[nodiscard]] DFileFuture *readAsync(qint64 maxSize, int ioPriority, QObject *parent = nullptr);
+    [[nodiscard]] DFileFuture *readAsync(size_t maxSize, int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *readAllAsync(int ioPriority, QObject *parent = nullptr);
-    [[nodiscard]] DFileFuture *writeAsync(const QByteArray &data, qint64 len, int ioPriority, QObject *parent = nullptr);
+    [[nodiscard]] DFileFuture *writeAsync(const QByteArray &data, size_t len, int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *writeAsync(const QByteArray &data, int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *flushAsync(int ioPriority, QObject *parent = nullptr);
     [[nodiscard]] DFileFuture *sizeAsync(int ioPriority, QObject *parent = nullptr);

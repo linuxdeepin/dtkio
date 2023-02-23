@@ -104,15 +104,15 @@ DFileFuture *DFileInfoPrivate::attributeAsync(AttributeID id, int ioPriority, QO
         DFileFuture *future = this->initQuerierAsync(ioPriority, nullptr);
         connect(future, &DFileFuture::finished, this, [=]() {
             if (!future->hasError()) {
-                futureRet->infoAttribute(id, q->attribute(id).value());
-                futureRet->finished();
+                Q_EMIT futureRet->fileAttributeRequired(id, q->attribute(id).value());
+                Q_EMIT futureRet->finished();
             }
             future->deleteLater();
         });
     }
     QTimer::singleShot(10, this, [=]() {
-        futureRet->infoAttribute(id, q->attribute(id).value());
-        futureRet->finished();
+        Q_EMIT futureRet->fileAttributeRequired(id, q->attribute(id).value());
+        Q_EMIT futureRet->finished();
     });
     return futureRet;
 }
@@ -124,15 +124,15 @@ DFileFuture *DFileInfoPrivate::attributeAsync(const QByteArray &key, const Attri
         DFileFuture *future = this->initQuerierAsync(ioPriority, nullptr);
         connect(future, &DFileFuture::finished, this, [=]() {
             if (!future->hasError()) {
-                futureRet->infoAttribute(key, q->attribute(key, type).value());
-                futureRet->finished();
+                Q_EMIT futureRet->fileAttributeRequired(key, q->attribute(key, type).value());
+                Q_EMIT futureRet->finished();
             }
             future->deleteLater();
         });
     }
     QTimer::singleShot(10, this, [=]() {
-        futureRet->infoAttribute(key, q->attribute(key, type).value());
-        futureRet->finished();
+        Q_EMIT futureRet->fileAttributeRequired(key, q->attribute(key, type).value());
+        Q_EMIT futureRet->finished();
     });
     return futureRet;
 }
@@ -145,16 +145,16 @@ DFileFuture *DFileInfoPrivate::existsAsync(int ioPriority, QObject *parent)
         connect(future, &DFileFuture::finished, this, [=]() {
             if (!future->hasError()) {
                 const bool exists = q->exists().value();
-                futureRet->infoExists(exists);
-                futureRet->finished();
+                Q_EMIT futureRet->fileExistsStateRequired(exists);
+                Q_EMIT futureRet->finished();
             }
             future->deleteLater();
         });
     }
     QTimer::singleShot(10, this, [=]() {
         const bool exists = q->exists().value();
-        futureRet->infoExists(exists);
-        futureRet->finished();
+        Q_EMIT futureRet->fileExistsStateRequired(exists);
+        Q_EMIT futureRet->finished();
     });
     return futureRet;
 }
@@ -163,7 +163,7 @@ DFileFuture *DFileInfoPrivate::refreshAsync(int ioPriority, QObject *parent)
 {
     DFileFuture *future = this->initQuerierAsync(ioPriority, parent);
     connect(future, &DFileFuture::finished, this, [=]() {
-        future->finished();
+        Q_EMIT future->finished();
     });
     return future;
 }
@@ -172,8 +172,8 @@ DFileFuture *DFileInfoPrivate::permissionsAsync(int ioPriority, QObject *parent)
 {
     DFileFuture *future = this->initQuerierAsync(ioPriority, parent);
     connect(future, &DFileFuture::finished, this, [=]() {
-        future->infoPermissions(q->permissions().value());
-        future->finished();
+        Q_EMIT future->filePermissionsRequired(q->permissions().value());
+        Q_EMIT future->finished();
     });
     return future;
 }
@@ -212,7 +212,7 @@ void DFileInfoPrivate::initQuerierAsyncCallback(GObject *sourceObject, GAsyncRes
     me->gFileInfo = fileinfo;
     me->querierInit = true;
 
-    future->finished();
+    Q_EMIT future->finished();
 
     future = nullptr;
     me = nullptr;

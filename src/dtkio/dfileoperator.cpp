@@ -73,7 +73,7 @@ DFileFuture *DFileOperatorPrivate::moveFileAsync(const QUrl &destUrl, CopyFlag f
         q->moveFile(destUrl, flag);
         if (!me)
             return;
-        future->finished();
+        Q_EMIT future->finished();
     });
     return future;
 }
@@ -119,7 +119,7 @@ DFileFuture *DFileOperatorPrivate::restoreFileAsync(int ioPriority, QObject *par
         q->restoreFile();
         if (!me)
             return;
-        future->finished();
+        Q_EMIT future->finished();
     });
     return future;
 }
@@ -166,7 +166,7 @@ DFileFuture *DFileOperatorPrivate::createLinkAsync(const QUrl &link, int ioPrior
         q->createLink(link);
         if (!me)
             return;
-        future->finished();
+        Q_EMIT future->finished();
     });
     return future;
 }
@@ -197,7 +197,7 @@ void DFileOperatorPrivate::renameAsyncFutureCallback(GObject *sourceObject, GAsy
     if (gerror)
         me->setError(IOErrorCode(gerror->code));
 
-    future->finished();
+    Q_EMIT future->finished();
 
     data->me = nullptr;
     data->future = nullptr;
@@ -223,7 +223,7 @@ void DFileOperatorPrivate::copyAsyncFutureCallback(GObject *sourceObject, GAsync
     if (gerror)
         me->setError(IOErrorCode(gerror->code));
 
-    future->finished();
+    Q_EMIT future->finished();
 
     data->me = nullptr;
     data->future = nullptr;
@@ -249,7 +249,7 @@ void DFileOperatorPrivate::trashAsyncFutureCallback(GObject *sourceObject, GAsyn
     if (gerror)
         me->setError(IOErrorCode(gerror->code));
 
-    future->finished();
+    Q_EMIT future->finished();
 
     data->me = nullptr;
     data->future = nullptr;
@@ -275,7 +275,7 @@ void DFileOperatorPrivate::deleteAsyncFutureCallback(GObject *sourceObject, GAsy
     if (gerror)
         me->setError(IOErrorCode(gerror->code));
 
-    future->finished();
+    Q_EMIT future->finished();
 
     data->me = nullptr;
     data->future = nullptr;
@@ -302,7 +302,7 @@ void DFileOperatorPrivate::touchAsyncFutureCallback(GObject *sourceObject, GAsyn
     if (gerror)
         me->setError(IOErrorCode(gerror->code));
 
-    future->finished();
+    Q_EMIT future->finished();
 
     data->me = nullptr;
     data->future = nullptr;
@@ -328,7 +328,7 @@ void DFileOperatorPrivate::makeDirAsyncFutureCallback(GObject *sourceObject, GAs
     if (gerror)
         me->setError(IOErrorCode(gerror->code));
 
-    future->finished();
+    Q_EMIT future->finished();
 
     data->me = nullptr;
     data->future = nullptr;

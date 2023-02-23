@@ -24,17 +24,13 @@ bool exist(const QUrl &url)
     DFile *file = new DFile(url);
     if (!file)
         return false;
-    auto expected = file->exists();
-    if (expected) {
-        if (!expected.value()) {
-            qInfo() << "file does not exist";
-        } else {
-            delete file;
-            return true;
-        }
+    if (!file->exists()) {
+        qInfo() << "file does not exist";
     } else {
-        qWarning() << expected.error();
+        delete file;
+        return true;
     }
+
     delete file;
     return false;
 }

@@ -9,6 +9,8 @@
     @brief 文件IO相关错误码
     @var Dtk::IO::IOErrorCode::NoError
         没有错误
+    @var Dtk::IO::IOErrorCode::Failed
+        通用错误（非其他以下错误类型）
     @var Dtk::IO::IOErrorCode::FileNotFound
         找不到该文件
     @var Dtk::IO::IOErrorCode::FileExists
