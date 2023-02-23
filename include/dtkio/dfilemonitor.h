@@ -22,7 +22,7 @@ class DFileMonitor : public QObject
     Q_OBJECT
 public:
     explicit DFileMonitor(const QUrl &url, QObject *parent = nullptr);
-    ~DFileMonitor();
+    virtual ~DFileMonitor() override;
 
     DTK_CORE_NAMESPACE::DExpected<QUrl> url() const;
     DTK_CORE_NAMESPACE::DExpected<void> setTimeRate(quint32 msec);
@@ -34,7 +34,7 @@ public:
     DTK_CORE_NAMESPACE::DExpected<bool> start();
     DTK_CORE_NAMESPACE::DExpected<bool> start(quint32 timeRate = 200);
 
-    DTK_CORE_NAMESPACE::DExpected<bool> stop();
+    bool stop();
 
     DTK_CORE_NAMESPACE::DError lastError() const;
 

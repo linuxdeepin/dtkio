@@ -199,10 +199,11 @@ DExpected<bool> DFileMonitor::start(quint32 timeRate)
     return true;
 }
 
-DExpected<bool> DFileMonitor::stop()
+bool DFileMonitor::stop()
 {
+    bool ret = false;
     if (d->gmonitor) {
-        g_file_monitor_cancel(d->gmonitor);
+        ret = g_file_monitor_cancel(d->gmonitor);
         g_object_unref(d->gmonitor);
         d->gmonitor = nullptr;
     }
@@ -210,8 +211,7 @@ DExpected<bool> DFileMonitor::stop()
         g_object_unref(d->gfile);
         d->gfile = nullptr;
     }
-
-    return true;
+    return ret;
 }
 
 DError DFileMonitor::lastError() const

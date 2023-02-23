@@ -33,11 +33,11 @@
 @brief 获取当前对象管理的文件的url字符串
 @return 当前对象所管理的文件的url
 
-@fn DExpected<void> DFileInfo::setQueryAttributes(const QByteArray &attributes)
+@fn void DFileInfo::setQueryAttributes(const QByteArray &attributes)
 @brief 设置查询属性
 @param[in] attributes 要设置的属性
 
-@fn DExpected<void> DFileInfo::setQueryInfoFlags(const FileQueryInfoFlags flags)
+@fn void DFileInfo::setQueryInfoFlags(const FileQueryInfoFlags flags)
 @brief 设置查询文件信息时的标志
 @param[in] flags 标志（不进行额外操作 | 不处理链接文件）
 
