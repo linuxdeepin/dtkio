@@ -30,8 +30,8 @@ public:
     virtual ~DFileInfo() override;
 
     DTK_CORE_NAMESPACE::DExpected<QUrl> url() const;
-    DTK_CORE_NAMESPACE::DExpected<void> setQueryAttributes(const QByteArray &attributes);
-    DTK_CORE_NAMESPACE::DExpected<void> setQueryInfoFlags(const FileQueryInfoFlags flags);
+    void setQueryAttributes(const QByteArray &attributes);
+    void setQueryInfoFlags(const FileQueryInfoFlags flags);
     DTK_CORE_NAMESPACE::DExpected<QByteArray> queryAttributes() const;
     DTK_CORE_NAMESPACE::DExpected<FileQueryInfoFlags> queryInfoFlag() const;
 
