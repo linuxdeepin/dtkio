@@ -46,7 +46,7 @@
 @param[in] timeRate 轮询间隔
 @return 成功返回true，反之false
 
-@fn DExpected<bool> DFileMonitor::stop()
+@fn bool DFileMonitor::stop()
 @brief 停止监听
 @return 成功返回true，反之false
 

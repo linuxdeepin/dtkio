@@ -257,12 +257,12 @@ DExpected<QUrl> DFileInfo::url() const
     return d->url;
 }
 
-DExpected<void> DFileInfo::setQueryAttributes(const QByteArray &attributes)
+void DFileInfo::setQueryAttributes(const QByteArray &attributes)
 {
     d->queryAttributes = attributes;
 }
 
-DExpected<void> DFileInfo::setQueryInfoFlags(const FileQueryInfoFlags flags)
+void DFileInfo::setQueryInfoFlags(const FileQueryInfoFlags flags)
 {
     d->queryInfoFlags = flags;
 }

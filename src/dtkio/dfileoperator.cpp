@@ -403,8 +403,10 @@ DExpected<bool> DFileOperator::moveFile(const QUrl &destUrl, CopyFlag flag)
 
     bool ret = g_file_move(gfileFrom, gfileTo, GFileCopyFlags(flag), cancellable, nullptr, nullptr, &gerror);
 
-    if (gerror)
+    if (gerror) {
         d->setError(IOErrorCode(gerror->code));
+        return DUnexpected<> { d->error };
+    }
 
     return ret;
 }
@@ -418,8 +420,10 @@ DExpected<bool> DFileOperator::trashFile()
 
     bool ret = g_file_trash(gfile, cancellable, &gerror);
 
-    if (gerror)
+    if (gerror) {
         d->setError(IOErrorCode(gerror->code));
+        return DUnexpected<> { d->error };
+    }
 
     return ret;
 }
@@ -433,8 +437,10 @@ DExpected<bool> DFileOperator::deleteFile()
 
     bool ret = g_file_delete(gfile, cancellable, &gerror);
 
-    if (gerror)
+    if (gerror) {
         d->setError(IOErrorCode(gerror->code));
+        return DUnexpected<> { d->error };
+    }
 
     return ret;
 }
@@ -449,8 +455,10 @@ DExpected<bool> DFileOperator::touchFile()
     // if file exist, return failed
     g_autoptr(GFileOutputStream) stream = g_file_create(gfile, GFileCreateFlags::G_FILE_CREATE_NONE, cancallable, &gerror);
 
-    if (gerror)
+    if (gerror) {
         d->setError(IOErrorCode(gerror->code));
+        return DUnexpected<> { d->error };
+    }
 
     return stream != nullptr;
 }
@@ -464,8 +472,10 @@ DExpected<bool> DFileOperator::makeDirectory()
 
     bool ret = g_file_make_directory(gfile, cancellable, &gerror);
 
-    if (gerror)
+    if (gerror) {
         d->setError(IOErrorCode(gerror->code));
+        return DUnexpected<> { d->error };
+    }
 
     return ret;
 }
@@ -480,8 +490,10 @@ DExpected<bool> DFileOperator::createLink(const QUrl &link)
     const QString &linkValue = d->url.toLocalFile();
     bool ret = g_file_make_symbolic_link(gfile, linkValue.toStdString().c_str(), cancellabel, &gerror);
 
-    if (gerror)
+    if (gerror) {
         d->setError(IOErrorCode(gerror->code));
+        return DUnexpected<> { d->error };
+    }
 
     return ret;
 }

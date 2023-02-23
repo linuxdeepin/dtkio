@@ -43,4 +43,4 @@ Testing/
 examples/dtkmount/device_monitor/device_monitor
 examples/dtkio/io_client/io_client
 examples/dtkburn/burn_client/burn_client
-
+examples/dtksearch/search_client/search_client
