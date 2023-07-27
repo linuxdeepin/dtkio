@@ -31,16 +31,19 @@ endif ()
 
 set(CMAKE_CXX_FLAGS Release CACHE STRING "define CXXFLAGS")
 
-if (CMAKE_BUILD_TYPE STREQUAL "Debug")
-    set(BUILD_TESTING ON)
-    set(BUILD_EXAMPLES ON)
-    set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
-endif ()
+find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
+message("Using Qt version: ${QT_VERSION_MAJOR}")
 
-find_package(QT NAMES Qt5 REQUIRED COMPONENTS Core)
+if(QT_VERSION_MAJOR EQUAL "5")
+    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(BUILD_TESTING ON)
+        set(BUILD_EXAMPLES ON)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+    endif()
+endif()
+
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus)
 find_package(DtkCore REQUIRED)
-
 add_compile_definitions(QT_NO_SIGNALS_SLOTS_KEYWORDS)
 
 # src

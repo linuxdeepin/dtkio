@@ -9,6 +9,8 @@
 #include "plugin.h"
 
 #include <QThread>
+#include <QTextCodec>
+
 #include "dcompressornamespace.h"
 DCOMPRESSOR_BEGIN_NAMESPACE
 

@@ -5,7 +5,7 @@
 #ifndef ITERATORSEARCHER_H
 #define ITERATORSEARCHER_H
 
-#include <QTime>
+#include <QElapsedTimer>
 #include <QMutex>
 #include <QRegularExpression>
 
@@ -37,7 +37,7 @@ private:
     QRegularExpression regex;
     quint32 resultCount = 0;
 
-    QTime notifyTimer;
+    QElapsedTimer notifyTimer;
     int lastEmit = 0;
 };
 

@@ -28,7 +28,6 @@ add_library(${LIB_NAME} SHARED ${c_files} ${json_files} ${h_files})
 
 #链接动静态库
 target_link_libraries(${LIB_NAME}
-#    Qt5::Core
     KF5::Codecs
     interfacecompressor
     zip

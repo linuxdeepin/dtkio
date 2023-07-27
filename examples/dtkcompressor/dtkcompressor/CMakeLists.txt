@@ -12,7 +12,7 @@ set(CMAKE_AUTOUIC ON)
 PROJECT(testcompressor)
 
 
-find_package(Qt5Widgets)
+find_package(Qt${QT_VERSION_MAJOR}Widgets)
 find_package(PkgConfig REQUIRED)
 find_package(DtkCore REQUIRED)
 find_package(KF5Codecs REQUIRED)
@@ -33,7 +33,7 @@ target_include_directories(${PROJECT_NAME} PUBLIC
     Qt${QT_VERSION_MAJOR}::DBus)
 
 set(TARGET_LIBS
-    Qt5::Widgets
+    Qt${QT_VERSION_MAJOR}::Widgets
     ${DtkCore_LIBRARIES}
     KF5::Codecs
     Qt${QT_VERSION_MAJOR}::DBus

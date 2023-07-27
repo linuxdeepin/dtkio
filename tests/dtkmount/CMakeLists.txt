@@ -22,9 +22,13 @@ set_source_files_properties(
     ${UDISKS2_XML}
     PROPERTIES NO_NAMESPACE true INCLUDE ${PROJECT_SOURCE_DIR}/src/dtkmount/dbus/udisks2_dbus_common.h
     )
-qt5_add_dbus_interface(SRCS ${UDISKS2_OBJECT_XML} objectmanager_interface)
-qt5_add_dbus_interface(SRCS ${UDISKS2_XML} udisks2_interface)
-
+if(QT_VERSION_MAJOR EQUAL "6")
+    qt_add_dbus_interface(SRCS ${UDISKS2_OBJECT_XML} objectmanager_interface)
+    qt_add_dbus_interface(SRCS ${UDISKS2_XML} udisks2_interface)
+else()
+    qt5_add_dbus_interface(SRCS ${UDISKS2_OBJECT_XML} objectmanager_interface)
+    qt5_add_dbus_interface(SRCS ${UDISKS2_XML} udisks2_interface)
+endif()
 
 include_directories(
     "${PROJECT_SOURCE_DIR}/include/dtkmount/"

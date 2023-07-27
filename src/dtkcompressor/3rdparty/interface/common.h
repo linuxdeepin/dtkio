@@ -7,6 +7,7 @@
 
 #include <QString>
 #include <QLocale>
+#include <QTextCodec>
 
 class Common: public QObject
 {

@@ -9,18 +9,26 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 
-find_package(Qt5 COMPONENTS Widgets Core Gui DBus LinguistTools REQUIRED)
+find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Core Gui DBus LinguistTools REQUIRED)
 find_package(Dtk COMPONENTS Widget Core Gui REQUIRED)
 #find_package(dtkmount REQUIRED)
 
 file(GLOB TS_FILES CONFIGURE_DEPENDS translations/*.ts)
 file(GLOB PROJECT_SOURCES CONFIGURE_DEPENDS src/*.cpp include/*.h ${TS_FILES})
 
-qt5_create_translation(
-    QM_FILES 
-    ${PROJECT_SOURCES} 
-    ${TS_FILES}
-)
+if(QT_VERSION_MAJOR EQUAL "6")
+    qt_create_translation(
+        QM_FILES
+        ${PROJECT_SOURCES}
+        ${TS_FILES}
+    )
+else()
+    qt5_create_translation(
+        QM_FILES
+        ${PROJECT_SOURCES}
+        ${TS_FILES}
+    )
+endif()
 
 add_executable(
     ${PROJECT_NAME}
@@ -35,7 +43,7 @@ target_link_libraries(
     ${DtkWidget_LIBRARIES}
     ${DtkCore_LIBRARIES}
     dtkmount
-    Qt5::Widgets
-    Qt5::Core
-    Qt5::DBus
+    Qt${QT_VERSION_MAJOR}::Widgets
+    Qt${QT_VERSION_MAJOR}::Core
+    Qt${QT_VERSION_MAJOR}::DBus
 )

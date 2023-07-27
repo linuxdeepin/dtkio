@@ -7,7 +7,7 @@
 
 #include <LuceneHeaders.h>
 
-#include <QTime>
+#include <QElapsedTimer>
 #include <QMutex>
 
 #include "dtksearch_global.h"
@@ -61,7 +61,7 @@ private:
     QMap<QString, QString> bindPathTable;
     QAtomicInt status = AbstractSearcher::Ready;
 
-    QTime notifyTimer;
+    QElapsedTimer notifyTimer;
     int lastEmit = 0;
 };
 

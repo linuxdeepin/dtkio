@@ -335,11 +335,13 @@ protected:
     KProcessPrivate *const d_ptr;
 
 private:
+#if QT_VERSION < QT_VERSION_CHECK(6, 0, 0)
     // hide those
     using QProcess::setReadChannelMode;
     using QProcess::readChannelMode;
     using QProcess::setProcessChannelMode;
     using QProcess::processChannelMode;
+#endif
 
     Q_PRIVATE_SLOT(d_func(), void _k_forwardStdout())
     Q_PRIVATE_SLOT(d_func(), void _k_forwardStderr())

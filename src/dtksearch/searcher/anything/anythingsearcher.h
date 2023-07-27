@@ -6,7 +6,7 @@
 #define ANYTHINGSEARCHER_H
 
 #include <QMutex>
-#include <QTime>
+#include <QElapsedTimer>
 
 #include "dtksearch_global.h"
 #include "searcher/abstractsearcher.h"
@@ -33,7 +33,7 @@ private:
     QStringList allResults;
     mutable QMutex mutex;
 
-    QTime notifyTimer;
+    QElapsedTimer notifyTimer;
     int lastEmit = 0;
 };
 

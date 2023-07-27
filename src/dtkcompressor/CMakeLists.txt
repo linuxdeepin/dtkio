@@ -20,10 +20,12 @@ if(NOT DEFINED HFILES_OUTPUT_PATH)
     set(HFILES_OUTPUT_PATH ${CMAKE_BINARY_DIR}/include)
 endif()
 add_subdirectory(3rdparty)
-
 find_package(KF5Codecs REQUIRED)
 find_package(PkgConfig REQUIRED)
 find_package(DtkCore REQUIRED)
+if(QT_VERSION_MAJOR EQUAL "6")
+    find_package(Qt6Core5Compat REQUIRED)
+endif()
 
 target_include_directories(${BIN_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include/${BIN_NAME}/)
 target_include_directories(${BIN_NAME} PUBLIC ${KF5Codecs_INCLUDE_DIRS})
@@ -34,16 +36,26 @@ set_target_properties(${BIN_NAME} PROPERTIES
 
 target_compile_definitions(${BIN_NAME} PRIVATE VERSION="${CMAKE_PROJECT_VERSION}")
 
-target_include_directories(${BIN_NAME} PUBLIC
-    Qt${QT_VERSION_MAJOR}::Core
-    ${HFILES_OUTPUT_PATH}
-)
+if(QT_VERSION_MAJOR EQUAL "6")
+    target_link_libraries(${BIN_NAME} PRIVATE
+        Qt${QT_VERSION_MAJOR}::Core
+        Qt6::Core5Compat
+        ${DtkCore_LIBRARIES}
+        interfacecompressor
+        KF5::Codecs
+    )
+else()
+    target_link_libraries(${BIN_NAME} PRIVATE
+        Qt${QT_VERSION_MAJOR}::Core
+        ${DtkCore_LIBRARIES}
+        interfacecompressor
+        KF5::Codecs
+    )
+endif()
 
-target_link_libraries(${BIN_NAME} PRIVATE
-    Qt${QT_VERSION_MAJOR}::Core
-    ${DtkCore_LIBRARIES}
-    interfacecompressor
-    KF5::Codecs
+
+target_include_directories(${BIN_NAME} PUBLIC
+    ${HFILES_OUTPUT_PATH}
 )
 
 install(FILES ${INCLUDE_FILES} DESTINATION ${CMAKE_INSTALL_INCLUDEDIR}/${BIN_NAME})

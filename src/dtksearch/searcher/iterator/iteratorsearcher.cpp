@@ -71,10 +71,10 @@ void IteratorSearcher::doSearch()
             return;
 
         const auto &path = searchPathList.takeAt(0);
-        QRegExp reg(Utils::kNotSupportDirectories);
+        QRegularExpression reg(Utils::kNotSupportDirectories);
         // The filter directory can be searched only when
         // searching in the filter directory
-        if (!reg.exactMatch(m_searchPath) && reg.exactMatch(path))
+        if (!reg.match(m_searchPath).hasMatch() && reg.match(path).hasMatch())
             continue;
 
         QDirIterator iterator(path, QDir::NoDotAndDotDot | QDir::Dirs | QDir::Files);

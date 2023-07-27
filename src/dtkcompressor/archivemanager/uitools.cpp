@@ -140,7 +140,11 @@ bool UiTools::isArchiveFile(const QString &strFileName)
 bool UiTools::isExistMimeType(const QString &strMimeType, bool &bArchive)
 {
     QString conf = readConf();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    QStringList confList = conf.split("\n", Qt::SkipEmptyParts);
+#else
     QStringList confList = conf.split("\n", QString::SkipEmptyParts);
+#endif
 
     bool exist = false;
     for (int i = 0; i < confList.count(); i++) {
@@ -291,10 +295,10 @@ ReadOnlyArchiveInterface *UiTools::createInterface(const QString &fileName, cons
 void UiTools::transSplitFileName(QString &fileName, UnCompressParameter::SplitType &eSplitType)
 {
     if (fileName.contains(".7z.")) {
-        QRegExp reg("^([\\s\\S]*\\.)7z\\.[0-9]{3}$");
-
-        if (reg.exactMatch(fileName)) {
-            fileName = reg.cap(1) + "7z.001";
+        QRegularExpression reg("^([\\s\\S]*\\.)7z\\.[0-9]{3}$");
+        QRegularExpressionMatch match = reg.match(fileName);
+        if (match.hasMatch()) {
+            fileName = match.captured(1) + "7z.001";
             eSplitType = UnCompressParameter::ST_Other;
         }
     } else if (fileName.contains(".part") && fileName.endsWith(".rar")) {
@@ -309,11 +313,12 @@ void UiTools::transSplitFileName(QString &fileName, UnCompressParameter::SplitTy
 
         eSplitType = UnCompressParameter::ST_Other;
     } else if (fileName.contains(".zip.")) {
-        QRegExp reg("^([\\s\\S]*\\.)zip\\.[0-9]{3}$");
-        if (reg.exactMatch(fileName)) {
-            QFileInfo fi(reg.cap(1) + "zip.001");
+        QRegularExpression reg("^([\\s\\S]*\\.)zip\\.[0-9]{3}$");
+        QRegularExpressionMatch match = reg.match(fileName);
+        if (match.hasMatch()) {
+            QFileInfo fi(match.captured(1) + "zip.001");
             if (fi.exists() == true) {
-                fileName = reg.cap(1) + "zip.001";
+                fileName = match.captured(1) + "zip.001";
                 eSplitType = UnCompressParameter::ST_Zip;
             }
         }
@@ -323,9 +328,10 @@ void UiTools::transSplitFileName(QString &fileName, UnCompressParameter::SplitTy
             eSplitType = UnCompressParameter::ST_Zip;
         }
     } else if (fileName.contains(".z")) {
-        QRegExp reg("^([\\s\\S]*\\.)z[0-9]+$");   //
-        if (reg.exactMatch(fileName)) {
-            fileName = reg.cap(1) + "zip";
+        QRegularExpression reg("^([\\s\\S]*\\.)z[0-9]+$");   //
+        QRegularExpressionMatch match = reg.match(fileName);
+        if (match.hasMatch()) {
+            fileName = match.captured(1) + "zip";
             QFileInfo fi(fileName);
             if (fi.exists()) {
                 eSplitType = UnCompressParameter::ST_Zip;
