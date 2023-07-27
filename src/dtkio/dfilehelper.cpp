@@ -412,7 +412,13 @@ QSet<QString> hideListFromUrl(const QUrl &url)
     if (succ) {
         if (contents && len > 0) {
             QString dataStr(contents);
-            return QSet<QString>::fromList(dataStr.split('\n', QString::SkipEmptyParts));
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            const QStringList strs { dataStr.split('\n', Qt::SkipEmptyParts) };
+            return QSet<QString> { strs.begin(), strs.end() };
+#else
+            const QStringList strs { dataStr.split('\n', QString::SkipEmptyParts) };
+            return QSet<QString>::fromList(strs);
+#endif
         }
     } else {
         qWarning() << "load .hidden fail, url: " << url << " error: " << error->code << " " << QString::fromLocal8Bit(error->message);

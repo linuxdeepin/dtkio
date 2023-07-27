@@ -4,6 +4,9 @@
 
 #include "processopenthread.h"
 #include "kprocess.h"
+
+#include <QProcess>
+
 DCOMPRESSOR_USE_NAMESPACE
 ProcessOpenThread::ProcessOpenThread(QObject *parent)
     : QThread(parent)

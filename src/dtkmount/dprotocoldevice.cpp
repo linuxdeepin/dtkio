@@ -202,8 +202,14 @@ QStringList DProtocolDevice::iconNames() const
         return {};
 
     g_autofree char *names = g_icon_to_string(icon);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    if (names)
+        d->icons = QString(names).remove(". GThemedIcon").split(" ", Qt::SkipEmptyParts);
+#else
     if (names)
         d->icons = QString(names).remove(". GThemedIcon").split(" ", QString::SkipEmptyParts);
+#endif
+
     return d->icons;
 }
 

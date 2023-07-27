@@ -8,6 +8,8 @@
 #include <QDir>
 #include <QMetaEnum>
 #include <QDebug>
+#include <QDateTime>
+#include <QRegularExpression>
 
 #include <FileUtils.h>
 #include <QueryWrapperFilter.h>
@@ -85,7 +87,7 @@ bool FullTextSearcher::createIndex(const QString &path)
 
     try {
         // record spending
-        QTime timer;
+        QElapsedTimer timer;
         timer.start();
         IndexWriterPtr writer = newIndexWriter(true);
         qDebug() << "Indexing to directory: " << m_indexPath;
@@ -161,7 +163,8 @@ DocumentPtr FullTextSearcher::fileDocument(const QString &file)
 
     // file last modified time
     QFileInfo info(file);
-    QString modifyTime = QString::number(info.lastModified().toTime_t());
+    QDateTime lastModified = info.lastModified();
+    QString modifyTime = QString::number(lastModified.toSecsSinceEpoch());
     doc->add(newLucene<Field>(L"modified", modifyTime.toStdWString(), Field::STORE_YES, Field::INDEX_NOT_ANALYZED));
 
     // file contents
@@ -214,8 +217,8 @@ void FullTextSearcher::doSearch(const QString &path, const QString &keyword)
                     indexDocuments(writer, info.absoluteFilePath(), DeleteIndex);
                     continue;
                 }
-
-                const QString &modifyTime = QString::number(info.lastModified().toTime_t());
+                QDateTime lastModified = info.lastModified();
+                const QString &modifyTime = QString::number(lastModified.toSecsSinceEpoch());
                 const String &storeTime = doc->get(L"modified");
                 if (modifyTime.toStdWString() != storeTime) {
                     continue;
@@ -251,8 +254,8 @@ void FullTextSearcher::doIndexTask(const IndexReaderPtr &reader, const IndexWrit
         return;
 
     // filter some folders
-    static QRegExp reg(Utils::kNotSupportDirectories);
-    if (bindPathTable.contains(path) || (reg.exactMatch(path) && !path.startsWith("/run/user")))
+    static QRegularExpression reg(Utils::kNotSupportDirectories);
+    if (bindPathTable.contains(path) || (reg.match(path).hasMatch() && !path.startsWith("/run/user")))
         return;
 
     // limit file name length and level
@@ -290,8 +293,8 @@ void FullTextSearcher::doIndexTask(const IndexReaderPtr &reader, const IndexWrit
         } else {
             QFileInfo info(fn);
             QString suffix = info.suffix();
-            static QRegExp suffixRegExp(Utils::kSupportFiles);
-            if (suffixRegExp.exactMatch(suffix)) {
+            static QRegularExpression suffixRegExp(Utils::kSupportFiles);
+            if (suffixRegExp.match(suffix).hasMatch()) {
                 switch (type) {
                 case Create:
                     indexDocuments(writer, fn, AddIndex);
@@ -368,7 +371,8 @@ bool FullTextSearcher::checkUpdate(const IndexReaderPtr &reader, const QString &
         } else {
             DocumentPtr doc = searcher->doc(topDocs->scoreDocs[0]->doc);
             QFileInfo info(file);
-            const QString &modifyTime = QString::number(info.lastModified().toTime_t());
+            QDateTime lastModified = info.lastModified();
+            const QString &modifyTime = QString::number(lastModified.toSecsSinceEpoch());
             const String &storeTime = doc->get(L"modified");
 
             if (modifyTime.toStdWString() != storeTime) {
@@ -389,18 +393,18 @@ bool FullTextSearcher::checkUpdate(const IndexReaderPtr &reader, const QString &
 
 QString FullTextSearcher::dealKeyword(const QString &keyword)
 {
-    static QRegExp cnReg("^[\u4e00-\u9fa5]");
-    static QRegExp enReg("^[A-Za-z]+$");
-    static QRegExp numReg("^[0-9]$");
+    static QRegularExpression cnReg("^[\u4e00-\u9fa5]");
+    static QRegularExpression enReg("^[A-Za-z]+$");
+    static QRegularExpression numReg("^[0-9]$");
 
     QString oldType = "cn", currType = "cn";
     QString newStr;
     for (auto c : keyword) {
-        if (cnReg.exactMatch(c)) {
+        if (cnReg.match(c).hasMatch()) {
             currType = "cn";
-        } else if (enReg.exactMatch(c)) {
+        } else if (enReg.match(c).hasMatch()) {
             currType = "en";
-        } else if (numReg.exactMatch(c)) {
+        } else if (numReg.match(c).hasMatch()) {
             currType = "digit";
         } else {
             newStr += ' ';

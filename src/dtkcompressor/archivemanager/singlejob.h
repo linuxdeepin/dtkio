@@ -10,6 +10,8 @@
 #include "commonstruct.h"
 #include "queries.h"
 #include "dcompressornamespace.h"
+
+#include <QTextCodec>
 #include <QThread>
 #include <QElapsedTimer>
 

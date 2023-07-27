@@ -11,7 +11,11 @@ file(GLOB_RECURSE SRCS
 )
 
 set(QRC_FILE qrc/resources.qrc)
-qt5_add_resources(QRC_RESOURCES ${QRC_FILE})
+if(QT_VERSION_MAJOR EQUAL "6")
+    qt_add_resources(QRC_RESOURCES ${QRC_FILE})
+else()
+    qt5_add_resources(QRC_RESOURCES ${QRC_FILE})
+endif()
 
 add_library(${BIN_NAME} SHARED
     ${INCLUDE_FILES}
