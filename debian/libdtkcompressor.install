@@ -1,4 +1,4 @@
-usr/lib/*/libdtkcompressor.so.*
+usr/lib/*/libdtkcompressor.so*
 usr/lib/*/dtkcompressor/plugins/libcli7zplugincompressor.so
 usr/lib/*/dtkcompressor/plugins/libclirarplugincompressor.so
 usr/lib/*/dtkcompressor/plugins/libzipplugincompressor.so
