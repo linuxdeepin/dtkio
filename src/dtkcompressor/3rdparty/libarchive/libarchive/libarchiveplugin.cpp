@@ -725,7 +725,14 @@ void LibarchivePlugin::emitEntryForIndex(archive_entry *aentry)
     m_archiveEntryStat.strFullPath = entryName;
 
     // 文件名
-    const QStringList pieces = m_archiveEntryStat.strFullPath.split(QLatin1Char('/'), QString::SkipEmptyParts);
+    const QStringList pieces = m_archiveEntryStat.strFullPath.split(
+        QLatin1Char('/'),
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        Qt::SkipEmptyParts
+#else
+        QString::SkipEmptyParts
+#endif
+        );
     m_archiveEntryStat.strFileName = pieces.last();
 
     // 是否为文件夹

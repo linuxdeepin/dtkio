@@ -37,7 +37,7 @@ protected:
     {
     }
 
-    QHash<QString, Plugin> createInstanceHash;
+    QMultiHash<QString, Plugin> createInstanceHash;
     QString catalogName;
     bool catalogInitialized;
 

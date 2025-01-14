@@ -26,8 +26,11 @@ DArchiveManager::MgrFileEntry CompressorTest::fileInfo2Entry(const QFileInfo &fi
         // 文件直接显示大小
         entry.qSize = fileInfo.size();
     }
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    entry.uLastModifiedTime = fileInfo.lastModified().toSecsSinceEpoch();
+#else
     entry.uLastModifiedTime = fileInfo.lastModified().toTime_t();   // 最后一次修改时间
+#endif
 
     return entry;
 }

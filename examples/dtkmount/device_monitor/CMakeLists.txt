@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Core Gui DBus LinguistTools REQUIRED)
-find_package(Dtk COMPONENTS Widget Core Gui REQUIRED)
+find_package(Dtk${DTK_VERSION_MAJOR} COMPONENTS Widget Core Gui REQUIRED)
 #find_package(dtkmount REQUIRED)
 
 file(GLOB TS_FILES CONFIGURE_DEPENDS translations/*.ts)
@@ -40,9 +40,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC include)
 
 target_link_libraries(
     ${PROJECT_NAME} PRIVATE
-    ${DtkWidget_LIBRARIES}
-    ${DtkCore_LIBRARIES}
-    dtkmount
+    Dtk${DTK_VERSION_MAJOR}::Core
+    Dtk${DTK_VERSION_MAJOR}::Gui
+    Dtk${DTK_VERSION_MAJOR}::Widget
+    dtk${DTK_VERSION_MAJOR}mount
     Qt${QT_VERSION_MAJOR}::Widgets
     Qt${QT_VERSION_MAJOR}::Core
     Qt${QT_VERSION_MAJOR}::DBus

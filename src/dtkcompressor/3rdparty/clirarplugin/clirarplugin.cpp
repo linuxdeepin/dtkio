@@ -216,7 +216,13 @@ bool CliRarPlugin::readListLine(const QString &line)
             m_fileEntry.strFullPath = parseLineRight;
 
             // 文件名称
-            const QStringList pieces = m_fileEntry.strFullPath.split(QLatin1Char('/'), QString::SkipEmptyParts);
+            const QStringList pieces = m_fileEntry.strFullPath.split(QLatin1Char('/'),
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                                                                     Qt::SkipEmptyParts
+#else
+                                                                     QString::SkipEmptyParts
+#endif
+                                                                     );
             m_fileEntry.strFileName = pieces.isEmpty() ? QString() : pieces.last();
         } else if (parseLineLeft == QLatin1String("Type")) {
             if (parseLineRight == QLatin1String("Directory")) {
@@ -240,8 +246,13 @@ bool CliRarPlugin::readListLine(const QString &line)
         } else if (parseLineLeft == QLatin1String("mtime")) {
             QString time = line.left((line.length() - 10));
             // 文件最后修改时间
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            m_fileEntry.uLastModifiedTime = QDateTime::fromString(time.right(time.length() - 14),
+                                                                  QStringLiteral("yyyy-MM-dd hh:mm:ss")).toSecsSinceEpoch();
+#else
             m_fileEntry.uLastModifiedTime = QDateTime::fromString(time.right(time.length() - 14),
                                                                   QStringLiteral("yyyy-MM-dd hh:mm:ss")).toTime_t();
+#endif
 
             QString name = m_fileEntry.strFullPath;
 

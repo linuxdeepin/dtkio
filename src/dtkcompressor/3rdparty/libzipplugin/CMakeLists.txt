@@ -7,7 +7,7 @@ project(${LIB_NAME})
 
 #查找依赖关系的包信息
 find_package(PkgConfig REQUIRED)
-find_package(KF5Codecs REQUIRED)
+find_package(KF${KF_VERSION_MAJOR}Codecs REQUIRED)
 find_package(ZLIB REQUIRED)
 include(FindPkgConfig)
 
@@ -28,7 +28,7 @@ add_library(${LIB_NAME} SHARED ${c_files} ${json_files} ${h_files})
 
 #链接动静态库
 target_link_libraries(${LIB_NAME}
-    KF5::Codecs
+    KF${KF_VERSION_MAJOR}::Codecs
     interfacecompressor
     zip
 )

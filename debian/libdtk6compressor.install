@@ -1,0 +1,12 @@
+usr/lib/*/libdtk6compressor.so*
+usr/lib/*/dtk6compressor/plugins/libcli7zplugincompressor.so
+usr/lib/*/dtk6compressor/plugins/libclirarplugincompressor.so
+usr/lib/*/dtk6compressor/plugins/libzipplugincompressor.so
+usr/lib/*/dtk6compressor/plugins/libpigzplugincompressor.so
+usr/lib/*/dtk6compressor/plugins/libminizipplugincompressor.so
+usr/lib/*/dtk6compressor/plugins/libreadwritelibarchiveplugincompressor.so
+usr/lib/*/dtk6compressor/plugins/libreadonlylibarchiveplugincompressor.so
+usr/lib/*/dtk6compressor/plugins/libinterfacecompressor.so
+usr/lib/*/dtk6compressor/plugins/libbz2plugincompressor.so
+usr/lib/*/dtk6compressor/plugins/libgzplugincompressor.so
+usr/lib/*/dtk6compressor/plugins/libxzplugincompressor.so

@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+# SPDX-FileCopyrightText: 2022-2025 UnionTech Software Technology Co., Ltd.
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -28,8 +28,8 @@ add_executable(${BIN_NAME}
 )
 
 find_package(PkgConfig REQUIRED)
-find_package(DtkCore REQUIRED)
-find_package(KF5Codecs REQUIRED)
+find_package(Dtk${DTK_VERSION_MAJOR}Core REQUIRED)
+find_package(KF${KF_VERSION_MAJOR}Codecs REQUIRED)
 find_package(ZLIB REQUIRED)
 
 target_include_directories(${BIN_NAME} PUBLIC
@@ -39,8 +39,8 @@ target_include_directories(${BIN_NAME} PUBLIC
 )
 
 target_link_libraries(${BIN_NAME} PRIVATE
-    ${DtkCore_LIBRARIES}
-    KF5::Codecs
+    Dtk${DTK_VERSION_MAJOR}::Core
+    KF${KF_VERSION_MAJOR}::Codecs
     zip
     interfacecompressor
     -lpthread

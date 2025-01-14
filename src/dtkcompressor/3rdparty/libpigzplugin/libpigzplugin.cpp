@@ -280,7 +280,7 @@ void LibPigzPlugin::getChildProcessId(qint64 processId, const QStringList &listK
         if (lines.count() > 0 && lines[0].contains(strProcessId.toUtf8())) {     // 从包含有processId这一行开始处理
             for (const QByteArray &line : qAsConst(lines)) {
                 for (const QString &strKey : qAsConst(listKey)) {
-                    QString str = QString("-%1(").arg(strKey);
+                    QByteArray str = QString("-%1(").arg(strKey).toUtf8();
                     int iCount = line.count(str.toStdString().c_str());        // 多个子进程都需要获取到
                     int iIndex = 0;
                     for (int i = 0; i < iCount; ++i) {

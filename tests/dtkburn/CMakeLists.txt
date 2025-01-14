@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+# SPDX-FileCopyrightText: 2022-2025 UnionTech Software Technology Co., Ltd.
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -36,7 +36,7 @@ target_include_directories(${BIN_NAME} PRIVATE
 
 target_link_libraries(${BIN_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
-    Dtk::Core
+    Dtk${DTK_VERSION_MAJOR}::Core
     ${ISOBURN_LIBRARIES}
     -lpthread
     -lgcov

@@ -1,0 +1,5 @@
+usr/include/dtk6io/*
+usr/lib/*/pkgconfig/dtk6io.pc
+usr/lib/*/cmake/dtk6io/*.cmake
+usr/lib/*/*/mkspecs/modules/*dtk6io.pri
+usr/share/*/doc/*.qch

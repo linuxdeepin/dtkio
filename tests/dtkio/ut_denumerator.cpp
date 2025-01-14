@@ -61,10 +61,20 @@ TEST_F(TestDEnumerator, hasnext)
     //test false
     {
         m_enumerator->d->enumeratorInited = true;
-        m_stub.set_lamda(ADDR(QStack<GFileEnumerator *>, isEmpty), []() {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        using IsEmptyFunc = bool (QStack<GFileEnumerator*>::*)() const;
+        IsEmptyFunc isEmptyFunc = &QStack<GFileEnumerator*>::isEmpty;
+        m_stub.set_lamda(isEmptyFunc, []()->bool {
             __DBG_STUB_INVOKE__
             return true;
         });
+#else
+        m_stub.set_lamda(ADDR(QStack<GFileEnumerator *>, isEmpty), []()->bool {
+            __DBG_STUB_INVOKE__
+            return true;
+        });
+#endif
+
         EXPECT_FALSE(m_enumerator->hasNext().value());
     }
     //test true
@@ -74,11 +84,29 @@ TEST_F(TestDEnumerator, hasnext)
             __DBG_STUB_INVOKE__
             return true;
         });
-        m_stub.set_lamda(ADDR(QStack<GFileEnumerator *>, isEmpty), []() {
+
+        // Force set isEmpty() return true, d->stackEnumerator.top() return undefined pointer
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        using IsEmptyFunc = bool (QStack<GFileEnumerator*>::*)() const;
+        IsEmptyFunc isEmptyFunc = &QStack<GFileEnumerator*>::isEmpty;
+        m_stub.set_lamda(isEmptyFunc, []()->bool {
             __DBG_STUB_INVOKE__
             return false;
         });
 
+        GFileEnumerator* tmpPtr = nullptr;
+        using TopFunc = GFileEnumerator* & (QStack<GFileEnumerator*>::*)();
+        TopFunc topFunc = &QStack<GFileEnumerator*>::top;
+        m_stub.set_lamda(topFunc, [&]()-> GFileEnumerator* &{
+            __DBG_STUB_INVOKE__
+            return tmpPtr;
+        });
+#else
+        m_stub.set_lamda(ADDR(QStack<GFileEnumerator *>, isEmpty), []()->bool {
+            __DBG_STUB_INVOKE__
+            return false;
+        });
+#endif
         m_enumerator->d->iteratorflags = IteratorFlag::NoIteratorFlags;
         m_stub.set_lamda(g_file_enumerator_iterate, [](GFileEnumerator *direnum, GFileInfo **out_info, GFile **out_child, GCancellable *cancellable, GError **error) {
             Q_UNUSED(direnum);

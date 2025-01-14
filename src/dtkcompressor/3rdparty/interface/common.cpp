@@ -55,7 +55,7 @@
             break;
         default:
             // full-width character, emoji, 常用标点, 拉丁文补充1，天城文补充，CJK符号和标点符号（如：【】）
-            if ((ch.unicode() >= 0xff00 && ch <= 0xffef)
+            if ((ch.unicode() >= 0xff00 && ch <= QChar(0xffef))
                     || (ch.unicode() >= 0x2600 && ch.unicode() <= 0x27ff)
                     || (ch.unicode() >= 0x2000 && ch.unicode() <= 0x206f)
                     || (ch.unicode() >= 0x80 && ch.unicode() <= 0xff)
@@ -132,7 +132,7 @@ QByteArray Common::detectEncode(const QByteArray &data, const QString &fileName)
     QString detectedResult;
     float chardetconfidence = 0;
     QString str(data);
-    bool bFlag = str.contains(QRegExp("[\\x4e00-\\x9fa5]+")); //匹配的是中文
+    bool bFlag = str.contains(QRegularExpression("[\\x4e00-\\x9fa5]+")); //匹配的是中文
     if (bFlag) {
         QByteArray newData = data;
         newData += "为增加探测率保留的中文";    //手动添加中文字符，避免字符长度太短而导致判断编码错误
@@ -273,7 +273,12 @@ QByteArray Common::textCodecDetect(const QByteArray &data, const QString &fileNa
         QTextStream stream(data);
 
         pattern.setPatternOptions(QRegularExpression::DontCaptureOption | QRegularExpression::CaseInsensitiveOption);
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        stream.setEncoding(QStringConverter::Latin1);
+#else
         stream.setCodec("latin1");
+#endif
 
         while (!stream.atEnd()) {
             const QString &_data = stream.readLine();

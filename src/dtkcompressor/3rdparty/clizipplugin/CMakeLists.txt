@@ -13,17 +13,7 @@ find_package(PkgConfig REQUIRED)
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Gui Widgets Network Concurrent Xml Svg)
 include(FindPkgConfig)
 
-pkg_search_module(DtkWidget REQUIRED dtkwidget)
-include_directories(${DtkWidget_INCLUDE_DIRS})
-
-pkg_search_module(DtkCore REQUIRED dtkcore)
-include_directories(${DtkCore_INCLUDE_DIRS})
-
-set(LIBS_INCLUDE_DIRS 
-    ${DtkWidget_LIBRARIES}
-    ${DtkCore_LIBRARIES}
-)
-
+find_package(Dtk${DTK_VERSION_MAJOR} REQUIRED COMPONENTS Core Widget)
 
 include_directories(${PROJECT_SOURCE_DIR}/../ChardetDetector)
 include_directories(${PROJECT_SOURCE_DIR}/../interface)
@@ -39,5 +29,5 @@ include_directories(${PROJECT_SOURCE_DIR})
 
 add_library(${LIB_NAME} SHARED  ${c_files} ${h_files} ${json_files})
 target_link_libraries(${LIB_NAME} Qt${QT_VERSION_MAJOR}::Widgets)
-target_link_libraries(${LIB_NAME} ${LIBS_INCLUDE_DIRS})
+target_link_libraries(${LIB_NAME} DTK${DTK_VERSION_MAJOR}::Core DTK${DTK_VERSION_MAJOR}::Widget)
 target_link_libraries( ${LIB_NAME} compressor-interface)

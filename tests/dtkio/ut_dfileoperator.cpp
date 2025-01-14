@@ -45,7 +45,12 @@ TEST_F(TestDFileOperator, renameFile)
         static GError err;
         m_stub.set_lamda(g_file_set_display_name, [](GFile *file, const char *display_name, GCancellable *cancellable, GError **error) {
             __DBG_STUB_INVOKE__
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            GQuark domain = g_quark_from_static_string("MyAppErrorDomain");
+            *error = g_error_new(domain, 42, "This is a test error: %s", "something went wrong");
+#else
             *error = &err;
+#endif
             return nullptr;
         });
         auto ret { m_operator->renameFile("test666") };
@@ -56,7 +61,12 @@ TEST_F(TestDFileOperator, renameFile)
     {
         m_stub.set_lamda(g_file_set_display_name, [](GFile *file, const char *display_name, GCancellable *cancellable, GError **error) {
             __DBG_STUB_INVOKE__
+            // avoid duplicate GFile unref
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            return g_file_new_for_path("nullptr");
+#else
             return file;
+#endif
         });
         auto ret { m_operator->renameFile("test666") };
         EXPECT_TRUE(ret.hasValue());

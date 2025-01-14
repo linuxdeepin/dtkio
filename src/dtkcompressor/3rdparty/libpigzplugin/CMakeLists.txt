@@ -7,7 +7,7 @@ project(${LIB_NAME})
 
 #查找依赖关系的包信息
 find_package(PkgConfig REQUIRED)
-find_package(KF5Codecs REQUIRED)
+find_package(KF${KF_VERSION_MAJOR}Codecs REQUIRED)
 include(FindPkgConfig)
 
 #指定头文件路径

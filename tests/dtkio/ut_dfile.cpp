@@ -100,7 +100,12 @@ TEST_F(TestDFile, read)
 
         m_stub.set_lamda(g_input_stream_read, [](GInputStream *, void *, gsize, GCancellable *, GError **error) {
             __DBG_STUB_INVOKE__
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            GQuark domain = g_quark_from_static_string("MyAppErrorDomain");
+            *error = g_error_new(domain, 42, "This is a test error: %s", "something went wrong");
+#else
             *error = &err;
+#endif
             return 0;
         });
 
@@ -149,7 +154,12 @@ TEST_F(TestDFile, readAll)
         });
         m_stub.set_lamda(g_input_stream_read_all, [](GInputStream *, void *, gsize, gsize *, GCancellable *, GError **error) {
             __DBG_STUB_INVOKE__
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            GQuark domain = g_quark_from_static_string("MyAppErrorDomain");
+            *error = g_error_new(domain, 42, "This is a test error: %s", "something went wrong");
+#else
             *error = &err;
+#endif
             return FALSE;
         });
         auto ret { file.readAll() };
@@ -206,7 +216,12 @@ TEST_F(TestDFile, writeWithLen)
         });
         m_stub.set_lamda(g_output_stream_write, [](GOutputStream *, const void *, gsize, GCancellable *, GError **error) {
             __DBG_STUB_INVOKE__
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            GQuark domain = g_quark_from_static_string("MyAppErrorDomain");
+            *error = g_error_new(domain, 42, "This is a test error: %s", "something went wrong");
+#else
             *error = &err;
+#endif
             return 0;
         });
         auto ret { file.write(QByteArray {}, 10) };
@@ -286,7 +301,12 @@ TEST_F(TestDFile, seek)
         static GError err;
         m_stub.set_lamda(g_seekable_seek, [](GSeekable *, goffset, GSeekType, GCancellable *, GError **error) {
             __DBG_STUB_INVOKE__
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            GQuark domain = g_quark_from_static_string("MyAppErrorDomain");
+            *error = g_error_new(domain, 42, "This is a test error: %s", "something went wrong");
+#else
             *error = &err;
+#endif
             return FALSE;
         });
         ret = file.seek(10, SeekType::Begin);
@@ -370,7 +390,12 @@ TEST_F(TestDFile, flush)
         });
         m_stub.set_lamda(g_output_stream_flush, [](GOutputStream *, GCancellable *, GError **error) {
             __DBG_STUB_INVOKE__
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            GQuark domain = g_quark_from_static_string("MyAppErrorDomain");
+            *error = g_error_new(domain, 42, "This is a test error: %s", "something went wrong");
+#else
             *error = &err;
+#endif
             return FALSE;
         });
         auto ret { file.flush() };
@@ -401,7 +426,12 @@ TEST_F(TestDFile, size)
     {
         static GError err;
         m_stub.set_lamda(g_file_query_info, [](GFile *, const char *, GFileQueryInfoFlags, GCancellable *, GError **error) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            GQuark domain = g_quark_from_static_string("MyAppErrorDomain");
+            *error = g_error_new(domain, 42, "This is a test error: %s", "something went wrong");
+#else
             *error = &err;
+#endif
             return nullptr;
         });
         auto ret { file.size() };
@@ -429,7 +459,12 @@ TEST_F(TestDFile, permissions)
     {
         static GError err;
         m_stub.set_lamda(g_file_query_info, [](GFile *, const char *, GFileQueryInfoFlags, GCancellable *, GError **error) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            GQuark domain = g_quark_from_static_string("MyAppErrorDomain");
+            *error = g_error_new(domain, 42, "This is a test error: %s", "something went wrong");
+#else
             *error = &err;
+#endif
             return nullptr;
         });
         auto ret { file.permissions() };
@@ -453,7 +488,12 @@ TEST_F(TestDFile, setPermissions)
         static GError err;
         m_stub.set_lamda(ADDR(DFileHelper, setAttribute),
                          [](GFile *, const char *, AttributeType, const QVariant &, GFileQueryInfoFlags, GCancellable *, GError **error) {
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+                             GQuark domain = g_quark_from_static_string("MyAppErrorDomain");
+                             *error = g_error_new(domain, 42, "This is a test error: %s", "something went wrong");
+#else
                              *error = &err;
+#endif
                              return false;
                          });
         auto ret { file.setPermissions(perms) };

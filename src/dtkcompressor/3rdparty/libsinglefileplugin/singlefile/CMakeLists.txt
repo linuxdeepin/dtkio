@@ -8,7 +8,7 @@ project(${LIB_NAME})
 #查找依赖关系的包信息
 find_package(PkgConfig REQUIRED)
 #find_package(LibArchive)
-find_package(KF5Archive)
+find_package(KF${KF_VERSION_MAJOR}Archive)
 include(FindPkgConfig)
 
 
@@ -26,6 +26,6 @@ file(GLOB_RECURSE h_files RELATIVE ${PROJECT_SOURCE_DIR} *.h)
 #生成动静态库
 add_library(${LIB_NAME} STATIC ${h_files} ${c_files})
 target_link_libraries(${LIB_NAME}
-    KF5::Archive
+    KF${KF_VERSION_MAJOR}::Archive
     interfacecompressor
 )

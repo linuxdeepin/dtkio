@@ -167,8 +167,11 @@ QJsonValue KPluginMetaData::readTranslatedValue(const QJsonObject &jo, const QSt
     if (it != jo.constEnd()) {
         return it.value();
     }
-
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    const QString language = languageWithCountry.mid(0, languageWithCountry.indexOf(QLatin1Char('_')));
+#else
     const QStringRef language = languageWithCountry.midRef(0, languageWithCountry.indexOf(QLatin1Char('_')));
+#endif
     it = jo.constFind(key + QLatin1Char('[') + language + QLatin1Char(']'));
     if (it != jo.constEnd()) {
         return it.value();

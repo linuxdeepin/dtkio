@@ -1,10 +1,11 @@
-# SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+# SPDX-FileCopyrightText: 2022-2025 UnionTech Software Technology Co., Ltd.
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
-set(BIN_NAME dtkburn)
+set(BIN_NAME dtk${DTK_VERSION_MAJOR}burn)
+set(BASE_NAME dtkburn)
 
-file(GLOB_RECURSE INCLUDE_FILES "${PROJECT_SOURCE_DIR}/include/${BIN_NAME}/*")
+file(GLOB_RECURSE INCLUDE_FILES "${PROJECT_SOURCE_DIR}/include/${BASE_NAME}/*")
 file(GLOB_RECURSE SRCS
     "./*.h"
     "./*.cpp"
@@ -15,7 +16,7 @@ add_library(${BIN_NAME} SHARED
     ${SRCS}
 )
 
-target_include_directories(${BIN_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include/${BIN_NAME}/)
+target_include_directories(${BIN_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include/${BASE_NAME}/)
 
 set_target_properties(${BIN_NAME} PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION}
@@ -33,7 +34,7 @@ target_include_directories(${BIN_NAME} PUBLIC
 
 target_link_libraries(${BIN_NAME} PRIVATE
     Qt${QT_VERSION_MAJOR}::Core
-    Dtk::Core
+    Dtk${DTK_VERSION_MAJOR}::Core
     ${ISOBURN_LIBRARIES}
 )
 
@@ -46,16 +47,16 @@ set(PC_REQ_PRIVATE)
 set(PC_REQ_PUBLIC)
 
 # config pkgconfig file
-configure_file(${PROJECT_SOURCE_DIR}/misc/${BIN_NAME}/${BIN_NAME}.pc.in ${BIN_NAME}.pc @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/misc/${BASE_NAME}/${BASE_NAME}.pc.in ${BIN_NAME}.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${BIN_NAME}.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 # config cmake file
-configure_file(${PROJECT_SOURCE_DIR}/misc/${BIN_NAME}/${BIN_NAME}Config.cmake.in ${BIN_NAME}Config.cmake @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/misc/${BASE_NAME}/${BASE_NAME}Config.cmake.in ${BIN_NAME}Config.cmake @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${BIN_NAME}Config.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${BIN_NAME})
 
 # config qmake moudule file
 set(DTK_MODULE ${BIN_NAME})
 set(DTK_DEPS "core dbus")
 set(QMKSPECS_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/qt${QT_VERSION_MAJOR}/mkspecs/modules" CACHE STRING "INSTALL DIR FOR qt pri files")
-configure_file(${PROJECT_SOURCE_DIR}/misc/${BIN_NAME}/qt_lib_${BIN_NAME}.pri.in qt_lib_${BIN_NAME}.pri @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/misc/${BASE_NAME}/qt_lib_${BASE_NAME}.pri.in qt_lib_${BIN_NAME}.pri @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qt_lib_${BIN_NAME}.pri DESTINATION "${QMKSPECS_INSTALL_DIR}")
