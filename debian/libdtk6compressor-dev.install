@@ -1,0 +1,5 @@
+usr/include/dtk6compressor/*
+usr/lib/*/pkgconfig/dtk6compressor.pc
+usr/lib/*/cmake/*/dtk6compressor*.cmake
+usr/lib/*/*/mkspecs/modules/*dtk6compressor.pri
+usr/share/*/doc/*.qch

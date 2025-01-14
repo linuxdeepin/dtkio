@@ -148,9 +148,16 @@ void Window::deviceMountAdd(const QString &devPath, const QString &mountPoint)
             data.mountPoint = mountPoint;
             data.isMount = true;
             data.usedSize = data.size - (new QStorageInfo(mountPoint))->bytesAvailable();
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            m_model->setData(index, QVariant(data.isMount), Qt::UserRole + 1);
+            variant.setValue<DeviceData>(std::move(data));
+            m_model->setData(index, variant, Qt::UserRole);
+#else
             variant.setValue<DeviceData>(data);
             m_model->setData(index, variant, Qt::UserRole);
             m_model->setData(index, QVariant(data.isMount), Qt::UserRole + 1);
+#endif
             return;
         }
     }
@@ -166,9 +173,16 @@ void Window::deviceMountRemove(const QString &devPath)
             data.mountPoint = "";
             data.isMount = false;
             data.usedSize = 0;
+
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+            m_model->setData(index, QVariant(data.isMount), Qt::UserRole + 1);
+            variant.setValue<DeviceData>(std::move(data));
+            m_model->setData(index, variant, Qt::UserRole);
+#else
             variant.setValue<DeviceData>(data);
             m_model->setData(index, variant, Qt::UserRole);
             m_model->setData(index, QVariant(data.isMount), Qt::UserRole + 1);
+#endif
             return;
         }
     }

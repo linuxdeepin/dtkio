@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Widgets Core Gui REQUIRED)
-find_package(Dtk COMPONENTS Widget Core Gui REQUIRED)
+find_package(Dtk${DTK_VERSION_MAJOR} COMPONENTS Widget Core Gui REQUIRED)
 
 file(GLOB PROJECT_SOURCES CONFIGURE_DEPENDS ./*.cpp ./*.h)
 
@@ -22,10 +22,11 @@ target_include_directories(${PROJECT_NAME} PUBLIC include)
 
 target_link_libraries(
     ${PROJECT_NAME} PRIVATE
-    ${DtkWidget_LIBRARIES}
-    ${DtkCore_LIBRARIES}
-    dtksearch
+    Dtk${DTK_VERSION_MAJOR}::Core
+    Dtk${DTK_VERSION_MAJOR}::Gui
+    Dtk${DTK_VERSION_MAJOR}::Widget
     Qt${QT_VERSION_MAJOR}::Widgets
-    Qt${QT_VERSION_MAJOR}::Core
+    Qt${Qt_VERSION_MAJOR}::Core
+    dtk${DTK_VERSION_MAJOR}search
 )
 

@@ -14,8 +14,8 @@ PROJECT(testcompressor)
 
 find_package(Qt${QT_VERSION_MAJOR}Widgets)
 find_package(PkgConfig REQUIRED)
-find_package(DtkCore REQUIRED)
-find_package(KF5Codecs REQUIRED)
+find_package(Dtk${DTK_VERSION_MAJOR}Core REQUIRED)
+find_package(KF${KF_VERSION_MAJOR}Codecs REQUIRED)
 
 # 4.source directory
 AUX_SOURCE_DIRECTORY(. DIR_SRCS)
@@ -34,10 +34,10 @@ target_include_directories(${PROJECT_NAME} PUBLIC
 
 set(TARGET_LIBS
     Qt${QT_VERSION_MAJOR}::Widgets
-    ${DtkCore_LIBRARIES}
-    KF5::Codecs
+    Dtk${DTK_VERSION_MAJOR}::Core
+    KF${KF_VERSION_MAJOR}::Codecs
     Qt${QT_VERSION_MAJOR}::DBus
-    dtkcompressor
+    dtk${DTK_VERSION_MAJOR}compressor
     )
 
 # 7.add link library

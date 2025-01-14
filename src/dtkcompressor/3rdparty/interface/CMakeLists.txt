@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+# SPDX-FileCopyrightText: 2022-2025 UnionTech Software Technology Co., Ltd.
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -11,7 +11,11 @@ project(${LIB_NAME})
 
 #查找依赖关系的包信息
 find_package(PkgConfig REQUIRED)
-find_package(KF5Codecs REQUIRED)
+find_package(KF${KF_VERSION_MAJOR}Codecs REQUIRED)
+if(BUILD_WITH_QT6)
+    find_package(Qt${QT_VERSION_MAJOR}Core5Compat REQUIRED)
+endif()
+
 include(FindPkgConfig)
 
 pkg_search_module(GOBJECT REQUIRED gobject-2.0)
@@ -21,7 +25,11 @@ file(GLOB_RECURSE c_files RELATIVE ${PROJECT_SOURCE_DIR} *.cpp)
 file(GLOB_RECURSE h_files RELATIVE ${PROJECT_SOURCE_DIR} *.h)
 
 #指定头文件路径
-include_directories(${KF5Codecs_INCLUDE_DIRS})
+if(BUILD_WITH_QT6)
+    include_directories(${KF6Codecs_INCLUDE_DIRS})
+else()
+    include_directories(${KF5Codecs_INCLUDE_DIRS})
+endif()
 include_directories(${PROJECT_SOURCE_DIR})
 include_directories(${PROJECT_SOURCE_DIR}/archiveinterface)
 include_directories(${PROJECT_SOURCE_DIR}/plugin)
@@ -58,7 +66,10 @@ add_library(${LIB_NAME} SHARED ${h_files} ${c_files})
 
 #链接动静态库
 target_link_libraries(${LIB_NAME}
-    KF5::Codecs
+    KF${KF_VERSION_MAJOR}::Codecs
     chardetdetectorcompressor
 )
 
+if(BUILD_WITH_QT6)
+    target_link_libraries(${LIB_NAME} Qt${QT_VERSION_MAJOR}::Core5Compat)
+endif()

@@ -232,7 +232,11 @@ void PluginManager::loadPlugins()
 {
     QString path = QLibraryInfo::location(QLibraryInfo::LibrariesPath);
     QCoreApplication::addLibraryPath(path);
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    const QVector<KPluginMetaData> plugins = KPluginLoader::findPlugins(QStringLiteral("dtk6compressor/plugins"));
+#else
     const QVector<KPluginMetaData> plugins = KPluginLoader::findPlugins(QStringLiteral("dtkcompressor/plugins"));
+#endif
     QSet<QString> addedPlugins;
     for (const KPluginMetaData &metaData : plugins) {
         const auto pluginId = metaData.pluginId();

@@ -10,7 +10,7 @@ set(CMAKE_CXX_STANDARD_REQUIRED ON)
 SET(EXECUTABLE_OUTPUT_PATH ${PROJECT_SOURCE_DIR})
 
 find_package(Qt${QT_VERSION_MAJOR} COMPONENTS Core REQUIRED)
-find_package(Dtk COMPONENTS Core REQUIRED)
+find_package(Dtk${DTK_VERSION_MAJOR} COMPONENTS Core REQUIRED)
 #find_package(dtkburn REQUIRED)
 
 file(GLOB PROJECT_SOURCES CONFIGURE_DEPENDS ./*.cpp ./*.h)
@@ -23,7 +23,6 @@ target_include_directories(${PROJECT_NAME} PUBLIC include)
 
 target_link_libraries(
     ${PROJECT_NAME} PRIVATE
-    ${DtkCore_LIBRARIES}
-    ${dtkburn_LIBRARIES}
-    dtkburn
+    Dtk${DTK_VERSION_MAJOR}::Core
+    dtk${DTK_VERSION_MAJOR}burn
 )

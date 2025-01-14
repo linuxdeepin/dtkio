@@ -1,10 +1,11 @@
-# SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+# SPDX-FileCopyrightText: 2022-2025 UnionTech Software Technology Co., Ltd.
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
-set(BIN_NAME dtkcompressor)
+set(BIN_NAME dtk${DTK_VERSION_MAJOR}compressor)
+set(BASE_MAME dtkcompressor)
 
-file(GLOB_RECURSE INCLUDE_FILES "${PROJECT_SOURCE_DIR}/include/${BIN_NAME}/*")
+file(GLOB_RECURSE INCLUDE_FILES "${PROJECT_SOURCE_DIR}/include/${BASE_MAME}/*")
 file(GLOB_RECURSE SRCS
     "./archivemanager/*.h"
     "./archivemanager/*.cpp"
@@ -20,15 +21,15 @@ if(NOT DEFINED HFILES_OUTPUT_PATH)
     set(HFILES_OUTPUT_PATH ${CMAKE_BINARY_DIR}/include)
 endif()
 add_subdirectory(3rdparty)
-find_package(KF5Codecs REQUIRED)
+find_package(KF${KF_VERSION_MAJOR}Codecs REQUIRED)
 find_package(PkgConfig REQUIRED)
-find_package(DtkCore REQUIRED)
+find_package(Dtk${DTK_VERSION_MAJOR} REQUIRED Core)
 if(QT_VERSION_MAJOR EQUAL "6")
     find_package(Qt6Core5Compat REQUIRED)
 endif()
 
-target_include_directories(${BIN_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include/${BIN_NAME}/)
-target_include_directories(${BIN_NAME} PUBLIC ${KF5Codecs_INCLUDE_DIRS})
+target_include_directories(${BIN_NAME} PUBLIC ${PROJECT_SOURCE_DIR}/include/${BASE_MAME}/)
+target_include_directories(${BIN_NAME} PUBLIC ${KF${KF_VERSION_MAJOR}Codecs_INCLUDE_DIRS})
 
 set_target_properties(${BIN_NAME} PROPERTIES
     VERSION ${CMAKE_PROJECT_VERSION}
@@ -40,16 +41,16 @@ if(QT_VERSION_MAJOR EQUAL "6")
     target_link_libraries(${BIN_NAME} PRIVATE
         Qt${QT_VERSION_MAJOR}::Core
         Qt6::Core5Compat
-        ${DtkCore_LIBRARIES}
+        Dtk6::Core
         interfacecompressor
-        KF5::Codecs
+        KF${KF_VERSION_MAJOR}::Codecs
     )
 else()
     target_link_libraries(${BIN_NAME} PRIVATE
         Qt${QT_VERSION_MAJOR}::Core
-        ${DtkCore_LIBRARIES}
+        Dtk5::Core
         interfacecompressor
-        KF5::Codecs
+        KF${KF_VERSION_MAJOR}::Codecs
     )
 endif()
 
@@ -67,23 +68,23 @@ set(PC_REQ_PRIVATE)
 set(PC_REQ_PUBLIC)
 
 # config pkgconfig file
-configure_file(${PROJECT_SOURCE_DIR}/misc/${BIN_NAME}/${BIN_NAME}.pc.in ${BIN_NAME}.pc @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/misc/${BASE_MAME}/${BASE_MAME}.pc.in ${BIN_NAME}.pc @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${BIN_NAME}.pc DESTINATION ${CMAKE_INSTALL_LIBDIR}/pkgconfig)
 
 # config cmake file
-configure_file(${PROJECT_SOURCE_DIR}/misc/${BIN_NAME}/${BIN_NAME}Config.cmake.in ${BIN_NAME}Config.cmake @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/misc/${BASE_MAME}/${BASE_MAME}Config.cmake.in ${BIN_NAME}Config.cmake @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/${BIN_NAME}Config.cmake DESTINATION ${CMAKE_INSTALL_LIBDIR}/cmake/${BIN_NAME})
 
 # config qmake moudule file
 set(DTK_MODULE ${BIN_NAME})
 set(DTK_DEPS "core")
 set(QMKSPECS_INSTALL_DIR "${CMAKE_INSTALL_LIBDIR}/qt${QT_VERSION_MAJOR}/mkspecs/modules" CACHE STRING "INSTALL DIR FOR qt pri files")
-configure_file(${PROJECT_SOURCE_DIR}/misc/${BIN_NAME}/qt_lib_${BIN_NAME}.pri.in qt_lib_${BIN_NAME}.pri @ONLY)
+configure_file(${PROJECT_SOURCE_DIR}/misc/${BASE_MAME}/qt_lib_${BASE_MAME}.pri.in qt_lib_${BIN_NAME}.pri @ONLY)
 install(FILES ${CMAKE_CURRENT_BINARY_DIR}/qt_lib_${BIN_NAME}.pri DESTINATION "${QMKSPECS_INSTALL_DIR}")
 
 ## plugin install
 if(NOT DEFINED DTK_COMPRESSOR_PLUGIN_PATH)
-    set(DTK_COMPRESSOR_PLUGIN_PATH ${CMAKE_INSTALL_LIBDIR}/dtkcompressor/plugins)
+    set(DTK_COMPRESSOR_PLUGIN_PATH ${CMAKE_INSTALL_LIBDIR}/${BIN_NAME}/plugins)
 endif()
 
 if (CMAKE_BUILD_TYPE STREQUAL "Debug")

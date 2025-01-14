@@ -271,7 +271,11 @@ PluginFinishType CliInterface::addFiles(const QList<FileEntry> &files, const Com
         QDir::setCurrent(m_extractTempDir->path());
 
         // 添加临时路径中的第一层文件（夹）
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+        fileList.append(destinationPath.split(QLatin1Char('/'), Qt::SkipEmptyParts).at(0));
+#else
         fileList.append(destinationPath.split(QLatin1Char('/'), QString::SkipEmptyParts).at(0));
+#endif
     } else { // 压缩、向压缩包第一层文件追加压缩
         QList<FileEntry> tempfiles = files;
         // 获取待压缩的文件
@@ -622,7 +626,7 @@ void CliInterface::handleProgress(const QString &line)
     if (m_process && m_process->program().at(0).contains("7z")) {  // 解析7z相关进度、文件名
         int pos = line.indexOf(QLatin1Char('%'));
         if (pos > 1) {
-            int percentage = line.midRef(pos - 3, 3).toInt();
+            int percentage = line.mid(pos - 3, 3).toInt();
             if (percentage > 0) {
                 if (line.contains("\b\b\b\b") == true) {
                     QString strfilename;
@@ -640,7 +644,7 @@ void CliInterface::handleProgress(const QString &line)
                         }
 
                         if (count > 0) {
-                            strfilename = line.midRef(count + 2).toString();  // 文件名
+                            strfilename = line.mid(count + 2);  // 文件名
                             // 右键 解压到当前文件夹
                             if (m_workStatus == WT_Extract && !m_extractOptions.bExistList && m_indexOfListRootEntry == 0) {
                                 m_indexOfListRootEntry++;
@@ -673,18 +677,15 @@ void CliInterface::handleProgress(const QString &line)
     } else if (m_process && m_process->program().at(0).contains("unrar")) { // 解析rar相关进度、文件名
         int pos = line.indexOf(QLatin1Char('%'));
         if (pos > 1) {
-            int percentage = line.midRef(pos - 3, 3).toInt();
+            int percentage = line.mid(pos - 3, 3).toInt();
             emit signalprogress(percentage);
         }
 
-        QStringRef strfilename;
         QString fileName;
         if (line.startsWith("Extracting")) {            // 普通文件
-            strfilename = line.midRef(12, pos - 24);
-            fileName = strfilename.toString();
+            fileName = line.mid(12, pos - 24);
         } else if (line.startsWith("Creating")) {       // 文件夹
-            strfilename = line.midRef(10, pos - 22);
-            fileName = strfilename.toString();
+            fileName = line.mid(10, pos - 22);
         }
 
         if (!fileName.isEmpty()) {
@@ -1026,7 +1027,7 @@ void CliInterface::getChildProcessId(qint64 processId, const QStringList &listKe
             for (const QByteArray &line : qAsConst(lines)) {
 
                 for (const QString &strKey : qAsConst(listKey)) {
-                    QString str = QString("-%1(").arg(strKey);
+                    QByteArray str = QString("-%1(").arg(strKey).toUtf8();
                     int iCount = line.count(str.toStdString().c_str());        // 多个子进程都需要获取到
                     int iIndex = 0;
                     for (int i = 0; i < iCount; ++i) {

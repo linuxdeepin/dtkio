@@ -191,7 +191,18 @@ bool KPluginLoader::load()
 
     Q_ASSERT(!fileName().isEmpty());
     QLibrary lib(fileName());
+
+    // Note: Prior to Qt 6.6, this function would return true even without
+    // a call to load() if another QLibrary object on the same library had
+    // caused it to be loaded.
+#if QT_VERSION >= QT_VERSION_CHECK(6, 6, 0)
+    lib.load();
+    if (!lib.load()) {
+        return false;
+    }
+#else
     Q_ASSERT(lib.isLoaded()); // already loaded by QPluginLoader::load()
+#endif
 
     // TODO: this messes up KPluginLoader::errorString(): it will change from unknown error to could not resolve kde_plugin_version
     quint32 *version = reinterpret_cast<quint32 *>(lib.resolve("kde_plugin_version"));

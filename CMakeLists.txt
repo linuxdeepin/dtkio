@@ -1,4 +1,4 @@
-# SPDX-FileCopyrightText: 2022 UnionTech Software Technology Co., Ltd.
+# SPDX-FileCopyrightText: 2022-2025 UnionTech Software Technology Co., Ltd.
 #
 # SPDX-License-Identifier: LGPL-3.0-or-later
 
@@ -7,7 +7,7 @@ cmake_minimum_required(VERSION 3.13)
 # If do't define version number, specify the version number
 set(VERSION "1.0.0" CACHE STRING "define project version")
 
-project(dtkio
+project(dtk6io
     LANGUAGES CXX
     HOMEPAGE_URL https://github.com/linuxdeepin/dtkio
     DESCRIPTION "dtk library for dtkio."
@@ -25,25 +25,45 @@ set(CMAKE_SHARED_LINKER_FLAGS ${CMAKE_SHARED_LINKER_FLAGS} "-Wl,--as-needed")
 set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
 
 # Install settings
-if (CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
+if(CMAKE_INSTALL_PREFIX_INITIALIZED_TO_DEFAULT)
     set(CMAKE_INSTALL_PREFIX /usr)
-endif ()
+endif()
 
 set(CMAKE_CXX_FLAGS Release CACHE STRING "define CXXFLAGS")
 
+# Qt6
+option(ENABLE_QT6 "Enable Qt6" ON)
+set(BUILD_WITH_QT6 OFF CACHE BOOL "Build with Qt6")
 find_package(QT NAMES Qt6 Qt5 REQUIRED COMPONENTS Core)
 message("Using Qt version: ${QT_VERSION_MAJOR}")
 
-if(QT_VERSION_MAJOR EQUAL "5")
-    if (CMAKE_BUILD_TYPE STREQUAL "Debug")
+if(ENABLE_QT6 AND Qt6_FOUND)
+    set(QT_VERSION_MAJOR 6)
+    set(DTK_VERSION_MAJOR 6)
+    set(KF_VERSION_MAJOR 6)
+    set(BUILD_WITH_QT6 ON)
+
+
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
         set(BUILD_TESTING ON)
         set(BUILD_EXAMPLES ON)
         set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
     endif()
+
+else()
+    set(QT_VERSION_MAJOR 5)
+    set(KF_VERSION_MAJOR 5)
+
+    if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+        set(BUILD_TESTING ON)
+        set(BUILD_EXAMPLES ON)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fsanitize=address -fno-omit-frame-pointer")
+    endif()
+
 endif()
 
 find_package(Qt${QT_VERSION_MAJOR} REQUIRED COMPONENTS Core DBus)
-find_package(DtkCore REQUIRED)
+find_package(Dtk${DTK_VERSION_MAJOR} REQUIRED COMPONENTS Core)
 add_compile_definitions(QT_NO_SIGNALS_SLOTS_KEYWORDS)
 
 # src
@@ -52,16 +72,17 @@ add_subdirectory(src)
 # docs
 set(BUILD_DOCS ON CACHE BOOL "Generate doxygen-based documentation")
 find_package(Doxygen)
-if (BUILD_DOCS AND DOXYGEN_FOUND)
+
+if(BUILD_DOCS AND DOXYGEN_FOUND)
     add_subdirectory(docs)
-endif ()
+endif()
 
 # example
-if (BUILD_EXAMPLES)
+if(BUILD_EXAMPLES)
     add_subdirectory(examples)
 endif()
 
 # test
-if (BUILD_TESTING)
-  add_subdirectory(tests)
-endif ()
+if(BUILD_TESTING)
+    add_subdirectory(tests)
+endif()

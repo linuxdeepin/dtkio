@@ -33,8 +33,14 @@
 #include <QDir>
 #include <QThread>
 
+#include <karchive_version.h>
+
+#if KARCHIVE_VERSION_MAJOR >= 6
+#include <KCompressionDevice>
+#else
 #include <KFilterDev>
-//#include <KLocalizedString>
+#endif
+
 #include <linux/limits.h>
 
 #include <unistd.h>
@@ -42,6 +48,7 @@
 LibSingleFileInterface::LibSingleFileInterface(QObject *parent, const QVariantList &args)
     : ReadOnlyArchiveInterface(parent, args)
 {
+
 }
 
 LibSingleFileInterface::~LibSingleFileInterface()
@@ -129,7 +136,12 @@ PluginFinishType LibSingleFileInterface::extractFiles(const QList<FileEntry> &fi
     }
 
     // 打开压缩设备，写入数据
+#if KARCHIVE_VERSION_MAJOR >= 6
+    KCompressionDevice *device = new KCompressionDevice(m_strArchiveName, KCompressionDevice::compressionTypeForMimeType(m_mimeType));
+#else
     KCompressionDevice *device = new KCompressionDevice(m_strArchiveName, KFilterDev::compressionTypeForMimeType(m_mimeType));
+#endif
+
     if (!device) {
         emit signalFileWriteErrorName(QFileInfo(outputFile.fileName()).fileName());
         m_eErrorType = ET_FileWriteError;

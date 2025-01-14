@@ -1,0 +1,5 @@
+usr/include/dtk6mount/*
+usr/lib/*/pkgconfig/dtk6mount.pc
+usr/lib/*/cmake/dtk6mount/*.cmake
+usr/lib/*/*/mkspecs/modules/*dtk6mount.pri
+usr/share/*/doc/*.qch

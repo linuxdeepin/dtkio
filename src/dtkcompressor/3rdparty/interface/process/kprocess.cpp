@@ -403,10 +403,16 @@ int KProcess::startDetached(const QStringList &argv)
 
 int KProcess::pid() const
 {
-#ifdef Q_OS_UNIX
-    return (int) QProcess::pid();
+#if QT_VERSION >= QT_VERSION_CHECK(6, 0, 0)
+    auto pid = QProcess::processId();
 #else
-    return QProcess::pid() ? QProcess::pid()->dwProcessId : 0;
+    auto pid = QProcess::pid();
+#endif
+
+#ifdef Q_OS_UNIX
+    return pid;
+#else
+    return pid ? QProcess::pid()->dwProcessId : 0;
 #endif
 }
 
