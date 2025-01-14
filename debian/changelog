@@ -1,3 +1,9 @@
+dtkio (6.0.0) unstable; urgency=medium
+
+  * fix: Update project name to dtk6io in CMakeLists.txt
+
+ -- renbin <renbin@uniontech.com>  Tue, 14 Jan 2025 20:07:12 +0800
+
 dtkio (1.0.1) unstable; urgency=medium
 
   * update version to 1.0.1
