@@ -39,7 +39,7 @@ set_target_properties(${BIN_NAME} PROPERTIES
 
 target_compile_definitions(${BIN_NAME} PRIVATE VERSION="${CMAKE_PROJECT_VERSION}")
 
-find_package(DtkCore REQUIRED)
+find_package(Dtk${DTK_VERSION_MAJOR}Core REQUIRED)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GLIB REQUIRED glib-2.0)
 pkg_check_modules(GIOUNIX REQUIRED gio-unix-2.0)
