@@ -1,3 +1,10 @@
+dtkio (6.0.1) unstable; urgency=medium
+
+  * fix: missing dtk version in CMakeListst.txt
+  * fix: conflict installation files
+
+ -- renbin <renbin@uniontech.com>  Wed, 15 Jan 2025 14:01:07 +0800
+
 dtkio (6.0.0) unstable; urgency=medium
 
   * fix: Update project name to dtk6io in CMakeLists.txt
