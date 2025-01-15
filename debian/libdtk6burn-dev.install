@@ -2,4 +2,3 @@ usr/include/dtk6burn/*
 usr/lib/*/pkgconfig/dtk6burn.pc
 usr/lib/*/cmake/dtk6burn/*.cmake
 usr/lib/*/*/mkspecs/modules/*dtk6burn.pri
-usr/share/*/doc/*.qch
