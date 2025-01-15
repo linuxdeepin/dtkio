@@ -2,4 +2,3 @@ usr/include/dtk6search/*
 usr/lib/*/pkgconfig/dtk6search.pc
 usr/lib/*/cmake/dtk6search/*.cmake
 usr/lib/*/*/mkspecs/modules/*dtk6search.pri
-usr/share/*/doc/*.qch
